@@ -2,13 +2,14 @@
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :min-lein-version "2.0.0"
-  :dependencies [[org.clojure/clojure "1.6.0"]
+  :dependencies [[cheshire "5.2.0"]
+                 [com.novemberain/monger "2.0.0"]
                  [compojure "1.2.0"]
-                 [ring/ring-defaults "0.1.2"]
-                 [cheshire "5.2.0"]
-                 [ring-anti-forgery "0.3.0"]]
+                 [org.clojure/clojure "1.6.0"]
+                 [ring-anti-forgery "0.3.0"]
+                 [ring/ring-defaults "0.1.2"]]
   :plugins [[lein-ring "0.8.13"]]
-  :ring {:handler teamwall.core.handler/app}
+  :ring {:handler teamwall.handler/app}
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring-mock "0.1.5"]]}})

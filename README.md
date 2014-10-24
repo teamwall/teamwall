@@ -1,6 +1,9 @@
 #teamwall
 
-[![Travis status](https://travis-ci.org/teamwall/teamwall.svg)](https://travis-ci.org/teamwall/teamwall)
+| Branch | Status |
+--------|--------
+| Master | [[![Build Status](https://travis-ci.org/teamwall/teamwall.svg?branch=master)](https://travis-ci.org/teamwall/teamwall)](https://travis-ci.org/teamwall/teamwall) |
+| Develop | [[![Build Status](https://travis-ci.org/teamwall/teamwall.svg?branch=develop)](https://travis-ci.org/teamwall/teamwall)](https://travis-ci.org/teamwall/teamwall)|
 
 An open source software used to build a wall of picture for your team
 

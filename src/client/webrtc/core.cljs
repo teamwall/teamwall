@@ -14,9 +14,9 @@
         height 480]
    (.setAttribute video "width" width)
    (.setAttribute video "height" height)
-   (.setAttribute canvas "width" width)
+   (.setAttribute canvas "width" height)
    (.setAttribute canvas "height" height)
-   (set! (.-width canvas) width)
+   (set! (.-width canvas) height)
    (set! (.-height canvas) height)))
 
 (def ^:private video-node
@@ -112,6 +112,6 @@
   "Take a picture using the stream open when calling `start-video-stream`.
   A Blob object is returned"
   [callback]
-  (.drawImage (.getContext canvas-node "2d") video-node 0 0 640 400)
+  (.drawImage (.getContext canvas-node "2d") video-node -80 0 640 480)
   (.toBlob canvas-node (fn [blob]
                          (callback blob))))

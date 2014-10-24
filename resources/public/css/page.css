@@ -1,37 +1,61 @@
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-}
-
+@import "/bower_components/bootstrap/dist/css/bootstrap.css";
+html,
 body {
-  background: #666;
-  color: #eee;
-  font-family: 'sans-serif';
+  height: 100%;
 }
-
+body {
+  background: #444;
+}
 h1.title {
   text-align: center;
+  font-weight: bold;
+  color: #eee;
+  font-size: 26px;
 }
-
-ul.mates {
+.navbar {
+  border: 0 none;
+  background: #0088cc;
+  margin: 0;
+  border-radius: 0;
+}
+.navbar .navbar-right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin-right: 0;
+}
+.navbar .navbar-right a {
+  cursor: pointer;
+  color: #EEE;
+}
+.navbar .navbar-right a.link {
+  line-height: 1.6;
   padding: 0;
-  width: 600px;
-  list-style: none;
-  display: block;
-  margin: 100px auto;
+  margin: 18px;
+  margin-left: 0;
 }
-
-li.mate {
-  margin: 10px;
-  background: #999;
-  display: inline-block;
-  height: 280px;
-  width: 280px;
-  text-align: center;
+.navbar .navbar-right a.link .glyphicon {
+  margin-right: 5px;
 }
-
-li.mate img {
-  max-height: 200px;
-  margin-top: 40px;
+.navbar .navbar-right a.link.glyphicon:hover {
+  text-decoration: none;
+}
+.navbar .navbar-right a:hover {
+  background: transparent;
+  color: #F5BB54;
+  text-decoration: underline;
+}
+.mates .mate {
+  padding: 0;
+}
+.mates .mate img {
+  width: 100%;
+}
+.mates .mate .timestamp {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 20px;
+  color: #EEE;
+  font-weight: bold;
 }

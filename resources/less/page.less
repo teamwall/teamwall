@@ -1,0 +1,78 @@
+@import "/bower_components/bootstrap/dist/css/bootstrap.css";
+
+html, body {
+  height: 100%;
+}
+
+body {
+ background: #444;
+}
+
+h1.title {
+  text-align: center;
+  font-weight: bold;
+  color: #eee;
+  font-size: 26px;
+}
+
+.navbar {
+  border: 0 none;
+  background: #0088cc;
+  margin: 0;
+  border-radius: 0;
+
+  .navbar-right {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin-right: 0;
+
+    a {
+      cursor: pointer;
+      color: #EEE;
+
+      &.link {
+        line-height: 1.6;
+        padding: 0;
+        margin: 18px;
+        margin-left: 0;
+
+        .glyphicon {
+          margin-right: 5px;
+        }
+
+        &.glyphicon {
+          &:hover {
+            text-decoration: none;
+          }
+        }
+      }
+
+      &:hover {
+        background: transparent;
+        color: #F5BB54;
+        text-decoration: underline;
+      }
+    }
+  }
+
+}
+
+.mates {
+  .mate {
+    padding: 0;
+
+    img {
+      width: 100%;
+    }
+
+    .timestamp {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      margin: 20px;
+      color: #EEE;
+      font-weight: bold;
+    }
+  }
+}

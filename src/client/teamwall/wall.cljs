@@ -18,10 +18,16 @@
   (atom {}))
 (def members (atom []))
 
-(defn- now
+(defn- now-as-milliseconds
   "Returns the current time as a string"
   []
   (str (.now js/Date)))
+
+(defn- timestamp-now
+  "Returns the current time as a timestamp string"
+  []
+  (let [date (js/Date.)]
+    (first (.split (.toTimeString date) " "))))
 
 (defn- get-team-members
   "Returns the list of all the team members of the current user"
@@ -38,7 +44,7 @@
                     "/last-photo?token="
                     (states/get-token)
                     "&time="
-                    (now))]
+                    (now-as-milliseconds))]
 
     (when-not existing-atom
       (swap! sources assoc (:email user) atom-to-use))
@@ -57,20 +63,46 @@
 (defn- tile
   "Build a snapshot tile for the given SRC"
   [src]
-  [:img {:src @src}])
-
-(defn- build-content
-  "Build the wall of mate tiles"
-  []
-  (let [imgs (map (fn [src]
-                    [:li.mate [tile src]])
-                  (get-tiles))]
-    [:ul.mates imgs]))
+  [:div
+   [:img {:src @src}]
+   [:span.timestamp (timestamp-now)]])
 
 (defn- build-title
   "Return a title DOM element."
   []
   [:h1.title "Teamwall"])
+
+(defn- build-settings-button
+  "Build the settings button as a cog icon"
+  []
+  [:a.link.glyphicon.glyphicon-cog])
+
+(defn- build-user-link
+  "Build the user anchor"
+  []
+  [:a.link
+   [:span.glyphicon.glyphicon-user]
+   (:username (states/get-user))])
+
+(defn- build-navbar
+  "Build the main navbar of the page"
+  []
+  [:div.navbar.navbar-fixed
+   [:div.container-fluid
+    [build-title]
+    [:ul.nav.navbar-nav.navbar-right
+     [:li [build-user-link]]
+     [:li [build-settings-button]]]]])
+
+(defn- build-content
+  "Build the wall of mate tiles"
+  []
+  (let [imgs (map (fn [src]
+                    [:div.col-xs-12.col-sm-6.col-md-6.col-lg-4.mate
+                     [tile src]])
+                  (get-tiles))]
+    [:div.container-fluid
+     [:div.row.mates imgs]]))
 
 
 ;;    /==================\
@@ -99,6 +131,7 @@
 (defn render-content
   "Main rendering function."
   []
-  [:div.wall
-   [build-title]
-   [build-content]])
+  [:div
+   [build-navbar]
+   [:div.wall
+    [build-content]]])

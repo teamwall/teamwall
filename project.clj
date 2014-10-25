@@ -7,6 +7,7 @@
                  [clojurewerkz/scrypt "1.2.0"]
                  [com.novemberain/monger "2.0.0"]
                  [compojure "1.2.0"]
+                 [crypto-random "1.2.0"]
                  [org.clojure/clojure "1.6.0"]
                  [ring/ring-codec "1.0.0"]
                  [slingshot "0.12.1"]]

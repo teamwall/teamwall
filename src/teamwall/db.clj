@@ -41,7 +41,8 @@
                           {:_id      (ObjectId.)
                            :username username
                            :email    email
-                           :hash (hashed-password password salt)})))
+                           :hash     (hashed-password password salt)})
+    (mg/disconnect conn)))
 
 (defn retrieve-user
   "Retrieves a user from the database using its email and password"
@@ -57,10 +58,12 @@
         valid-user?     (and
                          (not (nil? user ))
                          valid-password?)]
+    (mg/disconnect conn)
     (if valid-user?
       user
       (throw+ {:type ::login-failed
                :email email
+               :valid-password? valid-password?
                }))))
 
 

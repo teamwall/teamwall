@@ -1,26 +1,30 @@
 (ns teamwall.handler
-  (:require [cheshire.core :refer :all]
+  (:require [clojure.java.io :as io]
             [compojure.core :refer :all]
             [compojure.handler :refer [site]]
             [compojure.route :as route]
-            [ring.middleware.anti-forgery :refer :all]
-            [ring.middleware.session :refer [wrap-session]]
-            [ring.middleware.session.cookie :refer (cookie-store)]
             [teamwall.login :as login]
             [teamwall.serializer :as serializer]
-            [teamwall.settings :as settings]
-
-            [teamwall.db :as db]
-            ))
+            [teamwall.settings :as settings]))
 
 
-;;             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
+(def ^{:private true} setting-file-name "settings.tw")
 
-;; (def ^{:private true} settings (settings/load-settings))
+(defn- default-settings
+  "Generates a new default setting map"
+  []
+  {:salt (str (java.util.UUID/randomUUID))})
 
-(serializer/write-in-file {:foo 32 :bar 43 } "settings.tw")
-(def ^{:private true} settings (serializer/read-from-file "settings.tw"))
-(println settings)
+
+(defn- check-settings
+"Checks the existence of a setting file"
+  []
+  (let [file-exists? (.exists (io/as-file setting-file-name))]
+    (if file-exists?
+      (def ^{:private true} settings (serializer/read-from-file setting-file-name))
+      (do
+        (def ^{:private true} settings (default-settings))
+        (serializer/write-in-file settings setting-file-name)))))
 
 
 
@@ -31,11 +35,6 @@
         (login/login (:email params)
                      (:password params)))
 
-
-  (GET "/get-cookie"
-       []
-       (generate-string {:csrf-token
-                         *anti-forgery-token*}))
   (route/resources "/")
   (route/not-found "Not Found Yet"))
 
@@ -43,8 +42,17 @@
 ;;   (wrap-defaults app-routes site-defaults))
 
 (def app
-  (->
-   (site app-routes)
-   (wrap-anti-forgery)
-   (wrap-session {:cookie-attrs {:max-age 30}
-                  :store (cookie-store {:key "ahY9poQuaghahc7I"})})))
+   (site app-routes))
+
+;;    /==================\
+;;    |                  |
+;;    |       MAIN       |
+;;    |                  |
+;;    \==================/
+
+(defn- main
+  "Initialiization of the server"
+  []
+  (check-settings))
+
+(main)

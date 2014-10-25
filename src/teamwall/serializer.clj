@@ -1,5 +1,6 @@
 (ns teamwall.serializer
-  (:use [clojure.java.io]))
+  (:use [clojure.java.io])
+  (:import [java.io File]))
 
 
 (defn- serialize
@@ -25,9 +26,11 @@
 (defn write-in-file
   "Writes the object O into the file PATH via a ByteArray"
   [o path]
-    (let [buffer (serialize o)]
-      (with-open [stream (output-stream path)]
-        (.write stream buffer))))
+  (if-not (.exists (as-file path))
+    (.createNewFile (new File path)))
+  (let [buffer (serialize o)]
+    (with-open [stream (output-stream path)]
+      (.write stream buffer))))
 
 (defn read-from-file
   "Reads the file PATH via a ByteArray"

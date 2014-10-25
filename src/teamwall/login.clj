@@ -1,5 +1,4 @@
 (ns teamwall.login)
 
 (defn login [email password]
-
-  "200")
+  (str email password))

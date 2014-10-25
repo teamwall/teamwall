@@ -8,7 +8,10 @@
             [ring.middleware.session.cookie :refer (cookie-store)]
             [teamwall.login :as login]
             [teamwall.serializer :as serializer]
-            [teamwall.settings :as settings]))
+            [teamwall.settings :as settings]
+
+            [teamwall.db :as db]
+            ))
 
 
 ;;             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))

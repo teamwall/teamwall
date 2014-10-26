@@ -176,7 +176,3 @@
   (check-settings))
 
 (main)
-
-(comment
-  (macroexpand '(secure-routing 123 (+ 1 2) (- 4 3)))
-  )

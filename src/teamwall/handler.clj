@@ -82,10 +82,10 @@
                  :ttl default-ttl}
                 {:pretty true})})
    (catch [:type :teamwall.db/login-failed] {:keys [email valid-password?]}
-     (println (str "Email \""
-                   email
-                   "\" not found or password incorrect"
-                   valid-password?)))))
+     {:status 403})
+   (catch  Exception e
+     (.printStackTrace e)
+     {:status 500})))
 
 (defmacro secure-routing
   "Encapsulate the check of token validity"

@@ -114,7 +114,7 @@ A JSON string representing an array of literal objects.
 Each object has two keys:
 
 * username
-* eamil
+* email
 
 Example:
 

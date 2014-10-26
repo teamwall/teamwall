@@ -14,7 +14,7 @@
   "Extract the email pattern from an email address"
   [email]
   (let [splitted (string/split email #"@")
-        domain (last splitted)]
+        domain   (last splitted)]
     (str "[^@]+@" domain)))
 
 

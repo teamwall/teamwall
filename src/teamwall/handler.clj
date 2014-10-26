@@ -1,6 +1,7 @@
 (ns teamwall.handler
   (:use [slingshot.slingshot :only [throw+ try+]])
-  (:require [clojure.java.io :as io]
+  (:require [cheshire.core :refer :all]
+            [clojure.java.io :as io]
             [compojure.core :refer :all]
             [compojure.handler :refer [site]]
             [compojure.route :as route]
@@ -58,7 +59,13 @@
      (swap! tokens assoc token {:user          user
                                 :ttl           default-ttl
                                 :creation-time (java.util.Date.)})
-     token)
+
+     {:status  200
+      :headers {"Content-Type" "application/json"}
+      :body    (generate-string
+                {:token token
+                 :ttl default-ttl}
+                {:pretty true})})
    (catch [:type :teamwall.db/login-failed] {:keys [email valid-password?]}
      (println (str "Email \""
                    email
@@ -71,10 +78,7 @@
   `(let [valid# (token-valid? @tokens ~token)]
      (if valid#
        (do ~@body)
-       :error)
-     )
-
-  )
+       {:status 404})))
 
 ;;    /==================\
 ;;    |                  |
@@ -122,7 +126,7 @@
         "200"))
 
   (route/resources "/")
-  (route/not-found "Not Found Yet"))
+  (route/not-found {:status 404}))
 
 (def app
   (site app-routes))

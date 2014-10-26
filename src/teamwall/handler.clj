@@ -145,15 +145,13 @@
 
   (GET "/team-members"
        {params :params}
-       (secure-routing
-        (:token params)
-        api/get-team-members))
+       (secure-routing (:token params)
+                       api/get-team-members))
 
   (GET "/test"
        {params :params}
-       (secure-routing
-        (:token params)
-        #({:user %1})))
+       (secure-routing (:token params)
+                       #({:user %1})))
 
   (route/resources "/")
   (route/not-found {:status 404}))

@@ -40,8 +40,8 @@ First step is to login to retrieve an API token which will be used for every oth
     
 | Params | Description|
 --------|--------
-| _email_ | the email address used to register|
-| _password_| the password used to register|
+| email | the email address used to register|
+| password | the password used to register|
 
 cURL example:
 

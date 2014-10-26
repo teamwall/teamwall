@@ -6,15 +6,31 @@
             [compojure.handler :refer [site]]
             [compojure.route :as route]
             [crypto.random :as random]
+            [teamwall.api :as api]
             [teamwall.db :as db]
             [teamwall.serializer :as serializer]
             [teamwall.settings :as settings]))
 
+
+;;    /==================\
+;;    |                  |
+;;    |       VARS       |
+;;    |                  |
+;;    \==================/
+
+
 (def ^{:private true} default-ttl 3600000) ;; one hour
 (def ^{:private true} setting-file-name "settings.tw")
 (def ^{:private true} tokens (atom {}))
-
 (def ^{:private true} register-token (atom ""))
+
+
+;;    /==================\
+;;    |                  |
+;;    |     PRIVATES     |
+;;    |                  |
+;;    \==================/
+
 
 (defn- default-settings
   "Generates a new default setting map"
@@ -30,7 +46,6 @@
       (do
         (def ^{:private true} settings (default-settings))
         (serializer/write-in-file settings setting-file-name)))))
-
 
 (defn- generate-api-token
   "Generates a new API token"

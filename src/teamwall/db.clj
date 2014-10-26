@@ -3,12 +3,26 @@
             [monger.collection :as mc]
             [monger.core :as mg])
   (:use [slingshot.slingshot :only [throw+ try+]])
-  (:import [com.mongodb MongoOptions ServerAddress]
-           [org.bson.types ObjectId]))
+  (:import [com.mongodb MongoOptions ServerAddress]))
+
+
+;;    /==================\
+;;    |                  |
+;;    |       VARS       |
+;;    |                  |
+;;    \==================/
 
 
 (def ^{:private true} db-name "teamwall")
-(def ^{:private true} db-users "teamwall-users")
+(def ^{:private true} db-users "teamwallUsers")
+
+
+;;    /==================\
+;;    |                  |
+;;    |      PRIVATE     |
+;;    |                  |
+;;    \==================/
+
 
 (defn- connect-to-mongo
   "Connects to the mongoDB instance"
@@ -31,6 +45,14 @@
     (scrypt/verify (str password salt)
                    pw-hash)))
 
+
+;;    /==================\
+;;    |                  |
+;;    |      PUBLIC      |
+;;    |                  |
+;;    \==================/
+
+
 (defn register-user
   "Adds a new user to the user database"
   [username password email salt]
@@ -38,7 +60,7 @@
         db   (mg/get-db conn db-name)]
     (mc/insert-and-return db
                           db-users
-                          {:_id      (ObjectId.)
+                          {:_id      email
                            :username username
                            :email    email
                            :hash     (hashed-password password salt)})
@@ -47,11 +69,11 @@
 (defn retrieve-user
   "Retrieves a user from the database using its email and password"
   [email password salt]
-  (let [conn            (connect-to-mongo)
-        db              (mg/get-db conn db-name)
-        user            (mc/find-one-as-map db
-                                            db-users
-                                            {:email email})
+  (let [conn (connect-to-mongo)
+        db   (mg/get-db conn db-name)
+        user (mc/find-one-as-map db
+                                 db-users
+                                 {:email email})
         valid-password? (valid-password? password
                                          salt
                                          (:hash user))

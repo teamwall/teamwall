@@ -9,7 +9,6 @@
             [teamwall.api :as api]
             [teamwall.db :as db]
             [teamwall.serializer :as serializer]
-            [teamwall.settings :as settings]))
 
 
 ;;    /==================\

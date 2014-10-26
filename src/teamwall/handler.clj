@@ -98,6 +98,8 @@
         :body    (generate-string
                   (fun (:user (get @tokens token)))
                   {:pretty true})}
+       (catch [:type ::request-error] {:keys [status]}
+         {:status status})
        (catch Exception e
          (.printStackTrace e)
          {:status 500}))

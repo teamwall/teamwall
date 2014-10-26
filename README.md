@@ -45,9 +45,11 @@ Example:
 ~~~json
 {
 	"token" : "JSzvjh_Qq0zGjLu7pL-9tvGrl84DwgMNT4vZ_F4IxC",
-	"ttl"   : "3600000" // One hour in millisecond
+	"ttl"   : "3600000"
 }
 ~~~
+
+Note: _ttl_ is in milliseconds, `3600000` is one hour.
 
 #### Status
 

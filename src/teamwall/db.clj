@@ -58,12 +58,12 @@
   [username password email salt]
   (let [conn (connect-to-mongo)
         db   (mg/get-db conn db-name)]
-    (mc/insert-and-return db
-                          db-users
-                          {:_id      email
-                           :username username
-                           :email    email
-                           :hash     (hashed-password password salt)})
+    (mc/insert db
+               db-users
+               {:_id      email
+                :username username
+                :email    email
+                :hash     (hashed-password password salt)})
     (mg/disconnect conn)))
 
 (defn retrieve-user

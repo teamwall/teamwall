@@ -153,7 +153,7 @@
        {params :params}
        (secure-routing
         (:token params)
-        "200"))
+        #({:user %1})))
 
   (route/resources "/")
   (route/not-found {:status 404}))

@@ -78,7 +78,7 @@
                                          salt
                                          (:hash user))
         valid-user?     (and
-                         (not (nil? user ))
+                         (not (nil? user))
                          valid-password?)]
     (mg/disconnect conn)
     (if valid-user?

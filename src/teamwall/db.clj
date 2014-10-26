@@ -89,6 +89,16 @@
                }))))
 
 
+(defn get-users-for-email
+  "Retrieve all the users whose email match the pattern provided"
+  [pattern]
+  (let [conn  (connect-to-mongo)
+        db    (mg/get-db conn db-name)
+        users (mc/find-maps db
+                            db-users
+                            {:email (re-pattern pattern)})]
+    users))
+
 ;;    /==================\
 ;;    |                  |
 ;;    |       TEST       |

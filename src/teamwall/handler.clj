@@ -131,7 +131,6 @@
           (reset! register-token (generate-api-token))
           (if (= get-token (:token params))
             (do
-              (println (:password params))
               (db/register-user (:username params)
                                 (:password params)
                                 (:email params)

@@ -8,6 +8,10 @@ An open source software used to build a wall of picture for your team
 - [Running](#running)
 - [API](#api)
     - [Login](#login)
+        - [Path & Verb](#path-verb)
+        - [Parameters](#parameters)
+        - [Respond](#respond)
+        - [Status](#status)
 - [License](#license)
 
 <!-- end toc -->

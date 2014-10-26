@@ -18,9 +18,9 @@ An open source software used to build a wall of picture for your team
 
 ## Prerequisites
 
-You will need Leiningen[1] 2.0.0 or above installed.
+You will need [Leiningen][1] 2.0.0 or above installed.
 
-You will also need mongo[2] db running.
+You will also need [Mongo][2] database running.
 
 [1]: https://github.com/technomancy/leiningen
 [2]: http://www.mongodb.org/

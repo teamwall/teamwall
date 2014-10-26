@@ -83,11 +83,9 @@
     (mg/disconnect conn)
     (if valid-user?
       user
-      (throw+ {:type ::login-failed
-               :email email
-               :valid-password? valid-password?
-               }))))
-
+      (throw+ {:type            ::login-failed
+               :email           email
+               :valid-password? valid-password?}))))
 
 (defn get-users-for-email
   "Retrieve all the users whose email match the pattern provided"

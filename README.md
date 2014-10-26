@@ -32,7 +32,9 @@ The web server should be reachable at `localhost:3000`.
 
 First step is to login to retrieve an API token which will be used for every other request.
 
-#### Path
+#### Path & Verb
+
+To login, a *GET* request needs to be done against the path:
 
     /login
 

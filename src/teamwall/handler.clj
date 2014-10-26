@@ -87,13 +87,22 @@
      (.printStackTrace e)
      {:status 500})))
 
-(defmacro secure-routing
+(defn- secure-routing
   "Encapsulate the check of token validity"
-  [token & body]
-  `(let [valid# (token-valid? @tokens ~token)]
-     (if valid#
-       (do ~@body)
-       {:status 404})))
+  [token fun]
+  (let [valid (token-valid? @tokens token)]
+    (if valid
+      (try+
+       {:status  200
+        :headers {"Content-Type" "application/json"}
+        :body    (generate-string
+                  (fun (:user (get @tokens token)))
+                  {:pretty true})}
+       (catch Exception e
+         (.printStackTrace e)
+         {:status 500}))
+      {:status 404})))
+
 
 ;;    /==================\
 ;;    |                  |

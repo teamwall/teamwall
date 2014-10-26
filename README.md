@@ -10,12 +10,17 @@ An open source software used to build a wall of picture for your team
     - [Login](#login)
         - [Path & Verb](#path-verb)
         - [Parameters](#parameters)
-        - [Respond](#respond)
+        - [Response](#response)
         - [Status](#status)
     - [Get team members](#get-team-members)
         - [Path & Verb](#path-verb)
         - [Parameters](#parameters)
-        - [Respond](#respond)
+        - [Response](#response)
+        - [Status](#status)
+    - [Upload a new photo](#upload-a-new-photo)
+        - [Path & Verb](#path-verb)
+        - [Parameters](#parameters)
+        - [Response](#response)
         - [Status](#status)
 - [License](#license)
 
@@ -52,16 +57,16 @@ To login, a **GET** request needs to be done against the path:
 
 #### Parameters
     
-| Params | Description|
---------|--------
-| email | the email address used to register|
-| password | the password used to register|
+| Params | Type | Description|
+--------|--------|--------
+| email | url param | the email address used to register|
+| password | url param | the password used to register|
 
 cURL example:
 
     $ curl "localhost:3000/login?email=email&password=password"
 
-#### Respond
+#### Response
 
 A JSON string representing a literal object with two keys:
 
@@ -81,7 +86,7 @@ Note: _ttl_ is in milliseconds, `3600000` is one hour.
 
 #### Status
 
-| Repond | Status |
+| Cause | Status |
 --------|--------
 | Success | 200 OK |
 | Error | 403 Forbidden |
@@ -99,16 +104,16 @@ To login, a **GET** request needs to be done against the path:
 
 #### Parameters
     
-| Params | Description|
---------|--------
-| token | the API token received during the login |
+| Params | Type | Description|
+--------|--------|--------
+| token | url param | the API token received during the login |
 
 cURL example:
 
     $ curl "localhost:3000/team-members?token=JSzvjh_Qq0zGjLu7pL-9tvGrl84DwgMNT4vZ_F4IxC"
 
 
-#### Respond
+#### Response
 
 A JSON string representing an array of literal objects.
 Each object has two keys:
@@ -130,10 +135,44 @@ Example:
 
 #### Status
 
-| Repond | Status |
+| Cause | Status |
 --------|--------
 | Success | 200 OK |
-| Error | 404 Not Found |
+| field _token_ missing or invalid | 404 Not Found |
+
+### Upload a new photo
+
+Route used to upload a new photo for the user linked to the provided token.
+
+#### Path & Verb
+
+To login, a **POST** request needs to be done against the path:
+
+    /new-photo
+
+#### Parameters
+    
+| Params | Type | Description|
+--------|--------|---------
+| token | url param | the API token received during the login |
+| photo | multipart/form-data | the new photo to upload |
+
+cURL example:
+
+    $ curl --form photo=@photo.png "localhost:3000/new-photo?token=JSzvjh_Qq0zGjLu7pL-9tvGrl84DwgMNT4vZ_F4IxC"
+
+
+#### Response
+
+No response.
+
+#### Status
+
+| Cause | Status |
+--------|--------
+| Success | 200 OK |
+| field _token_ missing or invalid | 404 Not Found |
+| field _photo_ missing | 400 Bad Request |
 
 
 ## License

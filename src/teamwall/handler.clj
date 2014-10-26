@@ -22,6 +22,7 @@
 (def ^{:private true} default-ttl 3600000) ;; one hour
 (def ^{:private true} setting-file-name "settings.tw")
 (def ^{:private true} tokens (atom {}))
+
 (def ^{:private true} register-token (atom ""))
 
 

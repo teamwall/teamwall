@@ -58,7 +58,7 @@ cURL example:
 
 #### Respond
 
-A JSON string with two keys:
+A JSON string representing a literal object with two keys:
 
 * token: a string representing the unique API token
 * ttl: the token time-to-live
@@ -80,6 +80,55 @@ Note: _ttl_ is in milliseconds, `3600000` is one hour.
 --------|--------
 | Success | 200 OK |
 | Error | 403 Forbidden |
+
+### Get team members
+
+The route is used to provided information about the members of the team the logged user belongs to.
+The team is bound by a shared email domain.
+
+#### Path & Verb
+
+To login, a **GET** request needs to be done against the path:
+
+    /team-members
+
+#### Parameters
+    
+| Params | Description|
+--------|--------
+| token | the API token received during the login |
+
+cURL example:
+
+    $ curl "localhost:3000/team-members?token=JSzvjh_Qq0zGjLu7pL-9tvGrl84DwgMNT4vZ_F4IxC"
+
+
+#### Respond
+
+A JSON string representing an array of literal objects.
+Each object has two keys:
+
+* username
+* eamil
+
+Example:
+
+~~~json
+[ {
+  "username" : "User 1",
+  "email" : "user1@mycompany.com"
+}, {
+  "username" : "User 2",
+  "email" : "user2@mycompany.com"
+} ]
+~~~
+
+#### Status
+
+| Repond | Status |
+--------|--------
+| Success | 200 OK |
+| Error | 404 Not Found |
 
 
 ## License

@@ -2,6 +2,16 @@
 
 An open source software used to build a wall of picture for your team
 
+## Contents
+
+- [Prerequisites](#prerequisites)
+- [Running](#running)
+- [API](#api)
+    - [Login](#login)
+- [License](#license)
+
+<!-- end toc -->
+
 ## Prerequisites
 
 You will need [Leiningen][] 2.0.0 or above installed.
@@ -45,11 +55,9 @@ Example:
 ~~~json
 {
 	"token" : "JSzvjh_Qq0zGjLu7pL-9tvGrl84DwgMNT4vZ_F4IxC",
-	"ttl"   : "3600000"
+	"ttl"   : "3600000" // One hour in millisecond
 }
 ~~~
-
-Note: _ttl_ is in milliseconds, `3600000` is one hour.
 
 #### Status
 

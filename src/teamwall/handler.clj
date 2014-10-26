@@ -143,6 +143,12 @@
               (:password params)
               (:salt settings)))
 
+  (GET "/team-members"
+       {params :params}
+       (secure-routing
+        (:token params)
+        api/get-team-members))
+
   (GET "/test"
        {params :params}
        (secure-routing

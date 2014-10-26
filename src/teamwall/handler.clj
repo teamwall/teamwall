@@ -155,11 +155,13 @@
 (def app
   (site app-routes))
 
+
 ;;    /==================\
 ;;    |                  |
 ;;    |       MAIN       |
 ;;    |                  |
 ;;    \==================/
+
 
 (defn- main
   "Initialiization of the server"

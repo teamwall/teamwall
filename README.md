@@ -12,6 +12,11 @@ An open source software used to build a wall of picture for your team
         - [Parameters](#parameters)
         - [Respond](#respond)
         - [Status](#status)
+    - [Get team members](#get-team-members)
+        - [Path & Verb](#path-verb)
+        - [Parameters](#parameters)
+        - [Respond](#respond)
+        - [Status](#status)
 - [License](#license)
 
 <!-- end toc -->

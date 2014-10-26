@@ -6,9 +6,11 @@
             [compojure.handler :refer [site]]
             [compojure.route :as route]
             [crypto.random :as random]
+            [ring.middleware.multipart-params :refer [wrap-multipart-params]]
+            [ring.middleware.params :refer [wrap-params]]
             [teamwall.api :as api]
             [teamwall.db :as db]
-            [teamwall.serializer :as serializer]
+            [teamwall.serializer :as serializer]))
 
 
 ;;    /==================\
@@ -149,6 +151,17 @@
        {params :params}
        (secure-routing (:token params)
                        api/get-team-members))
+
+  (wrap-multipart-params
+   (POST "/new-photo"
+         {params :params}
+         (secure-routing (:token params)
+                         (fn [user]
+                           (if (:photo params)
+                             (api/set-new-photo user
+                                                (:photo params))
+                             (throw+ {:type ::request-error
+                                      :status 400}))))))
 
   (GET "/test"
        {params :params}

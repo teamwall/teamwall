@@ -3,7 +3,8 @@
             [monger.collection :as mc]
             [monger.core :as mg])
   (:use [slingshot.slingshot :only [throw+ try+]])
-  (:import [com.mongodb MongoOptions ServerAddress]))
+  (:import [com.mongodb MongoOptions ServerAddress]
+           [org.bson.types ObjectId]))
 
 
 ;;    /==================\
@@ -15,6 +16,7 @@
 
 (def ^{:private true} db-name "teamwall")
 (def ^{:private true} db-users "teamwallUsers")
+(def ^{:private true} db-photos "teamwallPhotos")
 
 
 ;;    /==================\
@@ -97,6 +99,23 @@
                             {:email (re-pattern pattern)})]
     users))
 
+(defn add-photo
+  "Stores a new photo for the provided user.
+  If timelaps is false, erase first all the other photos"
+  [user photo]
+  (let [conn     (connect-to-mongo)
+        db       (mg/get-db conn db-name)
+        timelaps (:timelaps user)]
+    (if-not timelaps
+      (mc/remove db
+                 db-photos
+                 {:user-id (:email user)}))
+    (mc/insert db
+              db-photos
+              {:_id     (ObjectId.)
+               :user-id (:email user)
+               :content photo})
+    (mg/disconnect conn)))
 
 ;;    /==================\
 ;;    |                  |

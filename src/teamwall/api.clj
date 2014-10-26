@@ -35,3 +35,11 @@
            {:username (:username user)
             :email    (:email user)})
          users)))
+
+(defn set-new-photo
+  "Set a new photo for the user provided as argument"
+  [user photo]
+  (let [tmp-file (:tempfile photo)
+        content  (slurp tmp-file)]
+    (db/add-photo user
+                  content)))

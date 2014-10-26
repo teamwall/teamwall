@@ -43,6 +43,10 @@ First step is to login to retrieve an API token which will be used for every oth
 | _email_ | the email address used to register|
 | _password_| the password used to register|
 
+cURL example:
+
+    $ curl "localhost:3000/login?email=email&password=password"
+
 #### Respond
 
 A JSON string with two keys:

@@ -34,7 +34,7 @@ First step is to login to retrieve an API token which will be used for every oth
 
 #### Path & Verb
 
-To login, a *GET* request needs to be done against the path:
+To login, a **GET** request needs to be done against the path:
 
     /login
 

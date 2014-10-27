@@ -53,15 +53,20 @@
 
 (defn last-photo
   "Returns the last photo for the user provided as argument"
-  [email]
-  (let [photo    (db/get-last-photo email)
-        content  (:tempfile photo)
-        filename (:filename photo)
-        size     (:size     photo)]
-    (if-not (nil? photo)
-      {:status  200
-       :headers {"Content-Type"   (mime/mime-type-of filename)
-                 "Content-Length" (str size)}
-       :body    (io/as-file tempfile)}
+  [user email]
+  (let [user-pattern  (extract-email-pattern (:email user))
+        email-pattern (extract-email-pattern email)]
+    (if (= user-pattern email-pattern)
+      (let [photo    (db/get-last-photo email)
+            tempfile (:tempfile photo)
+            filename (:filename photo)
+            size     (:size     photo)]
+        (if-not (nil? photo)
+          {:status  200
+           :headers {"Content-Type"   (mime/mime-type-of filename)
+                     "Content-Length" (str size)}
+           :body    (io/as-file tempfile)}
+          (throw+ {:type :teamwall.handler/request-error
+                   :status 404})))
       (throw+ {:type :teamwall.handler/request-error
-               :status 404}))))
+               :status 400}))))

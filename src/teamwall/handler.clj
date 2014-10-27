@@ -187,7 +187,7 @@
                             #({:user %1})))
 
   (route/resources "/")
-  (route/not-found {:status 403}))
+  (ANY "/*" [] {:status 403}))
 
 (def app
   (site app-routes))

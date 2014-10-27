@@ -40,7 +40,7 @@ You will also need [Mongo][2] database running.
 To start a web server for the application, run:
 
     lein ring server
-    
+
 The web server should be reachable at `localhost:3000`.
 
 ## API
@@ -56,7 +56,7 @@ To login, a **GET** request needs to be done against the path:
     /login
 
 #### Parameters
-    
+
 | Params | Type | Description|
 --------|--------|--------
 | email | url param | the email address used to register|
@@ -103,7 +103,7 @@ To login, a **GET** request needs to be done against the path:
     /team-members
 
 #### Parameters
-    
+
 | Params | Type | Description|
 --------|--------|--------
 | token | url param | the API token received during the login |
@@ -138,7 +138,7 @@ Example:
 | Cause | Status |
 --------|--------
 | Success | 200 OK |
-| field _token_ missing or invalid | 404 Not Found |
+| field _token_ missing or invalid | 403 Not Found |
 
 ### Upload a new photo
 
@@ -151,7 +151,7 @@ To login, a **POST** request needs to be done against the path:
     /new-photo
 
 #### Parameters
-    
+
 | Params | Type | Description|
 --------|--------|---------
 | token | url param | the API token received during the login |
@@ -171,7 +171,7 @@ No response.
 | Cause | Status |
 --------|--------
 | Success | 200 OK |
-| field _token_ missing or invalid | 404 Not Found |
+| field _token_ missing or invalid | 403 Not Found |
 | field _photo_ missing | 400 Bad Request |
 
 

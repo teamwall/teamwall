@@ -103,7 +103,7 @@ The team is bound by a shared email domain.
 
 #### Path & Verb
 
-To login, a **GET** request needs to be done against the path:
+To get all the team members, a **GET** request needs to be done against the path:
 
     /team-members
 
@@ -151,7 +151,7 @@ Route used to upload a new photo for the user linked to the provided token.
 
 #### Path & Verb
 
-To login, a **POST** request needs to be done against the path:
+To upload a new photo, a **POST** request needs to be done against the path:
 
     /new-photo
 
@@ -184,7 +184,7 @@ No response.
 This route is used to get the last photo of a giver user.
 #### Path & Verb
 
-To login, a **GET** request needs to be done against the path:
+To get the latest photo, a **GET** request needs to be done against the path:
 
     /<email>/last-photo
 

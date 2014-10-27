@@ -178,7 +178,8 @@
        {params :params}
        (secure-routing (:token params)
                        (fn [user]
-                         (api/last-photo (:email params)))))
+                         (api/last-photo user
+                                         (:email params)))))
 
   (GET "/test"
        {params :params}

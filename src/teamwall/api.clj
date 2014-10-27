@@ -40,6 +40,10 @@
   "Set a new photo for the user provided as argument"
   [user photo]
   (let [tmp-file (:tempfile photo)
-        content  (slurp tmp-file)]
+        size     (:size photo)
+        filename (:filename photo)]
     (db/add-photo user
-                  content)))
+                  filename
+                  size
+                  (.getAbsolutePath tmp-file)
+                  (slurp tmp-file))))

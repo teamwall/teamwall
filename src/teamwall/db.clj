@@ -1,7 +1,9 @@
 (ns teamwall.db
   (:require [clojurewerkz.scrypt.core :as scrypt]
             [monger.collection :as mc]
-            [monger.core :as mg])
+            [monger.core :as mg]
+            [monger.json]
+            [monger.query :as mq])
   (:use [slingshot.slingshot :only [throw+ try+]])
   (:import [com.mongodb MongoOptions ServerAddress]
            [org.bson.types ObjectId]))
@@ -119,6 +121,19 @@
                 :tempfile tempfile
                 :content  photo})
     (mg/disconnect conn)))
+
+(defn get-last-photo
+  "Returns the last photo of the user provided as argument"
+  [email]
+  (let [conn   (connect-to-mongo)
+        db     (mg/get-db conn db-name)
+        photo  (mq/with-collection db db-photos
+                 (mq/find {:user-id email})
+                 (mq/sort (array-map :_id -1))
+                 (mq/limit 1))
+        result (first photo)]
+    (mg/disconnect conn)
+    result))
 
 ;;    /==================\
 ;;    |                  |

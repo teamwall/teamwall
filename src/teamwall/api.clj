@@ -1,6 +1,9 @@
 (ns teamwall.api
-  (:require [clojure.string :as string]
-            [teamwall.db :as db]))
+  (:require [clojure.java.io :as io]
+            [clojure.string :as string]
+            [pantomime.mime :as mime]
+            [teamwall.db :as db])
+  (:use [slingshot.slingshot :only [throw+ try+]]))
 
 
 ;;    /==================\
@@ -47,3 +50,18 @@
                   size
                   (.getAbsolutePath tmp-file)
                   (slurp tmp-file))))
+
+(defn last-photo
+  "Returns the last photo for the user provided as argument"
+  [email]
+  (let [photo    (db/get-last-photo email)
+        content  (:tempfile photo)
+        filename (:filename photo)
+        size     (:size     photo)]
+    (if-not (nil? photo)
+      {:status  200
+       :headers {"Content-Type"   (mime/mime-type-of filename)
+                 "Content-Length" (str size)}
+       :body    (io/as-file tempfile)}
+      (throw+ {:type :teamwall.handler/request-error
+               :status 404}))))

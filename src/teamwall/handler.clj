@@ -105,7 +105,7 @@
        (catch Exception e
          (.printStackTrace e)
          {:status 500}))
-      {:status 404})))
+      {:status 403})))
 
 
 ;;    /==================\
@@ -169,7 +169,7 @@
                        #({:user %1})))
 
   (route/resources "/")
-  (route/not-found {:status 404}))
+  (route/not-found {:status 403}))
 
 (def app
   (site app-routes))

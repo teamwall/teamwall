@@ -22,6 +22,11 @@ An open source software used to build a wall of picture for your team
         - [Parameters](#parameters)
         - [Response](#response)
         - [Status](#status)
+    - [Get last photo of a user](#get-last-photo-of-a-user)
+        - [Path & Verb](#path-verb)
+        - [Parameters](#parameters)
+        - [Response](#response)
+        - [Status](#status)
 - [License](#license)
 
 <!-- end toc -->
@@ -138,7 +143,7 @@ Example:
 | Cause | Status |
 --------|--------
 | Success | 200 OK |
-| field _token_ missing or invalid | 403 Not Found |
+| Field _token_ missing or invalid | 403 Forbidden |
 
 ### Upload a new photo
 
@@ -171,8 +176,44 @@ No response.
 | Cause | Status |
 --------|--------
 | Success | 200 OK |
-| field _token_ missing or invalid | 403 Not Found |
-| field _photo_ missing | 400 Bad Request |
+| Field _token_ missing or invalid | 403 Forbidden |
+| Field _photo_ missing | 400 Bad Request |
+
+### Get last photo of a user
+
+This route is used to get the last photo of a giver user.
+#### Path & Verb
+
+To login, a **GET** request needs to be done against the path:
+
+    /<email>/last-photo
+
+#### Parameters
+
+| Params | Type | Description|
+--------|--------|---------
+| email | url segment | the email address of one of your team member |
+| token | url param | the API token received during the login |
+
+
+cURL example:
+
+    $ curl "http://localhost:3000/user1@mycompany.com/last-photo?token=JSzvjh_Qq0zGjLu7pL-9tvGrl84DwgMNT4vZ_F4IxC"
+
+
+#### Response
+
+Return an image. The url is made so it can be used as html image source.
+
+#### Status
+
+| Cause | Status |
+--------|--------
+| Success | 200 OK |
+| Email address not in the same team | 400 Bad Request |
+| Field _token_ missing or invalid | 403 Forbidden |
+| No photo available | 404 Not Found |
+
 
 
 ## License

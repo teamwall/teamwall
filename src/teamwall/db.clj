@@ -102,7 +102,7 @@
 (defn add-photo
   "Stores a new photo for the provided user.
   If timelaps is false, erase first all the other photos"
-  [user photo]
+  [user filename size tempfile photo]
   (let [conn     (connect-to-mongo)
         db       (mg/get-db conn db-name)
         timelaps (:timelaps user)]
@@ -111,10 +111,13 @@
                  db-photos
                  {:user-id (:email user)}))
     (mc/insert db
-              db-photos
-              {:_id     (ObjectId.)
-               :user-id (:email user)
-               :content photo})
+               db-photos
+               {:_id      (ObjectId.)
+                :user-id  (:email user)
+                :filename filename
+                :size     size
+                :tempfile tempfile
+                :content  photo})
     (mg/disconnect conn)))
 
 ;;    /==================\

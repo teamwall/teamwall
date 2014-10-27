@@ -95,17 +95,28 @@
   (let [valid (token-valid? @tokens token)]
     (if valid
       (try+
-       {:status  200
-        :headers {"Content-Type" "application/json"}
-        :body    (generate-string
-                  (fun (:user (get @tokens token)))
-                  {:pretty true})}
+       (fun (:user (get @tokens token)))
        (catch [:type ::request-error] {:keys [status]}
          {:status status})
        (catch Exception e
          (.printStackTrace e)
          {:status 500}))
       {:status 403})))
+
+(defn- secure-routing-json
+  "Encapsulate the check of token validity and wraps the result in JSON"
+  [token fun]
+  (secure-routing token
+                  (fn [user]
+                    (let [result (fun (:user (get @tokens token)))]
+                      (if-not (nil? result)
+                        {:status  200
+                         :headers {"Content-Type" "application/json"}
+                         :body    (generate-string
+                                   result
+                                   {:pretty true})}
+                        {:status  200
+                         :headers {"Content-Type" "application/json"}})))))
 
 
 ;;    /==================\
@@ -149,24 +160,30 @@
 
   (GET "/team-members"
        {params :params}
-       (secure-routing (:token params)
-                       api/get-team-members))
+       (secure-routing-json (:token params)
+                            api/get-team-members))
 
   (wrap-multipart-params
    (POST "/new-photo"
          {params :params}
-         (secure-routing (:token params)
-                         (fn [user]
-                           (if (:photo params)
-                             (api/set-new-photo user
-                                                (:photo params))
-                             (throw+ {:type ::request-error
-                                      :status 400}))))))
+         (secure-routing-json (:token params)
+                              (fn [user]
+                                (if (:photo params)
+                                  (api/set-new-photo user
+                                                     (:photo params))
+                                  (throw+ {:type ::request-error
+                                           :status 400}))))))
+
+  (GET "/:email/last-photo"
+       {params :params}
+       (secure-routing (:token params)
+                       (fn [user]
+                         (api/last-photo (:email params)))))
 
   (GET "/test"
        {params :params}
-       (secure-routing (:token params)
-                       #({:user %1})))
+       (secure-routing-json (:token params)
+                            #({:user %1})))
 
   (route/resources "/")
   (route/not-found {:status 403}))

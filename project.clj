@@ -2,7 +2,7 @@
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :min-lein-version "2.0.0"
-  :dependencies [[cheshire "5.2.0"]
+  :dependencies [[cheshire "5.3.1"]
                  [clj-http "1.0.0"]
                  [clojurewerkz/scrypt "1.2.0"]
                  [com.novemberain/monger "2.0.0"]

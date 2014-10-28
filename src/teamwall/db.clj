@@ -16,9 +16,15 @@
 ;;    \==================/
 
 
-(def ^{:private true} db-name "teamwall")
-(def ^{:private true} db-users "teamwallUsers")
-(def ^{:private true} db-photos "teamwallPhotos")
+(def ^{:private true} db-name
+  "Private: name of the mongo db to use"
+  "teamwall")
+(def ^{:private true} db-users
+  "Private: name of the user mongo collection"
+  "teamwallUsers")
+(def ^{:private true} db-photos
+  "Private: name of the photo mongo collection"
+  "teamwallPhotos")
 
 
 ;;    /==================\
@@ -34,7 +40,8 @@
   (mg/connect))
 
 (defn- hashed-password
-  "Generates a hashed password using Scrypt (https://www.tarsnap.com/scrypt/scrypt.pdf)"
+  "Generates a hashed password using Scrypt
+  (https://www.tarsnap.com/scrypt/scrypt.pdf)"
   [password salt]
   (scrypt/encrypt (str password salt)
                   16384

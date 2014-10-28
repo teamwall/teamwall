@@ -20,11 +20,19 @@
 ;;    \==================/
 
 
-(def ^{:private true} default-ttl 3600000) ;; one hour
-(def ^{:private true} setting-file-name "settings.tw")
-(def ^{:private true} tokens (atom {}))
+(def ^{:private true} default-ttl
+  "Default value for a token Time-To-Live. Default is one hour"
+  3600000)
+(def ^{:private true} setting-file-name
+  "Name of the setting file"
+  "settings.tw")
+(def ^{:private true} tokens
+  "Atom storing all the active tokens"
+  (atom {}))
 
-(def ^{:private true} register-token (atom ""))
+(def ^{:private true} register-token
+  "Random token used to check the registration form"
+  (atom ""))
 
 
 ;;    /==================\
@@ -44,9 +52,13 @@
   []
   (let [file-exists? (.exists (io/as-file setting-file-name))]
     (if file-exists?
-      (def ^{:private true} settings (serializer/read-from-file setting-file-name))
+      (def ^{:private true} settings
+        "Content of the setting file"
+        (serializer/read-from-file setting-file-name))
       (do
-        (def ^{:private true} settings (default-settings))
+        (def ^{:private true} settings
+          "Content of the setting file"
+          (default-settings))
         (serializer/write-in-file settings setting-file-name)))))
 
 (defn- generate-api-token
@@ -127,6 +139,7 @@
 
 
 (defroutes app-routes
+  "Defines the server routes"
   (GET "/register"
        {}
        (do
@@ -135,7 +148,7 @@
               Username: <input type=\"text\" name=\"username\"><br>
               Email: <input type=\"email\" name=\"email\"><br>
               Password: <input type=\"password\" name=\"password\"><br>
-              Confirm Password: <input type=\"password\" name=\"confirm-password\"><br>
+              Confirm Password: <input type=\"password\" name=\"cfm-pwd\"><br>
               <input type=\"hidden\" name=\"token\" value="
               @register-token
               ">
@@ -145,13 +158,13 @@
         {params :params}
         (let [get-token @register-token]
           (reset! register-token (generate-api-token))
-          (if (= get-token (:token params))
-            (do
-              (db/register-user (:username params)
-                                (:password params)
-                                (:email params)
-                                (:salt settings))
-              "User successfully created"))))
+          (when (= get-token (:token params))
+            (db/register-user
+             (:username params)
+             (:password params)
+             (:email params)
+             (:salt settings))
+            "User successfully created")))
   (GET "/login"
        {params :params}
        (login (:email params)
@@ -190,6 +203,7 @@
   (ANY "/*" [] {:status 403}))
 
 (def app
+  "main function used as hook from compojure"
   (site app-routes))
 
 

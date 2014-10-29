@@ -215,7 +215,7 @@
 
 
 (defn- main
-  "Initialiization of the server"
+  "Initialization of the server"
   []
   (check-settings))
 

@@ -130,6 +130,20 @@
                         {:status  200
                          :headers {"Content-Type" "application/json"}})))))
 
+(defn- render-app
+  "Render the index page"
+  []
+  {:status  200
+   :headers {"Content-Type" "text/html"}
+   :body    (str "<!DOCTYPE html>"
+                 "<html>"
+                 "<head>"
+                 "<link rel=\"stylesheet\" href=\"css/page.css\" />"
+                 "</head>"
+                 "<body>"
+                 "<script src=\"js/cljs.js\"></script>"
+                 "</body>"
+                 "</html>")})
 
 ;;    /==================\
 ;;    |                  |
@@ -140,6 +154,9 @@
 
 (defroutes app-routes
   "Defines the server routes"
+  (GET "/"
+       {}
+       (render-app))
   (GET "/register"
        {}
        (do

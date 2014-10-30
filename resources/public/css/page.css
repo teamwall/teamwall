@@ -1,0 +1,37 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+body {
+  background: #666;
+  color: #eee;
+  font-family: 'sans-serif';
+}
+
+h1.title {
+  text-align: center;
+}
+
+ul.mates {
+  padding: 0;
+  width: 600px;
+  list-style: none;
+  display: block;
+  margin: 100px auto;
+}
+
+li.mate {
+  margin: 10px;
+  background: #999;
+  display: inline-block;
+  height: 280px;
+  width: 280px;
+  text-align: center;
+}
+
+li.mate img {
+  max-height: 200px;
+  margin-top: 40px;
+}

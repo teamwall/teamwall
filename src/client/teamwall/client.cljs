@@ -1,8 +1,6 @@
 (ns client
-  (:use-macros [crate.def-macros :only [defpartial]])
-  (:require [crate.core :as crate]
-            [dommy.core :as dommy
-                        :refer-macros [sel sel1]]))
+  (:require [reagent.core :as reagent :refer [atom]]
+            [dommy.core :as dommy :refer-macros [sel sel1]]))
 
 (defn- get-tiles
   "Return all teammate tiles."
@@ -15,18 +13,22 @@
   (let [imgs (map (fn [tile]
                     [:li.mate [:img {:src tile}]])
                   (get-tiles))]
-    (crate/html [:ul.mates imgs])))
+    [:ul.mates imgs]))
 
 (defn- build-title
   "Return a title DOM element."
   []
-  (crate/html [:h1.title "Teamwall"]))
+  [:h1.title "Teamwall"])
 
 (defn- build
+  "Build the whole page"
+  []
+  [:div.container
+   [build-title]
+   [build-content]])
+
+(defn ^:export run
   "Main rendering function."
   []
-  (let [body (sel1 :body)]
-    (dommy/append! body
-                   (build-title) (build-content))))
-
-(build)
+  (reagent/render-component (fn [] [build])
+                            (sel1 :body)))

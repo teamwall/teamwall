@@ -13,3 +13,5 @@ pom.xml.asc
 database
 settings.tw
 R.png
+resources/public/js
+resources/public/bower_components

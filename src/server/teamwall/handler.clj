@@ -8,6 +8,7 @@
             [crypto.random :as random]
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.params :refer [wrap-params]]
+            [ring.util.response :as response]
             [teamwall.api :as api]
             [teamwall.db :as db]
             [teamwall.serializer :as serializer]))
@@ -130,20 +131,6 @@
                         {:status  200
                          :headers {"Content-Type" "application/json"}})))))
 
-(defn- render-app
-  "Render the index page"
-  []
-  {:status  200
-   :headers {"Content-Type" "text/html"}
-   :body    (str "<!DOCTYPE html>"
-                 "<html>"
-                 "<head>"
-                 "<link rel=\"stylesheet\" href=\"css/page.css\" />"
-                 "</head>"
-                 "<body>"
-                 "<script src=\"js/cljs.js\"></script>"
-                 "</body>"
-                 "</html>")})
 
 ;;    /==================\
 ;;    |                  |
@@ -154,9 +141,8 @@
 
 (defroutes app-routes
   "Defines the server routes"
-  (GET "/"
-       {}
-       (render-app))
+  (GET "/" [] (response/redirect "/index.html"))
+
   (GET "/register"
        {}
        (do

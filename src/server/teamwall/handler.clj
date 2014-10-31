@@ -132,6 +132,15 @@
                          :headers {"Content-Type" "application/json"}})))))
 
 
+(defmacro client-route
+  "Expands all the routes covered by the client side router"
+  [route]
+  `(GET ~route
+        {}
+        (response/resource-response "index.html"
+                                    {:root "public"})))
+
+
 ;;    /==================\
 ;;    |                  |
 ;;    |      ROUTES      |
@@ -141,7 +150,12 @@
 
 (defroutes app-routes
   "Defines the server routes"
-  (GET "/" [] (response/redirect "/index.html"))
+;;   (GET "/"
+;;        {}
+;;        (response/resource-response "index.html"
+;;                                    {:root "public"}))
+  (client-route "/")
+  (client-route "/wall")
 
   (GET "/register"
        {}

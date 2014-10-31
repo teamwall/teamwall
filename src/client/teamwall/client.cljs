@@ -1,34 +1,62 @@
 (ns client
-  (:require [reagent.core :as reagent :refer [atom]]
-            [dommy.core :as dommy :refer-macros [sel sel1]]))
+  (:require [dommy.core :as dommy :refer-macros [sel sel1]]
+            [reagent.core :as reagent :refer [atom]]
+            [goog.events :as events]
+            [login]
+            [secretary.core :as secretary :refer-macros [defroute]]
+            [wall])
+  (:import goog.History
+           goog.History.EventType))
 
-(defn- get-tiles
-  "Return all teammate tiles."
-  []
-  ["img/1.jpg" "img/2.jpg"])
+(def ^:private token (atom nil))
 
-(defn- build-content
+;;    /==================\
+;;    |                  |
+;;    |     RENDERING    |
+;;    |                  |
+;;    \==================/
+
+
+(defn- render-content
   ""
-  []
-  (let [imgs (map (fn [tile]
-                    [:li.mate [:img {:src tile}]])
-                  (get-tiles))]
-    [:ul.mates imgs]))
+  [document]
+  [:div.appContainer
+   document])
 
-(defn- build-title
-  "Return a title DOM element."
-  []
-  [:h1.title "Teamwall"])
-
-(defn- build
-  "Build the whole page"
-  []
-  [:div.container
-   [build-title]
-   [build-content]])
-
-(defn ^:export run
-  "Main rendering function."
-  []
-  (reagent/render-component (fn [] [build])
+(defn- append-content
+  ""
+  [current-document]
+  (reagent/render-component (fn [] [render-content current-document])
                             (sel1 :body)))
+
+
+;;    /==================\
+;;    |                  |
+;;    |      ROUTES      |
+;;    |                  |
+;;    \==================/
+
+(defroute login-route "*"
+  {:as params}
+  (append-content (login/render-content)))
+
+(defroute "/wall"
+  {:as params}
+  (if (nil? @token)
+    (append-content
+     (wall/render-content)
+     )
+    (login-route)))
+
+
+;;    /==================\
+;;    |                  |
+;;    |       MAIN       |
+;;    |                  |
+;;    \==================/
+
+
+(defn ^:export dispatch
+  "Dispatch the current URI"
+  [uri]
+  (secretary/dispatch! uri))

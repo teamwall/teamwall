@@ -5,8 +5,11 @@
     </head>
     <body>
         <script src="js/cljs.js"></script>
-        <script src="bower_components/react/react-with-addons.min.js"></script>
+        <script src="bower_components/react/react-with-addons.js"></script>
         <script src="bower_components/react/JSXTransformer.js"></script>
-        <script>client.run()</script>
+        <script>client.dispatch(window.location.pathname)</script>
+
+        <script>
+        </script>
     </body>
 </html>

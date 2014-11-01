@@ -10,6 +10,11 @@
 
 (def ^:private token (atom nil))
 
+(declare on-login)
+(declare dispatch)
+(declare login-route)
+
+
 ;;    /==================\
 ;;    |                  |
 ;;    |     RENDERING    |
@@ -29,6 +34,12 @@
   (reagent/render-component (fn [] [render-content current-document])
                             (sel1 :body)))
 
+(defn- redirect
+  ""
+  [uri]
+  (.pushState js/history {} "" uri)
+  (dispatch uri))
+
 
 ;;    /==================\
 ;;    |                  |
@@ -36,17 +47,25 @@
 ;;    |                  |
 ;;    \==================/
 
-(defroute login-route "*"
-  {:as params}
-  (append-content (login/render-content)))
 
-(defroute "/wall"
+(defroute wall-route "/wall"
   {:as params}
   (if (nil? @token)
-    (append-content
-     (wall/render-content)
-     )
-    (login-route)))
+    (redirect (login-route))
+    (do
+      (append-content
+       (wall/render-content)))))
+
+(defroute login-route "/"
+  {:as params}
+  (append-content (login/render-content on-login)))
+
+
+(defn- on-login
+  ""
+  [data]
+  (reset! token (:token data))
+  (redirect (wall-route)))
 
 
 ;;    /==================\

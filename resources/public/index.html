@@ -7,7 +7,12 @@
         <script src="js/cljs.js"></script>
         <script src="bower_components/react/react-with-addons.js"></script>
         <script src="bower_components/react/JSXTransformer.js"></script>
-        <script>client.dispatch(window.location.pathname)</script>
+        <script>
+            client.dispatch(window.location.pathname);
+            window.onpopstate = function(event){
+                client.dispatch(window.location.pathname)
+            };
+        </script>
 
         <script>
         </script>

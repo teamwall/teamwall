@@ -182,6 +182,7 @@
              (:email params)
              (:salt settings))
             "User successfully created")))
+
   (GET "/login"
        {params :params}
        (login (:email params)

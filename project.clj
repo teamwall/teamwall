@@ -2,7 +2,8 @@
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :min-lein-version "2.0.0"
-  :dependencies [[cheshire "5.3.1"]
+  :dependencies [[cljs-ajax "0.3.3"]
+                 [cheshire "5.3.1"]
                  [clj-http "1.0.1"]
                  [cljs-http "0.1.19"]
                  [clojurewerkz/scrypt "1.2.0"]
@@ -12,10 +13,8 @@
                  [com.novemberain/pantomime "2.3.0"]
                  [compojure "1.2.1"]
                  [crypto-random "1.2.0"]
-                 [jarohen/chord "0.4.2" :exclusions [org.clojure/clojure]]
                  [org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2371"]
-                 [org.clojure/core.async "0.1.319.0-6b1aca-alpha"]
                  [prismatic/dommy "1.0.0"]
                  [secretary "1.2.1"]
                  [reagent "0.4.3"]

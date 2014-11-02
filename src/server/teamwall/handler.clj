@@ -231,8 +231,8 @@
   (GET "/ping"
        {params :params}
        (doseq [uid (:any @connected-uids)]
-             (chsk-send! uid
-                         [:teamwall/ping {:data "plip"}])))
+         (chsk-send! uid
+                     [:teamwall/ping {:data "plip"}])))
 
   (route/resources "/")
   (ANY "/*" [] {:status 403}))

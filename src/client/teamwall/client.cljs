@@ -1,7 +1,7 @@
 (ns teamwall.client
   (:require [dommy.core :as dommy :refer-macros [sel sel1]]
-            [reagent.core :as reagent :refer [atom]]
             [goog.events :as events]
+            [reagent.core :as reagent :refer [atom]]
             [repositories.repository :as repository]
             [secretary.core :as secretary :refer-macros [defroute]]
             [teamwall.wall :as wall]

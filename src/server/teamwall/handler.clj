@@ -74,9 +74,9 @@
       (< (- (.getTime now) (.getTime creation-time)) ttl))
     false))
 
-(defn- login
+(defn- login!
   "Checks if the user info are correct and generates an API token for the user"
-  [email password salt]
+  [session email password salt]
   (try+
    (let [user (db/retrieve-user email
                                 password
@@ -87,6 +87,7 @@
                                 :creation-time (java.util.Date.)})
 
      {:status  200
+      :session (assoc session :uid token)
       :headers {"Content-Type" "application/json"}
       :body    (generate-string
                 {:token token
@@ -180,10 +181,12 @@
             "User successfully created")))
 
   (GET "/login"
-       {params :params}
-       (login (:email params)
-              (:password params)
-              (:salt settings)))
+       req
+       (let [{:keys [session params]} req]
+         (login! session
+                 (:email params)
+                 (:password params)
+                 (:salt settings))))
 
   (GET "/team-members"
        {params :params}

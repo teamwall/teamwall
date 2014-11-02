@@ -235,9 +235,11 @@
                          (api/last-photo user
                                          (:email params)))))
 
-  (GET "/test"
+  (GET "/ping"
        {params :params}
-       (chsk-send! "id" [:teamwall/ping {:data "plip"}]))
+       (doseq [uid (:any @connected-uids)]
+             (chsk-send! uid
+                         [:teamwall/ping {:data "plip"}])))
 
   (route/resources "/")
   (ANY "/*" [] {:status 403}))
@@ -258,7 +260,7 @@
            (println (format "Broadcasting server>user: %s" @connected-uids))
            (doseq [uid (:any @connected-uids)]
              (chsk-send! uid
-                         [:some/broadcast
+                         [:teamwall/test
                           {:what-is-this "A broadcast pushed from server"
                            :how-often    "Every 10 seconds"
                            :to-whom uid

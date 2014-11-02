@@ -41,21 +41,18 @@
       (swap! options assoc :params params))
     (GET url @options)))
 
-
-(defmulti #^{:private true} event-handler :id)
-(defmethod event-handler :default ; Fallback
-  [{:as ev-msg :keys [event]}]
-  (js/console.log "Unhandled event: %s" event))
-
-(defmethod event-handler :chsk/state
-  [{:as ev-msg :keys [?data]}]
-  (if (= ?data {:first-open? true})
-    (js/console.log "Channel socket successfully established!")
-    (js/console.log "Channel socket state change: %s" ?data)))
-
-(defmethod event-handler :chsk/recv
-  [{:as ev-msg :keys [?data]}]
-  (js/console.log "Push event from server: %s" ?data))
+(defn event-handler
+  ""
+  [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]
+  (match [id ?data]
+         [:chsk/state {:first-open? true}] (js/console.log "Channel socket successfully established!")
+         [:chsk/state _]                   (js/console.log "Channel socket state change: %s" ?data)
+         ;;
+         [:chsk/recv  [:teamwall/ping data]] (js/console.log "PONG: " (:data data))
+         [:chsk/recv  [:teamwall/test data]] (js/console.log "TEST: " (:what-is-this data))
+         [:chsk/recv  [& rest]] (js/console.log "Received: " rest)
+         ;;
+         :else (js/console.log "Unmatched event:" ev-msg)))
 
 
 ;;    /==================\
@@ -77,7 +74,6 @@
   "Opens the notification channel with the server.
   Keeps a WebSocket open"
   [token]
-
 
   (let [{:keys [chsk ch-recv send-fn state]}
         (sente/make-channel-socket! "/notifications" {:type :auto})]

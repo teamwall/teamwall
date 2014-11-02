@@ -1,6 +1,10 @@
 (ns teamwall.handler
-  (:use [slingshot.slingshot :only [throw+ try+]])
+  (:use org.httpkit.server
+        [slingshot.slingshot :only [throw+ try+]])
   (:require [cheshire.core :refer :all]
+            [clojure.core.async
+             :as async
+             :refer (<! <!! >! >!! put! chan go go-loop)]
             [clojure.java.io :as io]
             [compojure.core :refer :all]
             [compojure.handler :refer [site]]
@@ -9,6 +13,7 @@
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.util.response :as response]
+            [taoensso.sente :as sente]
             [teamwall.api :as api]
             [teamwall.db :as db]
             [teamwall.serializer :as serializer]))
@@ -34,6 +39,25 @@
 (def ^{:private true} register-token
   "Random token used to check the registration form"
   (atom ""))
+
+(let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
+              connected-uids]}
+      (sente/make-channel-socket! {})]
+  (def ^{:private true} ring-ajax-post
+    "Sente: post for handshake"
+    ajax-post-fn)
+  (def ^{:private true} ring-ajax-get-or-ws-handshake
+    "Sente: get for handshake"
+    ajax-get-or-ws-handshake-fn)
+  (def ^{:private true} ch-chsk
+    "Sente: Income channel"
+    ch-recv)
+  (def ^{:private true} chsk-send!
+    "Sente: send function"
+    send-fn)
+  (def ^{:private true} connected-uids
+    "Sente: open connections"
+    connected-uids))
 
 
 ;;    /==================\
@@ -128,7 +152,6 @@
                         {:status  200
                          :headers {"Content-Type" "application/json"}})))))
 
-
 (defmacro client-route
   "Expands all the routes covered by the client side router"
   [route]
@@ -147,10 +170,7 @@
 
 (defroutes app-routes
   "Defines the server routes"
-;;   (GET "/"
-;;        {}
-;;        (response/resource-response "index.html"
-;;                                    {:root "public"}))
+
   (client-route "/")
   (client-route "/wall")
 
@@ -168,6 +188,7 @@
               ">
               <input type=\"submit\" value=\"Register\">
               </form>")))
+
   (POST "/register"
         {params :params}
         (let [get-token @register-token]
@@ -179,6 +200,9 @@
              (:email params)
              (:salt settings))
             "User successfully created")))
+
+  (GET  "/notifications" req (ring-ajax-get-or-ws-handshake req))
+  (POST "/notifications" req (ring-ajax-post                req))
 
   (GET "/login"
        req
@@ -213,15 +237,10 @@
 
   (GET "/test"
        {params :params}
-       (secure-routing-json (:token params)
-                            #({:user %1})))
+       (chsk-send! "id" [:teamwall/ping {:data "plip"}]))
 
   (route/resources "/")
   (ANY "/*" [] {:status 403}))
-
-(def app
-  "main function used as hook from compojure"
-  (site app-routes))
 
 
 ;;    /==================\
@@ -231,10 +250,29 @@
 ;;    \==================/
 
 
-(defn- main
-  "Initialization of the server"
+(defn start-broadcaster!
+  "Debug: Used to ping clients every 10s"
   []
-  (check-settings))
+  (go-loop [i 0]
+           (<! (async/timeout 10000))
+           (println (format "Broadcasting server>user: %s" @connected-uids))
+           (doseq [uid (:any @connected-uids)]
+             (chsk-send! uid
+                         [:some/broadcast
+                          {:what-is-this "A broadcast pushed from server"
+                           :how-often    "Every 10 seconds"
+                           :to-whom uid
+                           :i i}]))
+           (recur (inc i))))
 
-(main)
+
+(defn -main
+  "Initialization of the server"
+  [& args]
   (ensure-settings)
+  (run-server (site app-routes)
+              ;;               {:port (:port settings)}
+              {:port 3000}
+              )
+  (println (str "Server started on port " (:port settings)))
+  (start-broadcaster!))

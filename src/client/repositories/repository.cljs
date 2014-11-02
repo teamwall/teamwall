@@ -1,14 +1,34 @@
 (ns repositories.repository
+  (:require-macros [cljs.core.async.macros :as asyncm :refer [go go-loop]]
+                   [cljs.core.match.macros :refer (match)])
   (:require [ajax.core :refer [GET POST]]
-            [cemerick.url :refer (url url-encode)]
+            [cemerick.url :refer [url url-encode]]
+            [cljs.core.async :as async  :refer [<! >! put! chan]]
+            [cljs.core.match]
             [cognitect.transit :as transit]
             [goog.string :as gstring]
-            [goog.string.format :as gformat]))
+            [goog.string.format :as gformat]
+            [taoensso.sente :as sente :refer [cb-success?]]))
+
+
+;;    /==================\
+;;    |                  |
+;;    |       VARS       |
+;;    |                  |
+;;    \==================/
 
 
 (def ^{:private :true} login-url
   "URL for the login route"
   "/login")
+
+
+;;    /==================\
+;;    |                  |
+;;    |     PRIVATES     |
+;;    |                  |
+;;    \==================/
+
 
 (defn- async-get-json
   [& {:keys [handler url error params]}]
@@ -21,6 +41,30 @@
       (swap! options assoc :params params))
     (GET url @options)))
 
+
+(defmulti #^{:private true} event-handler :id)
+(defmethod event-handler :default ; Fallback
+  [{:as ev-msg :keys [event]}]
+  (js/console.log "Unhandled event: %s" event))
+
+(defmethod event-handler :chsk/state
+  [{:as ev-msg :keys [?data]}]
+  (if (= ?data {:first-open? true})
+    (js/console.log "Channel socket successfully established!")
+    (js/console.log "Channel socket state change: %s" ?data)))
+
+(defmethod event-handler :chsk/recv
+  [{:as ev-msg :keys [?data]}]
+  (js/console.log "Push event from server: %s" ?data))
+
+
+;;    /==================\
+;;    |                  |
+;;    |      PUBLIC      |
+;;    |                  |
+;;    \==================/
+
+
 (defn login
   "Do a request over the login REST API"
   [email password callback]
@@ -28,3 +72,18 @@
                   :url login-url
                   :params {:email    email
                            :password password}))
+
+(defn open-notification-channel
+  "Opens the notification channel with the server.
+  Keeps a WebSocket open"
+  [token]
+
+
+  (let [{:keys [chsk ch-recv send-fn state]}
+        (sente/make-channel-socket! "/notifications" {:type :auto})]
+    (def chsk       chsk)
+    (def ch-chsk    ch-recv)
+    (def chsk-send! send-fn)
+    (def chsk-state state))
+
+  (defonce chsk-router (sente/start-chsk-router! ch-chsk event-handler)))

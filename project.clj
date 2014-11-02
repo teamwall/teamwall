@@ -11,10 +11,14 @@
                  [com.cognitect/transit-cljs "0.8.188"]
                  [com.novemberain/monger "2.0.0"]
                  [com.novemberain/pantomime "2.3.0"]
+                 [com.taoensso/sente "1.2.0"]
                  [compojure "1.2.1"]
                  [crypto-random "1.2.0"]
+                 [http-kit "2.1.19"]
                  [org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2371"]
+                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]
+                 [org.clojure/core.match "0.2.2"]
                  [prismatic/dommy "1.0.0"]
                  [secretary "1.2.1"]
                  [reagent "0.4.3"]
@@ -22,7 +26,7 @@
                  [slingshot "0.12.1"]]
   :plugins [[lein-ring "0.8.13"]
             [lein-cljsbuild "1.0.3"]]
-  :ring {:handler teamwall.handler/app}
+  :main teamwall.handler
   :hooks [leiningen.cljsbuild]
   :source-paths ["src/server"]
   :cljsbuild {
@@ -32,7 +36,6 @@
         :compiler {:output-to "resources/public/js/cljs.js"
                    :output-dir "resources/public/js/"
                    :optimizations :simple
-;;                    :optimizations :none
                    :source-map "resources/public/js/cljs.js.map"
                    :pretty-print true}
         :jar true}}}

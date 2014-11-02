@@ -1,10 +1,11 @@
-(ns client
+(ns teamwall.client
   (:require [dommy.core :as dommy :refer-macros [sel sel1]]
             [reagent.core :as reagent :refer [atom]]
             [goog.events :as events]
-            [login]
+            [repositories.repository :as repository]
             [secretary.core :as secretary :refer-macros [defroute]]
-            [wall])
+            [teamwall.wall :as wall]
+            [teamwall.login :as login])
   (:import goog.History
            goog.History.EventType))
 

@@ -1,4 +1,4 @@
-(ns wall
+(ns teamwall.wall
   (:require [reagent.core :as reagent :refer [atom]]))
 
 

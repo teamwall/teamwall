@@ -1,6 +1,6 @@
-(ns login
+(ns teamwall.login
   (:require [reagent.core :as reagent :refer [atom]]
-            [repository]))
+            [repositories.repository :as repository]))
 
 (defn- login-action
   ""

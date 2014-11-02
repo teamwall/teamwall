@@ -1,4 +1,4 @@
-(ns repository
+(ns repositories.repository
   (:require [ajax.core :refer [GET POST]]
             [cemerick.url :refer (url url-encode)]
             [cognitect.transit :as transit]

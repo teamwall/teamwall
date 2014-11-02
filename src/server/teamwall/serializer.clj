@@ -30,7 +30,8 @@
     (.createNewFile (new File path)))
   (let [buffer (serialize o)]
     (with-open [stream (output-stream path)]
-      (.write stream buffer))))
+      (.write stream buffer)))
+  o)
 
 (defn read-from-file
   "Reads the file PATH via a ByteArray"

@@ -46,7 +46,8 @@
 (defn- default-settings
   "Generates a new default setting map"
   []
-  {:salt (str (java.util.UUID/randomUUID))})
+  {:salt (str (java.util.UUID/randomUUID))
+   :port 3000})
 
 (defn- check-settings
   "Checks the existence of a setting file"

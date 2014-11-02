@@ -49,19 +49,14 @@
   {:salt (str (java.util.UUID/randomUUID))
    :port 3000})
 
-(defn- check-settings
+(defn- ensure-settings
   "Checks the existence of a setting file"
   []
-  (let [file-exists? (.exists (io/as-file setting-file-name))]
-    (if file-exists?
-      (def ^{:private true} settings
-        "Content of the setting file"
-        (serializer/read-from-file setting-file-name))
-      (do
-        (def ^{:private true} settings
-          "Content of the setting file"
-          (default-settings))
-        (serializer/write-in-file settings setting-file-name)))))
+  (def ^{:private true} settings
+    "Content of the setting file"
+    (if (.exists (io/as-file setting-file-name))
+      (serializer/read-from-file setting-file-name)
+      (serializer/write-in-file (default-settings) setting-file-name))))
 
 (defn- generate-api-token
   "Generates a new API token"
@@ -239,3 +234,4 @@
   (check-settings))
 
 (main)
+  (ensure-settings)

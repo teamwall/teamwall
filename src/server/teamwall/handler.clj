@@ -40,6 +40,14 @@
   "Random token used to check the registration form"
   (atom ""))
 
+(def ^{:private true} settings
+  "Content of the setting file"
+  (if (.exists (io/as-file setting-file-name))
+    (serializer/read-from-file setting-file-name)
+    (serializer/write-in-file {:salt (str (java.util.UUID/randomUUID))
+                               :port 3000}
+                              setting-file-name)))
+
 (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
               connected-uids]}
       (sente/make-channel-socket! {})]
@@ -66,21 +74,6 @@
 ;;    |                  |
 ;;    \==================/
 
-
-(defn- default-settings
-  "Generates a new default setting map"
-  []
-  {:salt (str (java.util.UUID/randomUUID))
-   :port 3000})
-
-(defn- ensure-settings
-  "Checks the existence of a setting file"
-  []
-  (def ^{:private true} settings
-    "Content of the setting file"
-    (if (.exists (io/as-file setting-file-name))
-      (serializer/read-from-file setting-file-name)
-      (serializer/write-in-file (default-settings) setting-file-name))))
 
 (defn- generate-api-token
   "Generates a new API token"
@@ -271,7 +264,6 @@
 (defn -main
   "Initialization of the server"
   [& args]
-  (ensure-settings)
   (run-server (site app-routes)
               ;;               {:port (:port settings)}
               {:port 3000}

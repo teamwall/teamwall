@@ -66,6 +66,7 @@
   ""
   [data]
   (reset! token (:token data))
+  (repository/open-notification-channel @token)
   (redirect (wall-route)))
 
 

@@ -113,7 +113,7 @@
    (catch [:type :teamwall.db/login-failed] {:keys [email valid-password?]}
      {:status 403})
    (catch  Exception e
-     (.printStackTrace e)
+;;      (.printStackTrace e)
      {:status 500})))
 
 (defn- secure-routing

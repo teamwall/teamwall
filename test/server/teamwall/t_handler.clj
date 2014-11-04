@@ -19,11 +19,13 @@
       response => (contains {:status 500})))
   (fact "Login returns a 200 and a JSON object for known user"
     (against-background
-     (db/retrieve-user anything
-                       anything
+     ...email... =contains=> ""
+     ...password... =contains=> ""
+     (db/retrieve-user ...email...
+                       ...password...
                        anything) => {:user :user})
-        (let [response (app-routes (mock :get "/login" {:email    "email@email.com"
-                                                        :password "password"}))
+        (let [response (app-routes (mock :get "/login" {:email    ...email...
+                                                        :password ...password...}))
               body     (parse-string (:body response) true)]
           response    => (contains {:status 200})
           (keys body) => '(:token :ttl))))

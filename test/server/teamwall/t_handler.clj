@@ -105,9 +105,19 @@
 
   (fact "last-photo returns a 400 if the email provided does not match the user email domain"
     (against-background
-     ...token...                                   =contains=> "correct token"
+     ...token...                                         =contains=> "correct token"
      (#'teamwall.handler/get-user-for-token ...token...) => {:email "wrong pattern"}
      (#'teamwall.handler/valid-token? anything
-                                      ...token...) => true)
+                                      ...token...)       => true)
     (let [response (app-routes (mock :get "/john@doe.com/last-photo" {:token ...token...}))]
-      response => (contains {:status 400}))))
+      response => (contains {:status 400})))
+
+  (fact "last-photo returns a 404 if there is no picture available"
+    (against-background
+     ...token...                                         =contains=> "correct token"
+     (#'teamwall.handler/get-user-for-token ...token...) => {:email "bob@doe.com"}
+     (db/get-last-photo "john@doe.com")                   => nil
+     (#'teamwall.handler/valid-token? anything
+                                      ...token...)       => true)
+    (let [response (app-routes (mock :get "/john@doe.com/last-photo" {:token ...token...}))]
+      response => (contains {:status 404}))))

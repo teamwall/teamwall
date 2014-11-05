@@ -80,7 +80,7 @@
   []
   (random/url-part 32))
 
-(defn- token-valid?
+(defn- valid-token?
   "Checks that the provided token exists and is still alive"
   [tokens token]
   (if (contains? tokens token)
@@ -119,7 +119,7 @@
 (defn- secure-routing
   "Encapsulate the check of token validity"
   [token fun]
-  (let [valid (token-valid? @tokens token)]
+  (let [valid (valid-token? @tokens token)]
     (if valid
       (try+
        (fun (:user (get @tokens token)))

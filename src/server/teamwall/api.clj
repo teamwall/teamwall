@@ -20,6 +20,12 @@
         domain   (last splitted)]
     (str "[^@]+@" domain)))
 
+(defn- as-absolute-path
+  "Takes a string as argument,
+  and returns the absolate path of the file named FILE"
+  [file]
+  (.getAbsolutePath file))
+
 
 ;;    /==================\
 ;;    |                  |
@@ -48,7 +54,7 @@
     (db/add-photo user
                   filename
                   size
-                  (.getAbsolutePath tmp-file)
+                  (as-absolute-path tmp-file)
                   (slurp tmp-file))))
 
 (defn last-photo

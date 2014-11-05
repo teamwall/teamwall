@@ -116,13 +116,18 @@
 ;;      (.printStackTrace e)
      {:status 500})))
 
+(defn- get-user-for-token
+  "Return the user corresponding to the provided token"
+  [token]
+  (:user (get @tokens token)))
+
 (defn- secure-routing
   "Encapsulate the check of token validity"
   [token fun]
   (let [valid (valid-token? @tokens token)]
     (if valid
       (try+
-       (fun (:user (get @tokens token)))
+       (fun (get-user-for-token token))
        (catch [:type ::request-error] {:keys [status]}
          {:status status})
        (catch Exception e

@@ -4,9 +4,10 @@
         <link rel="stylesheet" href="css/page.css" />
     </head>
     <body>
-        <script src="js/cljs.js"></script>
+        <script src="lib/polyfills.js"></script>
         <script src="bower_components/react/react-with-addons.js"></script>
         <script src="bower_components/react/JSXTransformer.js"></script>
+        <script src="js/cljs.js"></script>
         <script>
             teamwall.client.dispatch(window.location.pathname);
             window.onpopstate = function(event){

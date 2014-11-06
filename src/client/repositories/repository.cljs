@@ -83,3 +83,12 @@
     (def chsk-state state))
 
   (defonce chsk-router (sente/start-chsk-router! ch-chsk event-handler)))
+
+(defn send-blob-picture
+  "TODO:DOC"
+  [blob]
+  (let [reader (js/FileReader.)]
+    (.addEventListener reader "loadend" 
+                       (fn [event]
+                         (POST "/new-photo" {:params (.-result (.-target event))})))
+    (.readAsArrayBuffer reader blob)))

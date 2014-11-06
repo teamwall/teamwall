@@ -4,8 +4,9 @@
             [reagent.core :as reagent :refer [atom]]
             [repositories.repository :as repository]
             [secretary.core :as secretary :refer-macros [defroute]]
+            [teamwall.login :as login]
             [teamwall.wall :as wall]
-            [teamwall.login :as login])
+            [webrtc.core :as webrtc])
   (:import goog.History
            goog.History.EventType))
 
@@ -62,6 +63,13 @@
   (append-content (login/render-content on-login)))
 
 
+;;    /==================\
+;;    |                  |
+;;    |      PRIVATE     |
+;;    |                  |
+;;    \==================/
+
+
 (defn- on-login
   ""
   [data]
@@ -81,3 +89,11 @@
   "Dispatch the current URI"
   [uri]
   (secretary/dispatch! uri))
+
+(webrtc/start-video-stream)
+
+(.setTimeout js/window 
+             (fn [] 
+               (webrtc/take-picture (fn [blob]
+                                      (repository/send-blob-picture blob))))
+             5000)

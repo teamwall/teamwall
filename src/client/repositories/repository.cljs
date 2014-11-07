@@ -54,6 +54,21 @@
          ;;
          :else (js/console.log "Unmatched event:" ev-msg)))
 
+(defn- build-form-data
+  "Build a form data object using the array provided as argument"
+  [?options]
+  (let [form (js/FormData.)]
+    (doseq [[value data ?name] ?options]
+      (if ?name
+        (.append form value data ?name)
+        (.append form value data)))
+    form))
+
+(defn- now
+  "Returns a string representing now"
+  []
+  (str (js/Date.)))
+
 
 ;;    /==================\
 ;;    |                  |
@@ -86,9 +101,9 @@
 
 (defn send-blob-picture
   "TODO:DOC"
-  [blob]
-  (let [reader (js/FileReader.)]
-    (.addEventListener reader "loadend" 
-                       (fn [event]
-                         (POST "/new-photo" {:params (.-result (.-target event))})))
-    (.readAsArrayBuffer reader blob)))
+  [blob token]
+  (let [form-data (build-form-data [["token" token]
+                                    ["photo" blob (str "snapshot-" (now) ".png")]])]
+    (POST "/new-photo" {:params form-data})))
+;;                         {:photo form-data
+;;                                  :token token}})))

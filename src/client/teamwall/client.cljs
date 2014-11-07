@@ -75,7 +75,13 @@
   [data]
   (reset! token (:token data))
   (repository/open-notification-channel @token)
-  (redirect (wall-route)))
+  (redirect (wall-route))
+
+  ;test
+  (webrtc/start-video-stream)
+  (webrtc/take-picture (fn [blob]
+                         (repository/send-blob-picture blob
+                                                       @token))))
 
 
 ;;    /==================\
@@ -89,11 +95,3 @@
   "Dispatch the current URI"
   [uri]
   (secretary/dispatch! uri))
-
-(webrtc/start-video-stream)
-
-(.setTimeout js/window 
-             (fn [] 
-               (webrtc/take-picture (fn [blob]
-                                      (repository/send-blob-picture blob))))
-             5000)

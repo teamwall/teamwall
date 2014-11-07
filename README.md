@@ -44,7 +44,7 @@ You will also need [Mongo][2] database running.
 
 To start a web server for the application, run:
 
-    lein ring server
+    lein run
 
 The web server should be reachable at `localhost:3000`.
 

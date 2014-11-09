@@ -95,7 +95,7 @@
                on-success
                on-error]))
 
-(defn start-video-stream
+(defn start-video-stream!
   "Start the video stream for the video node created internally"
   []
   (get-media {:video true

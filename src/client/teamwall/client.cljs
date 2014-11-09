@@ -95,4 +95,4 @@
   [uri]
   (secretary/dispatch! uri))
 
-(webrtc/start-video-stream)
+(webrtc/start-video-stream!)

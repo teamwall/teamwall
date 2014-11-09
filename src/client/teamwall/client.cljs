@@ -5,12 +5,11 @@
             [repositories.repository :as repository]
             [secretary.core :as secretary :refer-macros [defroute]]
             [teamwall.login :as login]
+            [teamwall.states :as states]
             [teamwall.wall :as wall]
             [webrtc.core :as webrtc])
   (:import goog.History
            goog.History.EventType))
-
-(def ^:private token (atom nil))
 
 (declare on-login)
 (declare dispatch)
@@ -52,11 +51,10 @@
 
 (defroute wall-route "/wall"
   {:as params}
-  (if (nil? @token)
+  (if (nil? (states/get-token))
     (redirect (login-route))
     (do
-      (append-content
-       (wall/render-content)))))
+      (append-content (wall/render-content)))))
 
 (defroute login-route "/"
   {:as params}
@@ -73,14 +71,14 @@
 (defn- on-login
   ""
   [data]
-  (reset! token (:token data))
-  (repository/open-notification-channel @token)
+  (states/set-token (:token data))
+  (repository/open-notification-channel (:token data))
   (redirect (wall-route))
 
   ;test
   (webrtc/take-picture (fn [blob]
                          (repository/send-blob-picture blob
-                                                       @token))))
+                                                       (:token data)))))
 
 
 ;;    /==================\

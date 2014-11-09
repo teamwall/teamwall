@@ -158,6 +158,14 @@
         (response/resource-response "index.html"
                                     {:root "public"})))
 
+(defn- notify-all
+  "Notifies all the clients"
+  [event-type options]
+  (doseq [uid (:any @connected-uids)]
+    (chsk-send! uid
+                [(keyword "teamwall" event-type)
+                 options])))
+
 
 ;;    /==================\
 ;;    |                  |
@@ -221,8 +229,11 @@
          (secure-routing-json (:token params)
                               (fn [user]
                                 (if (:photo params)
-                                  (api/set-new-photo user
-                                                     (:photo params))
+                                  (do
+                                    (api/set-new-photo user
+                                                       (:photo params))
+                                    (notify-all "new-photo"
+                                                {:user user}))
                                   (throw+ {:type ::request-error
                                            :status 400}))))))
 

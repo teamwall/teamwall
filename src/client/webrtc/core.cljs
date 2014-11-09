@@ -103,7 +103,8 @@
              (fn [stream]
                (if (nil? (moz-get-user-media (navigator)))
                  (set-video-src! video-node (create-object-url (url) stream))
-                 (set-moz-video-src-object! video-node stream)))
+                 (set-moz-video-src-object! video-node stream))
+               (play-video video-node))
              (fn [err]
                (.log js/console "OOOOOPS"))))
 

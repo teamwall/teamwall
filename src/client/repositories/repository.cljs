@@ -30,6 +30,17 @@
 ;;    \==================/
 
 
+(defmulti event-received first)
+
+(defmethod event-received :teamwall/ping [[_ data]]
+  (js/console.log "PONG: " (:data data)))
+
+(defmethod event-received :teamwall/test [[_ data]]
+  (js/console.log "TEST: " (:what-is-this data)))
+
+(defmethod event-received :default [& rest]
+  (js/console.log "OPPPS " rest))
+
 (defn- async-get-json
   [& {:keys [handler url error params]}]
   (let [options (atom {:handler handler
@@ -41,16 +52,14 @@
       (swap! options assoc :params params))
     (GET url @options)))
 
-(defn event-handler
+(defn- event-handler
   ""
   [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]
   (match [id ?data]
          [:chsk/state {:first-open? true}] (js/console.log "Channel socket successfully established!")
          [:chsk/state _]                   (js/console.log "Channel socket state change: %s" ?data)
          ;;
-         [:chsk/recv  [:teamwall/ping data]] (js/console.log "PONG: " (:data data))
-         [:chsk/recv  [:teamwall/test data]] (js/console.log "TEST: " (:what-is-this data))
-         [:chsk/recv  [& rest]] (js/console.log "Received: " rest)
+         [:chsk/recv _] (event-received ?data)
          ;;
          :else (js/console.log "Unmatched event:" ev-msg)))
 

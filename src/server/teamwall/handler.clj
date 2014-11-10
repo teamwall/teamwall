@@ -233,7 +233,8 @@
                                     (api/set-new-photo user
                                                        (:photo params))
                                     (notify-all "new-photo"
-                                                {:user user}))
+                                                {:user {:email (:email user)
+                                                        :username (:username user)}}))
                                   (throw+ {:type ::request-error
                                            :status 400}))))))
 

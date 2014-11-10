@@ -1,5 +1,7 @@
 (ns teamwall.client
-  (:require [dommy.core :as dommy :refer-macros [sel sel1]]
+  (:require [cljs.core.async :as async
+             :refer [<! timeout]]
+            [dommy.core :as dommy :refer-macros [sel sel1]]
             [goog.events :as events]
             [reagent.core :as reagent :refer [atom]]
             [repositories.repository :as repository]
@@ -8,6 +10,7 @@
             [teamwall.states :as states]
             [teamwall.wall :as wall]
             [webrtc.core :as webrtc])
+  (:require-macros [cljs.core.async.macros :as m :refer [go]])
   (:import goog.History
            goog.History.EventType))
 
@@ -76,9 +79,15 @@
   (redirect (wall-route))
 
   ;test
-  (webrtc/take-picture (fn [blob]
-                         (repository/send-blob-picture blob
-                                                       (:token data)))))
+  (declare loop-fn)
+
+  (go
+   (loop []
+     (webrtc/take-picture (fn [blob]
+                            (repository/send-blob-picture blob
+                                                          (:token data))))
+     (<! (timeout 5000))
+     (recur))))
 
 
 ;;    /==================\

@@ -99,7 +99,10 @@
   [data]
   (states/set-token (:token data))
   (repository/open-notification-channel (:token data))
-  (redirect (wall-route))
+  (repository/get-team-members (:token data)
+                               (fn [members]
+                                 (wall/set-team members)
+                                 (redirect (wall-route))))
 
   ;test
   (snapshot-loop (:token data)))

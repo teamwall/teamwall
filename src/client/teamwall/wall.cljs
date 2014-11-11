@@ -13,6 +13,7 @@
 
 
 (def sources (atom {}))
+(def members (atom []))
 
 (defn- now
   "Returns the current time as a string"
@@ -22,11 +23,7 @@
 (defn- get-team-members
   "Returns the list of all the team members of the current user"
   []
-  [{:email "b@b.b"
-    :username "Bob"}
-   ;;    {:email "c@b.b"
-   ;;     :username "Conan"}
-   ])
+  @members)
 
 (defn- update-img-url-for-user
   "Returns the image url for the provided user"
@@ -81,6 +78,11 @@
 ;;    |                  |
 ;;    \==================/
 
+
+(defn set-team
+  "Set the members with the server data"
+  [new-members]
+  (reset! members new-members))
 
 (defn render-content
   "Main rendering function."

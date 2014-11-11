@@ -83,6 +83,17 @@
 ;;    \==================/
 
 
+(defn- snapshot-loop
+  "Runs an infinite loop of snapshot"
+  [token]
+  (go
+   (loop []
+     (webrtc/take-picture (fn [blob]
+                            (repository/send-blob-picture blob
+                                                          token)))
+     (<! (timeout @snapshot-sleep-time))
+     (recur))))
+
 (defn- on-login
   ""
   [data]
@@ -91,15 +102,7 @@
   (redirect (wall-route))
 
   ;test
-  (declare loop-fn)
-
-  (go
-   (loop []
-     (webrtc/take-picture (fn [blob]
-                            (repository/send-blob-picture blob
-                                                          (:token data))))
-     (<! (timeout 5000))
-     (recur))))
+  (snapshot-loop (:token data)))
 
 
 ;;    /==================\

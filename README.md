@@ -73,9 +73,10 @@ cURL example:
 
 #### Response
 
-A JSON string representing a literal object with two keys:
+A JSON string representing a literal object with three keys:
 
 * token: a string representing the unique API token
+* user: a map representing the current user
 * ttl: the token time-to-live
 
 Example:

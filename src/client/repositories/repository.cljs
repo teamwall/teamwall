@@ -114,5 +114,3 @@
   (let [form-data (build-form-data [["token" token]
                                     ["photo" blob (str "snapshot-" (now) ".png")]])]
     (POST "/new-photo" {:params form-data})))
-;;                         {:photo form-data
-;;                                  :token token}})))

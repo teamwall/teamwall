@@ -98,6 +98,7 @@
   ""
   [data]
   (states/set-token (:token data))
+  (states/set-user (:user data))
   (repository/open-notification-channel (:token data))
   (repository/get-team-members (:token data)
                                (fn [members]

@@ -75,6 +75,11 @@
 ;;    \==================/
 
 
+(defn- stub-user
+  "Returns a sub map of user to protect sensitive data"
+  [user]
+  (select-keys user [:username :email]))
+
 (defn- generate-api-token
   "Generates a new API token"
   []
@@ -108,6 +113,7 @@
       :headers {"Content-Type" "application/json"}
       :body    (generate-string
                 {:token token
+                 :user (stub-user user)
                  :ttl default-ttl}
                 {:pretty true})})
    (catch [:type :teamwall.db/login-failed] {:keys [email valid-password?]}
@@ -233,8 +239,7 @@
                                     (api/set-new-photo user
                                                        (:photo params))
                                     (notify-all "new-photo"
-                                                {:user {:email (:email user)
-                                                        :username (:username user)}}))
+                                                {:user (stub-user user)}))
                                   (throw+ {:type ::request-error
                                            :status 400}))))))
 

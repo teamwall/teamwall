@@ -22,6 +22,10 @@
   "URL for the login route"
   "/login")
 
+(def ^{:private :true} get-team-members-url
+  "URL for the login route"
+  "/team-members")
+
 
 ;;    /==================\
 ;;    |                  |
@@ -114,3 +118,11 @@
   (let [form-data (build-form-data [["token" token]
                                     ["photo" blob (str "snapshot-" (now) ".png")]])]
     (POST "/new-photo" {:params form-data})))
+
+
+(defn get-team-members
+  "Get the team members for the current user"
+  [token callback]
+  (async-get-json :handler callback
+                  :url get-team-members-url
+                  :params {:token token}))

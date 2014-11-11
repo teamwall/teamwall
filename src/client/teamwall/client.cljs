@@ -21,6 +21,18 @@
 
 ;;    /==================\
 ;;    |                  |
+;;    |      PRIVATE     |
+;;    |                  |
+;;    \==================/
+
+
+(def ^:private snapshot-sleep-time
+  "Time between two snapshots in milliseconds"
+  (atom 10000))
+
+
+;;    /==================\
+;;    |                  |
 ;;    |     RENDERING    |
 ;;    |                  |
 ;;    \==================/

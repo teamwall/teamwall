@@ -68,6 +68,13 @@
   [:h1.title "Teamwall"])
 
 
+;;    /==================\
+;;    |                  |
+;;    |    EXTENSIONS    |
+;;    |                  |
+;;    \==================/
+
+
 (defmethod repository/event-received :teamwall/new-photo [[_ data]]
   (update-img-url-for-user (:user data)))
 

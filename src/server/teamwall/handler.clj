@@ -26,21 +26,21 @@
 ;;    \==================/
 
 
-(def ^{:private true} default-ttl
+(def ^:private default-ttl
   "Default value for a token Time-To-Live. Default is one hour"
   3600000)
-(def ^{:private true} setting-file-name
+(def ^:private setting-file-name
   "Name of the setting file"
   "settings.tw")
-(def ^{:private true} tokens
+(def ^:private tokens
   "Atom storing all the active tokens"
   (atom {}))
 
-(def ^{:private true} register-token
+(def ^:private register-token
   "Random token used to check the registration form"
   (atom ""))
 
-(def ^{:private true} settings
+(def ^:private settings
   "Content of the setting file"
   (if (.exists (io/as-file setting-file-name))
     (serializer/read-from-file setting-file-name)
@@ -51,19 +51,19 @@
 (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
               connected-uids]}
       (sente/make-channel-socket! {})]
-  (def ^{:private true} ring-ajax-post
+  (def ^:private ring-ajax-post
     "Sente: post for handshake"
     ajax-post-fn)
-  (def ^{:private true} ring-ajax-get-or-ws-handshake
+  (def ^:private ring-ajax-get-or-ws-handshake
     "Sente: get for handshake"
     ajax-get-or-ws-handshake-fn)
-  (def ^{:private true} ch-chsk
+  (def ^:private ch-chsk
     "Sente: Income channel"
     ch-recv)
-  (def ^{:private true} chsk-send!
+  (def ^:private chsk-send!
     "Sente: send function"
     send-fn)
-  (def ^{:private true} connected-uids
+  (def ^:private connected-uids
     "Sente: open connections"
     connected-uids))
 

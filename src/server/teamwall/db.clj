@@ -16,13 +16,13 @@
 ;;    \==================/
 
 
-(def ^{:private true} db-name
+(def ^:private db-name
   "Private: name of the mongo db to use"
   "teamwall")
-(def ^{:private true} db-users
+(def ^:private db-users
   "Private: name of the user mongo collection"
   "teamwallUsers")
-(def ^{:private true} db-photos
+(def ^:private db-photos
   "Private: name of the photo mongo collection"
   "teamwallPhotos")
 

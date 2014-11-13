@@ -148,7 +148,7 @@
   [token fun]
   (secure-routing token
                   (fn [user]
-                    (let [result (fun (:user (get @tokens token)))]
+                    (let [result (fun user)]
                       (if-not (nil? result)
                         {:status  200
                          :headers {"Content-Type" "application/json"}

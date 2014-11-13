@@ -3,7 +3,7 @@
             [repositories.repository :as repository]))
 
 (defn- login-action
-  ""
+  "Callback invoked when the user submit the login form"
   [e email password on-login]
   (.preventDefault e)
   (repository/login email
@@ -11,7 +11,7 @@
                     on-login))
 
 (defn- render-form
-  ""
+  "Renders the login form"
   [on-login]
   (let [email    (reagent/atom "")
         password (reagent/atom "")]

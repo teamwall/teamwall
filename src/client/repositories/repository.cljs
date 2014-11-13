@@ -18,11 +18,11 @@
 ;;    \==================/
 
 
-(def ^{:private :true} login-url
+(def ^:private login-url
   "URL for the login route"
   "/login")
 
-(def ^{:private :true} get-team-members-url
+(def ^:private get-team-members-url
   "URL for the login route"
   "/team-members")
 
@@ -34,7 +34,10 @@
 ;;    \==================/
 
 
-(defmulti event-received first)
+(defmulti event-received
+  "Dispatch function invoked when a new event is received
+  via the communication channel"
+  first)
 
 (defmethod event-received :teamwall/ping [[_ data]]
   (js/console.log "PONG: " (:data data)))
@@ -46,6 +49,7 @@
   (js/console.log "OPPPS " rest))
 
 (defn- async-get-json
+  "Does an async GET call and consider the response as JSON"
   [& {:keys [handler url error params]}]
   (let [options (atom {:handler handler
                        :response-format :json
@@ -57,7 +61,8 @@
     (GET url @options)))
 
 (defn- event-handler
-  ""
+  "Global event handler which will dispatch
+  to the correct function based on the event type"
   [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]
   (match [id ?data]
          [:chsk/state {:first-open? true}] (js/console.log "Channel socket successfully established!")
@@ -113,7 +118,7 @@
   (defonce chsk-router (sente/start-chsk-router! ch-chsk event-handler)))
 
 (defn send-blob-picture
-  "TODO:DOC"
+  "Send a blob object as a form data to the server"
   [blob token]
   (let [form-data (build-form-data [["token" token]
                                     ["photo" blob (str "snapshot-" (now) ".png")]])]

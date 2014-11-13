@@ -28,7 +28,7 @@
 
 (def ^:private snapshot-sleep-time
   "Time between two snapshots in milliseconds"
-  (atom 10000))
+  (atom 1000))
 
 
 ;;    /==================\
@@ -39,19 +39,20 @@
 
 
 (defn- render-content
-  ""
+  "Render the whole application embedding the provided document"
   [document]
   [:div.appContainer
    document])
 
 (defn- append-content
-  ""
+  "Append the whole document to body"
   [current-document]
   (reagent/render-component (fn [] [render-content current-document])
                             (sel1 :body)))
 
 (defn- redirect
-  ""
+  "Redirect to the URL provided as argument
+  making sure the history state is correct"
   [uri]
   (.pushState js/history {} "" uri)
   (dispatch uri))
@@ -95,7 +96,7 @@
      (recur))))
 
 (defn- on-login
-  ""
+  "Callback function invoked after the user successfully logged in"
   [data]
   (states/set-token (:token data))
   (states/set-user (:user data))

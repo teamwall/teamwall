@@ -12,7 +12,10 @@
 ;;    \==================/
 
 
-(def sources (atom {}))
+(def sources
+  "Maps of all the sources containing the users
+  as well as the src path for their picture"
+  (atom {}))
 (def members (atom []))
 
 (defn- now
@@ -51,7 +54,9 @@
            (update-img-url-for-user user))
          team)))
 
-(defn- tile [src]
+(defn- tile
+  "Build a snapshot tile for the given SRC"
+  [src]
   [:img {:src @src}])
 
 (defn- build-content

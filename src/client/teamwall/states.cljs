@@ -13,6 +13,11 @@
   [value]
   (reset! token value))
 
+(defn reset-token!
+  "Set the token to nil"
+  []
+  (set-token nil))
+
 (defn get-user
   "Returns the value of USER"
   []

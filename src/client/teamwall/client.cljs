@@ -6,6 +6,7 @@
             [reagent.core :as reagent :refer [atom]]
             [repositories.repository :as repository]
             [secretary.core :as secretary :refer-macros [defroute]]
+            [teamwall.helper :as helper]
             [teamwall.login :as login]
             [teamwall.states :as states]
             [teamwall.wall :as wall]
@@ -16,7 +17,7 @@
 
 (declare on-login)
 (declare dispatch)
-(declare login-route)
+(declare wall-route)
 
 
 ;;    /==================\
@@ -60,20 +61,6 @@
 
 ;;    /==================\
 ;;    |                  |
-;;    |      ROUTES      |
-;;    |                  |
-;;    \==================/
-
-
-(defroute wall-route "/"
-  {:as params}
-  (append-content
-   (if (nil? (states/get-token))
-     (login/render-content on-login)
-     (wall/render-content))))
-
-;;    /==================\
-;;    |                  |
 ;;    |      PRIVATE     |
 ;;    |                  |
 ;;    \==================/
@@ -90,8 +77,8 @@
      (<! (timeout @snapshot-sleep-time))
      (recur))))
 
-(defn- on-login
-  "Callback function invoked after the user successfully logged in"
+(defn- setup-wall
+  "Setup the environment variables and render the wall"
   [data]
   (states/set-token (:token data))
   (states/set-user (:user data))
@@ -99,10 +86,42 @@
   (repository/get-team-members (:token data)
                                (fn [members]
                                  (wall/set-team members)
-                                 (redirect (wall-route))))
+                                 (append-content (wall/render-content))))
 
   ;test
   (snapshot-loop (:token data)))
+
+(defn set-token-from-cookie!
+  "Set the state token from the document cookie. If the cookie is
+  absent, set it to `nil`"
+  []
+  (states/set-token (helper/get-cookie :tw-token)))
+
+(defn- get-token
+  "Get the session token from the cookie or the state"
+  []
+  (when (nil? (states/get-token))
+    (set-token-from-cookie!))
+  (states/get-token))
+
+
+;;    /==================\
+;;    |                  |
+;;    |      ROUTES      |
+;;    |                  |
+;;    \==================/
+
+
+(defroute wall-route "/"
+  {:as params}
+  (let [token (get-token)]
+    (repository/get-current-user token
+                                 (fn [user]
+                                   (setup-wall {:user user
+                                                :token token}))
+                                 (fn [err]
+                                   (states/reset-token!)
+                                   (append-content (login/render-content (fn [] (dispatch (wall-route)))))))))
 
 
 ;;    /==================\

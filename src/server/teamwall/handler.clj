@@ -10,6 +10,7 @@
             [compojure.handler :refer [site]]
             [compojure.route :as route]
             [crypto.random :as random]
+            [ring.middleware.cookies :only [wrap-cookies]]
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.util.response :as response]
@@ -109,6 +110,7 @@
                                 :creation-time (java.util.Date.)})
 
      {:status  200
+      :cookies {"tw-token" {:value token}}
       :session (assoc session :uid token)
       :headers {"Content-Type" "application/json"}
       :body    (generate-string
@@ -224,6 +226,11 @@
                  (:password params)
                  (:salt settings))))
 
+  (GET "/current-user"
+       {params :params}
+       (secure-routing-json (:token params)
+                            stub-user))
+
   (GET "/team-members"
        {params :params}
        (secure-routing-json (:token params)
@@ -281,7 +288,6 @@
                            :to-whom uid
                            :i i}]))
            (recur (inc i))))
-
 
 (defn -main
   "Initialization of the server"

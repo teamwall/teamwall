@@ -40,6 +40,35 @@
       response => (contains {:status 200})
       (keys body) => '(:token :user :ttl)))
 
+  (fact "current-user returns a 403
+        if wrong token is provided"
+    (against-background
+     ...token... =contains=> "wrong token"
+     (#'teamwall.handler/valid-token? anything
+                                      ...token...) => false)
+    (let [response (app-routes (mock :get
+                                     "/current-user"
+                                     {:token ...token...}))]
+      response => (contains {:status 403})))
+
+  (fact "current-user returns a 200 and a the user data as a JSON
+        object if correct token is provided"
+    (against-background
+     ...user... =contains=> {:username "John Doe"
+                             :email "john@doe.com"
+                             :hash "SECRET"}
+     ...token... =contains=> "correct token"
+     (#'teamwall.handler/get-user-for-token ...token...) => ...user...
+     (#'teamwall.handler/valid-token? anything
+                                      ...token...) => true)
+    (let [response (app-routes (mock :get
+                                     "/current-user"
+                                     {:token ...token...}))
+          body     (parse-string (:body response) true)]
+      response => (contains {:status 200})
+      body     => {:username "John Doe"
+                   :email    "john@doe.com"}))
+
   (fact "team-members returns a 403
         if wrong token is provided"
     (against-background
@@ -69,17 +98,6 @@
       response => (contains {:status 200})
       body     => [{:username "John Doe"
                     :email    "john@doe.com"}]))
-
-  (fact "team-members returns a 403
-        if wrong token is provided"
-    (against-background
-     ...token... =contains=> "wrong token"
-     (#'teamwall.handler/valid-token? anything
-                                      ...token...) => false)
-    (let [response (app-routes (mock :post
-                                     "/new-photo"
-                                     {:token ...token...}))]
-      response => (contains {:status 403})))
 
   (fact "new-photo returns a 400
         if there is no `photo` param and a correct token"

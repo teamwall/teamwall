@@ -23,8 +23,12 @@
   "/login")
 
 (def ^:private get-team-members-url
-  "URL for the login route"
+  "URL for the team members route"
   "/team-members")
+
+(def ^:private get-current-user-url
+  "URL for the current user route"
+  "/current-user")
 
 
 ;;    /==================\
@@ -124,6 +128,13 @@
                                     ["photo" blob (str "snapshot-" (now) ".png")]])]
     (POST "/new-photo" {:params form-data})))
 
+(defn get-current-user
+  "Get the current user"
+  [token callback on-error]
+  (async-get-json :handler callback
+                  :error on-error
+                  :url get-current-user-url
+                  :params {:token token}))
 
 (defn get-team-members
   "Get the team members for the current user"

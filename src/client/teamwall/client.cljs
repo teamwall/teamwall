@@ -65,17 +65,12 @@
 ;;    \==================/
 
 
-(defroute wall-route "/wall"
+(defroute wall-route "/"
   {:as params}
-  (if (nil? (states/get-token))
-    (redirect (login-route))
-    (do
-      (append-content (wall/render-content)))))
-
-(defroute login-route "/"
-  {:as params}
-  (append-content (login/render-content on-login)))
-
+  (append-content
+   (if (nil? (states/get-token))
+     (login/render-content on-login)
+     (wall/render-content))))
 
 ;;    /==================\
 ;;    |                  |

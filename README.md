@@ -1,6 +1,9 @@
 #teamwall
 
+![Travis status](https://travis-ci.org/teamwall/teamwall.svg)
+
 An open source software used to build a wall of picture for your team
+
 
 ## Contents
 

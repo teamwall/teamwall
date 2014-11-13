@@ -164,6 +164,6 @@
      (#'teamwall.handler/valid-token? anything
                                       ...token...) => true)
     (let [response (app-routes (mock :get
-                                     "/john@doe.com/last-photo"
+                                     "/john@d.se/last-photo"
                                      {:token ...token...}))]
       response => (contains {:status 404}))))

@@ -54,11 +54,10 @@
   (fact "current-user returns a 200 and a the user data as a JSON
         object if correct token is provided"
     (against-background
-     ...user... =contains=> {:username "John Doe"
-                             :email "john@doe.com"
-                             :hash "SECRET"}
      ...token... =contains=> "correct token"
-     (#'teamwall.handler/get-user-for-token ...token...) => ...user...
+     (#'teamwall.handler/get-user-for-token ...token...) => {:username "John Doe"
+                                                             :email "john@doe.com"
+                                                             :hash "SECRET"}
      (#'teamwall.handler/valid-token? anything
                                       ...token...) => true)
     (let [response (app-routes (mock :get

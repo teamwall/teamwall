@@ -18,11 +18,11 @@
     (let [response (app-routes (mock :get "/invalid"))]
       response => (contains {:status 403})))
 
-  (fact "Login returns a 403
+  (fact "Login returns a 403 or a 500
         if user is unknown"
     (let [response (app-routes (mock :get "/login" {:email    "email@email.com"
                                                     :password "password"}))]
-      response => (contains {:status 403})))
+      (:status response) => (fn [status] (some #{status} [403 500]))))
 
   (fact "Login returns a 200 and a JSON object
         if user is known"

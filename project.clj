@@ -28,7 +28,6 @@
             [lein-ring "0.8.13"]
             [lein-cljsbuild "1.0.3"]]
   :main teamwall.handler
-  :hooks [leiningen.cljsbuild]
   :source-paths ["src/server"]
   :cljsbuild {
     :builds {

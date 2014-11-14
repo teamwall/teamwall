@@ -24,11 +24,26 @@
                  [reagent "0.4.3"]
                  [ring "1.3.1"]
                  [slingshot "0.12.1"]]
-  :plugins [[lein-ring "0.8.13"]
+  :plugins [[codox "0.8.10"]
+            [lein-ring "0.8.13"]
             [lein-cljsbuild "1.0.3"]]
   :main teamwall.handler
   :hooks [leiningen.cljsbuild]
   :source-paths ["src/server"]
+  :codox {:language :clojurescript
+          :include [repositories.repository
+                    teamwall.client
+                    teamwall.helper
+                    teamwall.login
+                    teamwall.states
+                    teamwall.wall
+                    webrtc.core]
+          :defaults {:doc "**FIXME: write docs**"
+                     :doc/format :markdown}
+          :sources ["src/client"]
+          :output-dir "doc/client"
+          :src-dir-uri "https://github.com/teamwall/teamwall/blob/master/"
+          :src-linenum-anchor-prefix "L"}
   :cljsbuild {
     :builds {
       :main {

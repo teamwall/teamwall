@@ -106,7 +106,7 @@ Note: _ttl_ is in milliseconds, `3600000` is one hour.
 
 ### Get current user
 
-The route is used to provided information about the current logged user.
+The route is used to provide information about the current logged user.
 It is mainly used when you log in back using the cookie stored token.
 
 #### Path & Verb

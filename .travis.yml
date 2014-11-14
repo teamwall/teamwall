@@ -1,2 +1,9 @@
 language: clojure
-script: "lein midje"
+script: lein midje
+after_success:
+	- ./publish_doc.sh
+env:
+  global:
+  - secure: VUYh9ye3nc5Lb7oeZGf1bwNSE3gHkZmnbWqtywYu+dc8+AtzHLjb+0st9Wv3reZXIvjPFHbJq7s6u3Qetc6xcnfp0wPVQcPDP+TQTJIlK7YlvA5Wwip8779i9ONP7uff92d7I/XH7ZLGhqxOdWIyb3MCzKseMs/DbgtWNOcoPGM=
+  - secure: awxDcE+d7rxX33n+FbJnzsE7Ik/Y1TIpL8PRuYT34AObl3K/GR1VxhT1IKuL7Ux/EyVN+a7MsshSRLoz+bF20+u4JoOQJPgYRXLiMEc84zH7Bqknc/rRlKa6o6UwXKcudVIzzj2wldnpwKXEFbgL8rAytyr46LGVc9iBhKBFaCQ=
+  - secure: FYFcjjSKThHKV8uwfUmNHuaAUroezJ9vRW+Cn2Mw6G0nNV7caJfHkG/5vhcmsxjvbbbwEwru8kd8PMOq3H77ZK/6atjvcFhgRp6WuMAq526EGdoFIh7TPDZv7p05zSVxagJOBKe7H30GQo983EDnDUluLdV6uTIlnKJKBo/4LNM=

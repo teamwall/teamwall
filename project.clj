@@ -30,12 +30,6 @@
   :main teamwall.handler
   :hooks [leiningen.cljsbuild]
   :source-paths ["src/server"]
-  :codox {:defaults {:doc "**FIXME: write docs**"
-                     :doc/format :markdown}
-          :sources ["src/server"]
-          :output-dir "doc/server"
-          :src-dir-uri "https://github.com/teamwall/teamwall/blob/master/"
-          :src-linenum-anchor-prefix "L"}
   :cljsbuild {
     :builds {
       :main {
@@ -51,17 +45,26 @@
                                   [ring/ring-codec "1.0.0"]
                                   [ring-mock "0.1.5"]]
                    :plugins [[lein-midje "3.1.3"]]}
-             :cljs {:codox {:language :clojurescript
-                            :include [repositories.repository
-                                      teamwall.client
-                                      teamwall.helper
-                                      teamwall.login
-                                      teamwall.states
-                                      teamwall.wall
-                                      webrtc.core]
-                            :defaults {:doc "**FIXME: write docs**"
-                                       :doc/format :markdown}
-                            :sources ["src/client"]
-                            :output-dir "doc/client"
-                            :src-dir-uri "https://github.com/teamwall/teamwall/blob/master/"
-                            :src-linenum-anchor-prefix "L"}}})
+             :doc-cljs {:codox {:language :clojurescript
+                                :include [repositories.repository
+                                          teamwall.client
+                                          teamwall.helper
+                                          teamwall.login
+                                          teamwall.states
+                                          teamwall.wall
+                                          webrtc.core]
+                                :defaults {:doc "**FIXME: write docs**"
+                                           :doc/format :markdown}
+                                :sources ["src/client"]
+                                :output-dir "doc/client"
+                                :src-dir-uri "https://github.com/teamwall/teamwall/blob/master/"
+                                :src-linenum-anchor-prefix "L"}}
+             :doc-clj {:codox {:defaults {:doc "**FIXME: write docs**"
+                                          :doc/format :markdown}
+                               :sources ["src/server"]
+                               :output-dir "doc/server"
+                               :src-dir-uri "https://github.com/teamwall/teamwall/blob/master/"
+                               :src-linenum-anchor-prefix "L"}}}
+  :aliases {"doc" ["do"
+                   ["with-profile" "doc-cljs" "doc"]
+                   ["with-profile" "doc-clj" "doc"]]})

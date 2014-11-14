@@ -30,18 +30,10 @@
   :main teamwall.handler
   :hooks [leiningen.cljsbuild]
   :source-paths ["src/server"]
-  :codox {:language :clojurescript
-          :include [repositories.repository
-                    teamwall.client
-                    teamwall.helper
-                    teamwall.login
-                    teamwall.states
-                    teamwall.wall
-                    webrtc.core]
-          :defaults {:doc "**FIXME: write docs**"
+  :codox {:defaults {:doc "**FIXME: write docs**"
                      :doc/format :markdown}
-          :sources ["src/client"]
-          :output-dir "doc/client"
+          :sources ["src/server"]
+          :output-dir "doc/server"
           :src-dir-uri "https://github.com/teamwall/teamwall/blob/master/"
           :src-linenum-anchor-prefix "L"}
   :cljsbuild {
@@ -54,9 +46,22 @@
                    :source-map "resources/public/js/cljs.js.map"
                    :pretty-print true}
         :jar true}}}
-  :profiles
-  {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
-                        [midje "1.6.3"]
-                        [ring/ring-codec "1.0.0"]
-                        [ring-mock "0.1.5"]]
-         :plugins [[lein-midje "3.1.3"]]}})
+  :profiles {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
+                                  [midje "1.6.3"]
+                                  [ring/ring-codec "1.0.0"]
+                                  [ring-mock "0.1.5"]]
+                   :plugins [[lein-midje "3.1.3"]]}
+             :cljs {:codox {:language :clojurescript
+                            :include [repositories.repository
+                                      teamwall.client
+                                      teamwall.helper
+                                      teamwall.login
+                                      teamwall.states
+                                      teamwall.wall
+                                      webrtc.core]
+                            :defaults {:doc "**FIXME: write docs**"
+                                       :doc/format :markdown}
+                            :sources ["src/client"]
+                            :output-dir "doc/client"
+                            :src-dir-uri "https://github.com/teamwall/teamwall/blob/master/"
+                            :src-linenum-anchor-prefix "L"}}})

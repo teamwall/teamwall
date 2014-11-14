@@ -15,6 +15,11 @@ An open source software used to build a wall of picture for your team
         - [Parameters](#parameters)
         - [Response](#response)
         - [Status](#status)
+    - [Get current user](#get-current-user)
+        - [Path & Verb](#path-verb)
+        - [Parameters](#parameters)
+        - [Response](#response)
+        - [Status](#status)
     - [Get team members](#get-team-members)
         - [Path & Verb](#path-verb)
         - [Parameters](#parameters)
@@ -99,6 +104,52 @@ Note: _ttl_ is in milliseconds, `3600000` is one hour.
 --------|--------
 | Success | 200 OK |
 | Error | 403 Forbidden |
+
+### Get current user
+
+The route is used to provided information about the current logged user.
+It is mainly used when you log in back using the cookie stored token.
+
+#### Path & Verb
+
+To get all the team members, a **GET** request needs to be done against the path:
+
+    /current-user
+
+#### Parameters
+
+| Params | Type | Description|
+--------|--------|--------
+| token | url param | the API token received during the login |
+
+cURL example:
+
+    $ curl "localhost:3000/current-user?token=JSzvjh_Qq0zGjLu7pL-9tvGrl84DwgMNT4vZ_F4IxC"
+
+
+#### Response
+
+A JSON string representing a literal object.
+This object has two keys:
+
+* username
+* email
+
+Example:
+
+~~~json
+{
+  "username" : "User 1",
+  "email" : "user1@mycompany.com"
+}
+~~~
+
+#### Status
+
+| Cause | Status |
+--------|--------
+| Success | 200 OK |
+| Field _token_ missing or invalid | 403 Forbidden |
 
 ### Get team members
 

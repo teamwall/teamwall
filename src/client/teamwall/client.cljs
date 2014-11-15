@@ -112,7 +112,7 @@
 ;;    \==================/
 
 
-(defroute wall-route "/"
+(defroute ^:no-doc wall-route "/"
   {:as params}
   (let [token (get-token)]
     (repository/get-current-user token

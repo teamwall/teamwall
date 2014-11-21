@@ -29,10 +29,12 @@
 
 (def ^:private default-ttl
   "Default value for a token Time-To-Live. Default is one hour"
-  3600000)
+  (* 365 24 60 60 1000))
+
 (def ^:private setting-file-name
   "Name of the setting file"
   "settings.tw")
+
 (def ^:private tokens
   "Atom storing all the active tokens"
   (atom {}))

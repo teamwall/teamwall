@@ -19,15 +19,31 @@ h1.title {
     top: 0;
     margin-right: 0;
 
-    .navbar-icon {
+    a {
       cursor: pointer;
-      font-size: 18px;
-      line-height: 30px;
       color: #EEE;
 
+      &.link {
+        line-height: 1.6;
+        padding: 0;
+        margin: 18px;
+        margin-left: 0;
+
+        .glyphicon {
+          margin-right: 5px;
+        }
+
+        &.glyphicon {
+          &:hover {
+            text-decoration: none;
+          }
+        }
+      }
+
       &:hover {
-        background: darken(#0088cc, 5%);
-        color: white;
+        background: transparent;
+        color: #F5BB54;
+        text-decoration: underline;
       }
     }
   }

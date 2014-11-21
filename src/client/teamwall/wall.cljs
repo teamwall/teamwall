@@ -72,11 +72,17 @@
   []
   [:h1.title "Teamwall"])
 
-(defn build-settings-button
+(defn- build-settings-button
   "Build the settings button as a cog icon"
   []
-  [:a.navbar-icon 
-   [:span.glyphicon.glyphicon-cog]])
+  [:a.link.glyphicon.glyphicon-cog])
+
+(defn- build-user-link
+  "Build the user anchor"
+  []
+  [:a.link
+   [:span.glyphicon.glyphicon-user]
+   (:username (states/get-user))])
 
 (defn- build-navbar
   "Build the main navbar of the page"
@@ -84,7 +90,8 @@
   [:div.navbar.navbar-fixed
    [:div.container-fluid
     [build-title]
-    [:ul.nav.navbar-nav.navbar-right 
+    [:ul.nav.navbar-nav.navbar-right
+     [:li [build-user-link]]
      [:li [build-settings-button]]]]])
 
 (defn- build-content

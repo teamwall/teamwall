@@ -1,37 +1,22 @@
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-}
-
-body {
-  background: #666;
-  color: #eee;
-  font-family: 'sans-serif';
-}
-
+@import "/bower_components/bootstrap/dist/css/bootstrap.css";
+/* line 3, /home/nico/work/clojure/teamwall/resources/less/page.less */
 h1.title {
   text-align: center;
+  font-weight: bold;
+  color: #eee;
 }
-
-ul.mates {
+/* line 9, /home/nico/work/clojure/teamwall/resources/less/page.less */
+.navbar {
+  border: 0 none;
+  background: #0088cc;
+  margin: 0;
+  border-radius: 0;
+}
+/* line 17, /home/nico/work/clojure/teamwall/resources/less/page.less */
+.mates .mate {
   padding: 0;
-  width: 600px;
-  list-style: none;
-  display: block;
-  margin: 100px auto;
 }
-
-li.mate {
-  margin: 10px;
-  background: #999;
-  display: inline-block;
-  height: 280px;
-  width: 280px;
-  text-align: center;
-}
-
-li.mate img {
-  max-height: 200px;
-  margin-top: 40px;
+/* line 19, /home/nico/work/clojure/teamwall/resources/less/page.less */
+.mates .mate img {
+  width: 100%;
 }

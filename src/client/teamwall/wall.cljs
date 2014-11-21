@@ -72,12 +72,20 @@
   []
   [:h1.title "Teamwall"])
 
+(defn build-settings-button
+  "Build the settings button as a cog icon"
+  []
+  [:a.navbar-icon 
+   [:span.glyphicon.glyphicon-cog]])
+
 (defn- build-navbar
   "Build the main navbar of the page"
   []
   [:div.navbar.navbar-fixed
    [:div.container-fluid
-    [build-title]]])
+    [build-title]
+    [:ul.nav.navbar-nav.navbar-right 
+     [:li [build-settings-button]]]]])
 
 (defn- build-content
   "Build the wall of mate tiles"

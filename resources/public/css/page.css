@@ -4,23 +4,43 @@ h1.title {
   text-align: center;
   font-weight: bold;
   color: #eee;
+  font-size: 26px;
 }
-/* line 9, /home/nico/work/clojure/teamwall/resources/less/page.less */
+/* line 10, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar {
   border: 0 none;
   background: #0088cc;
   margin: 0;
   border-radius: 0;
 }
-/* line 17, /home/nico/work/clojure/teamwall/resources/less/page.less */
+/* line 16, /home/nico/work/clojure/teamwall/resources/less/page.less */
+.navbar .navbar-right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin-right: 0;
+}
+/* line 22, /home/nico/work/clojure/teamwall/resources/less/page.less */
+.navbar .navbar-right .navbar-icon {
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 30px;
+  color: #EEE;
+}
+/* line 28, /home/nico/work/clojure/teamwall/resources/less/page.less */
+.navbar .navbar-right .navbar-icon:hover {
+  background: #0077b3;
+  color: white;
+}
+/* line 38, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .mates .mate {
   padding: 0;
 }
-/* line 20, /home/nico/work/clojure/teamwall/resources/less/page.less */
+/* line 41, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .mates .mate img {
   width: 100%;
 }
-/* line 24, /home/nico/work/clojure/teamwall/resources/less/page.less */
+/* line 45, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .mates .mate .timestamp {
   position: absolute;
   bottom: 0;

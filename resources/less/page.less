@@ -4,6 +4,7 @@ h1.title {
   text-align: center;
   font-weight: bold;
   color: #eee;
+  font-size: 26px;
 }
 
 .navbar {
@@ -11,6 +12,26 @@ h1.title {
   background: #0088cc;
   margin: 0;
   border-radius: 0;
+
+  .navbar-right {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin-right: 0;
+
+    .navbar-icon {
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 30px;
+      color: #EEE;
+
+      &:hover {
+        background: darken(#0088cc, 5%);
+        color: white;
+      }
+    }
+  }
+
 }
 
 .mates {

@@ -1,60 +1,56 @@
 @import "/bower_components/bootstrap/dist/css/bootstrap.css";
-/* line 3, /home/nico/work/clojure/teamwall/resources/less/page.less */
+html,
+body {
+  height: 100%;
+}
+body {
+  background: #444;
+}
 h1.title {
   text-align: center;
   font-weight: bold;
   color: #eee;
   font-size: 26px;
 }
-/* line 10, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar {
   border: 0 none;
   background: #0088cc;
   margin: 0;
   border-radius: 0;
 }
-/* line 16, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right {
   position: absolute;
   right: 0;
   top: 0;
   margin-right: 0;
 }
-/* line 22, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right a {
   cursor: pointer;
   color: #EEE;
 }
-/* line 26, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right a.link {
   line-height: 1.6;
   padding: 0;
   margin: 18px;
   margin-left: 0;
 }
-/* line 32, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right a.link .glyphicon {
   margin-right: 5px;
 }
-/* line 37, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right a.link.glyphicon:hover {
   text-decoration: none;
 }
-/* line 43, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right a:hover {
   background: transparent;
   color: #F5BB54;
   text-decoration: underline;
 }
-/* line 54, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .mates .mate {
   padding: 0;
 }
-/* line 57, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .mates .mate img {
   width: 100%;
 }
-/* line 61, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .mates .mate .timestamp {
   position: absolute;
   bottom: 0;

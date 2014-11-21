@@ -59,18 +59,27 @@
   [src]
   [:img {:src @src}])
 
-(defn- build-content
-  "Build the wall of mate tiles"
-  []
-  (let [imgs (map (fn [src]
-                    [:li.mate [tile src]])
-                  (get-tiles))]
-    [:ul.mates imgs]))
-
 (defn- build-title
   "Return a title DOM element."
   []
   [:h1.title "Teamwall"])
+
+(defn- build-navbar
+  "Build the main navbar of the page"
+  []
+  [:div.navbar.navbar-fixed 
+   [:div.container-fluid
+    [build-title]]])
+
+(defn- build-content
+  "Build the wall of mate tiles"
+  []
+  (let [imgs (map (fn [src]
+                    [:div.col-xs-12.col-sm-6.col-md-6.col-lg-4.mate
+                     [tile src]])
+                  (get-tiles))]
+    [:div.container-fluid 
+     [:div.row.mates imgs]]))
 
 
 ;;    /==================\
@@ -99,6 +108,7 @@
 (defn render-content
   "Main rendering function."
   []
-  [:div.wall
-   [build-title]
-   [build-content]])
+  [:div 
+   [build-navbar]
+   [:div.wall
+    [build-content]]])

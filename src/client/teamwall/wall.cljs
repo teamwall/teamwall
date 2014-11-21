@@ -18,10 +18,16 @@
   (atom {}))
 (def members (atom []))
 
-(defn- now
+(defn- now-as-milliseconds
   "Returns the current time as a string"
   []
   (str (.now js/Date)))
+
+(defn- timestamp-now
+  "Returns the current time as a timestamp string"
+  []
+  (let [date (js/Date.)]
+    (first (.split (.toTimeString date) " "))))
 
 (defn- get-team-members
   "Returns the list of all the team members of the current user"
@@ -38,7 +44,7 @@
                     "/last-photo?token="
                     (states/get-token)
                     "&time="
-                    (now))]
+                    (now-as-milliseconds))]
 
     (when-not existing-atom
       (swap! sources assoc (:email user) atom-to-use))
@@ -57,7 +63,9 @@
 (defn- tile
   "Build a snapshot tile for the given SRC"
   [src]
-  [:img {:src @src}])
+  [:div
+   [:img {:src @src}]
+   [:span.timestamp (timestamp-now)]])
 
 (defn- build-title
   "Return a title DOM element."
@@ -67,7 +75,7 @@
 (defn- build-navbar
   "Build the main navbar of the page"
   []
-  [:div.navbar.navbar-fixed 
+  [:div.navbar.navbar-fixed
    [:div.container-fluid
     [build-title]]])
 
@@ -78,7 +86,7 @@
                     [:div.col-xs-12.col-sm-6.col-md-6.col-lg-4.mate
                      [tile src]])
                   (get-tiles))]
-    [:div.container-fluid 
+    [:div.container-fluid
      [:div.row.mates imgs]]))
 
 
@@ -108,7 +116,7 @@
 (defn render-content
   "Main rendering function."
   []
-  [:div 
+  [:div
    [build-navbar]
    [:div.wall
     [build-content]]])

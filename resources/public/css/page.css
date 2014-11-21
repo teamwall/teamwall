@@ -16,7 +16,16 @@ h1.title {
 .mates .mate {
   padding: 0;
 }
-/* line 19, /home/nico/work/clojure/teamwall/resources/less/page.less */
+/* line 20, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .mates .mate img {
   width: 100%;
+}
+/* line 24, /home/nico/work/clojure/teamwall/resources/less/page.less */
+.mates .mate .timestamp {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 20px;
+  color: #EEE;
+  font-weight: bold;
 }

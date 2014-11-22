@@ -52,6 +52,13 @@
     (reset! atom-to-use source)
     atom-to-use))
 
+(defn- add-new-user!
+  "Add a new user to the local cache as a new user
+  registered to the server"
+  [user]
+  (swap! members conj user)
+  (update-img-url-for-user! user))
+
 (defn- get-tiles
   "Return all teammate tiles."
   []
@@ -114,6 +121,9 @@
 
 (defmethod repository/event-received :teamwall/new-photo [[_ data]]
   (update-img-url-for-user! (:user data)))
+
+(defmethod repository/event-received :teamwall/new-user [[_ data]]
+  (add-new-user! (:user data)))
 
 
 ;;    /==================\

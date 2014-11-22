@@ -176,6 +176,16 @@
                 [(keyword "teamwall" event-type)
                  options])))
 
+(defn- notify-team
+  "Notifies all the clients"
+  [user event-type & [options]]
+  (doseq [uid (:any @connected-uids)]
+    (when (= (api/extract-email-pattern (:email user))
+             (api/extract-email-pattern (:email (get-user-for-token uid))))
+      (chsk-send! uid
+                  [(keyword "teamwall" event-type)
+                   (merge {:user user} options)]))))
+
 
 ;;    /==================\
 ;;    |                  |
@@ -210,11 +220,13 @@
         (let [get-token @register-token]
           (reset! register-token (generate-api-token))
           (when (= get-token (:token params))
-            (db/register-user
-             (:username params)
-             (:password params)
-             (:email params)
-             (:salt settings))
+            (let [user         (db/register-user (:username params)
+                                                 (:password params)
+                                                 (:email params)
+                                                 (:salt settings))
+                  stubbed-user (stub-user user)]
+              (notify-team stubbed-user
+                           "new-user"))
             "User successfully created")))
 
   (GET  "/notifications" req (ring-ajax-get-or-ws-handshake req))

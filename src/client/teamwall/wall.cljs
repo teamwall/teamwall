@@ -34,7 +34,7 @@
   []
   @members)
 
-(defn- update-img-url-for-user
+(defn- update-img-url-for-user!
   "Returns the image url for the provided user"
   [user]
   (let [existing-atom (get @sources (:email user))
@@ -57,7 +57,7 @@
   []
   (let [team (get-team-members)]
     (map (fn [user]
-           (update-img-url-for-user user))
+           (update-img-url-for-user! user))
          team)))
 
 (defn- tile
@@ -113,7 +113,7 @@
 
 
 (defmethod repository/event-received :teamwall/new-photo [[_ data]]
-  (update-img-url-for-user (:user data)))
+  (update-img-url-for-user! (:user data)))
 
 
 ;;    /==================\

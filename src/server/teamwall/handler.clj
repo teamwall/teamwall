@@ -79,7 +79,7 @@
 (defn- stub-user
   "Returns a sub map of user to protect sensitive data"
   [user]
-  (select-keys user [:username :email]))
+  (select-keys user [:username :email :status]))
 
 (defn- generate-api-token
   "Generates a new API token"
@@ -104,7 +104,9 @@
    (let [user (db/retrieve-user email
                                 password
                                 salt)
+         user (assoc user :status :online)
          token (generate-api-token)]
+     (db/update-status user :online)
      (swap! tokens assoc token {:user          user
                                 :ttl           default-ttl
                                 :creation-time (java.util.Date.)})

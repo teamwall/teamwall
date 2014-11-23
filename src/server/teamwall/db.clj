@@ -74,6 +74,7 @@
                {:_id      email
                 :username username
                 :email    email
+                :status   :offline
                 :hash     (hashed-password password salt)})
     (mg/disconnect conn)))
 
@@ -97,6 +98,17 @@
       (throw+ {:type            ::login-failed
                :email           email
                :valid-password? valid-password?}))))
+
+(defn update-status
+  "Update the status of the provided USER to the new VALUE"
+  [user value]
+  (let [conn (connect-to-mongo)
+        db   (mg/get-db conn db-name)]
+    (mc/update-by-id db
+               db-users
+               (:email user)
+               {:status value})
+    (mg/disconnect conn)))
 
 (defn get-users-for-email
   "Retrieve all the users whose email match the pattern provided"

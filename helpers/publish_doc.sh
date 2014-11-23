@@ -10,7 +10,7 @@ then
 	git config user.name "$GH_NAME"
 	git status
 	git add --all .
-	git commit -am "Generation of documentation"
+	git commit -am "Generation of documentation - build $TRAVIS_BUILD_NUMBER"
 	git status
-	git push https://$GH_NAME:$GH_TOKEN@github.com/teamwall/teamwall.git gh-pages
+	git push --quiet https://$GH_NAME:$GH_TOKEN@github.com/teamwall/teamwall.git gh-pages > /dev/null 2>&1
 fi

@@ -3,6 +3,7 @@
             [monger.collection :as mc]
             [monger.core :as mg]
             [monger.json]
+            [monger.operators :refer :all]
             [monger.query :as mq])
   (:use [slingshot.slingshot :only [throw+ try+]])
   (:import [com.mongodb MongoOptions ServerAddress]
@@ -106,10 +107,10 @@
   [user value]
   (let [conn (connect-to-mongo)
         db   (mg/get-db conn db-name)]
-    (mc/update-by-id db
+    (mc/update db
                db-users
-               (:email user)
-               {:status value})
+               {:_id (:email user)}
+               {$set {:status value}})
     (mg/disconnect conn)))
 
 (defn get-users-for-email

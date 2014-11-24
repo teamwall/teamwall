@@ -34,7 +34,7 @@
   []
   @members)
 
-(defn- update-img-url-for-user
+(defn- update-img-url-for-user!
   "Returns the image url for the provided user"
   [user]
   (let [existing-atom (get @sources (:email user))
@@ -52,12 +52,19 @@
     (reset! atom-to-use source)
     atom-to-use))
 
+(defn- add-new-user!
+  "Add a new user to the local cache as a new user
+  registered to the server"
+  [user]
+  (swap! members conj user)
+  (update-img-url-for-user! user))
+
 (defn- get-tiles
   "Return all teammate tiles."
   []
   (let [team (get-team-members)]
     (map (fn [user]
-           (update-img-url-for-user user))
+           (update-img-url-for-user! user))
          team)))
 
 (defn- tile
@@ -113,7 +120,10 @@
 
 
 (defmethod repository/event-received :teamwall/new-photo [[_ data]]
-  (update-img-url-for-user (:user data)))
+  (update-img-url-for-user! (:user data)))
+
+(defmethod repository/event-received :teamwall/new-user [[_ data]]
+  (add-new-user! (:user data)))
 
 
 ;;    /==================\

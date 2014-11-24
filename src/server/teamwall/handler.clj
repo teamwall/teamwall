@@ -28,7 +28,7 @@
 
 
 (def ^:private default-ttl
-  "Default value for a token Time-To-Live. Default is one hour"
+  "Default value for a token Time-To-Live. Default is one year"
   (* 365 24 60 60 1000))
 
 (def ^:private setting-file-name

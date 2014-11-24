@@ -5,6 +5,7 @@
             [clojure.core.async
              :as async
              :refer (<! <!! >! >!! put! chan go go-loop)]
+            [clojure.data :as data]
             [clojure.java.io :as io]
             [compojure.core :refer :all]
             [compojure.handler :refer [site]]
@@ -51,25 +52,6 @@
                                :port 3000}
                               setting-file-name)))
 
-(let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
-              connected-uids]}
-      (sente/make-channel-socket! {})]
-  (def ^:private ring-ajax-post
-    "Sente: post for handshake"
-    ajax-post-fn)
-  (def ^:private ring-ajax-get-or-ws-handshake
-    "Sente: get for handshake"
-    ajax-get-or-ws-handshake-fn)
-  (def ^:private ch-chsk
-    "Sente: Income channel"
-    ch-recv)
-  (def ^:private chsk-send!
-    "Sente: send function"
-    send-fn)
-  (def ^:private connected-uids
-    "Sente: open connections"
-    connected-uids))
-
 
 ;;    /==================\
 ;;    |                  |
@@ -77,6 +59,46 @@
 ;;    |                  |
 ;;    \==================/
 
+
+(defn- get-user-for-token
+  "Return the user corresponding to the provided token"
+  [token]
+  (:user (get @tokens token)))
+
+(defn- connections-watcher
+  "Watcher over the sconnexion atom to set users offline"
+  [_key _ref old-value new-value]
+  (let [[removed add _] (data/diff old-value new-value)]
+    (doseq [uid removed]
+      (when-not (nil? uid)
+        (let [user (get-user-for-token uid)]
+          (println user)
+          (when-not (nil? user)
+            (swap! tokens dissoc uid)
+            (db/update-status user :offline)))))))
+
+(defn- open-channel
+  "Open the notifiations channel"
+  []
+  (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
+                connected-uids]}
+        (sente/make-channel-socket! {})]
+    (def ^:private ring-ajax-post
+      "Sente: post for handshake"
+      ajax-post-fn)
+    (def ^:private ring-ajax-get-or-ws-handshake
+      "Sente: get for handshake"
+      ajax-get-or-ws-handshake-fn)
+    (def ^:private ch-chsk
+      "Sente: Income channel"
+      ch-recv)
+    (def ^:private chsk-send!
+      "Sente: send function"
+      send-fn)
+    (def ^:private connected-uids
+      "Sente: open connections"
+      connected-uids)
+    (add-watch connected-uids :connected-uids connections-watcher)))
 
 (defn- stub-user
   "Returns a sub map of user to protect sensitive data"
@@ -127,11 +149,6 @@
    (catch  Exception e
 ;;      (.printStackTrace e)
      {:status 500})))
-
-(defn- get-user-for-token
-  "Return the user corresponding to the provided token"
-  [token]
-  (:user (get @tokens token)))
 
 (defn- secure-routing
   "Encapsulate the check of token validity"
@@ -250,7 +267,7 @@
   (GET "/team-members"
        {params :params}
        (secure-routing-json (:token params)
-                            api/get-team-members))
+                            #(map stub-user (api/get-team-members %))))
 
   (wrap-multipart-params
    (POST "/new-photo"
@@ -261,8 +278,8 @@
                                   (do
                                     (api/set-new-photo user
                                                        (:photo params))
-                                    (notify-all "new-photo"
-                                                {:user (stub-user user)}))
+                                    (notify-team (stub-user user)
+                                                 "new-photo"))
                                   (throw+ {:type ::request-error
                                            :status 400}))))))
 
@@ -309,8 +326,7 @@
   "Initialization of the server"
   [& args]
   (run-server (site app-routes)
-              ;;               {:port (:port settings)}
-              {:port 3000}
-              )
+              {:port (:port settings)})
+  (open-channel)
   (println (str "Server started on port " (:port settings)))
   (start-broadcaster!))

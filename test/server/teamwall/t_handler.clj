@@ -7,6 +7,16 @@
             [teamwall.db :as db]
             [teamwall.handler :refer :all]))
 
+;;
+;; Initialize
+;;
+
+(#'teamwall.handler/open-channel)
+
+;;
+;; Tests
+;;
+
 (defn- mock
   ([verb uri] (req/request verb uri))
   ([verb uri params] (assoc (req/request verb uri params) :params params)))

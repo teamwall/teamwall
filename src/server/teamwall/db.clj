@@ -68,15 +68,17 @@
   "Adds a new user to the user database"
   [username password email salt]
   (let [conn (connect-to-mongo)
-        db   (mg/get-db conn db-name)]
+        db   (mg/get-db conn db-name)
+        user {:_id      email
+              :username username
+              :email    email
+              :status   :offline
+              :hash     (hashed-password password salt)}]
     (mc/insert db
                db-users
-               {:_id      email
-                :username username
-                :email    email
-                :status   :offline
-                :hash     (hashed-password password salt)})
-    (mg/disconnect conn)))
+               user)
+    (mg/disconnect conn)
+    user))
 
 (defn retrieve-user
   "Retrieves a user from the database using its email and password"

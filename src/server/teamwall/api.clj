@@ -13,13 +13,6 @@
 ;;    \==================/
 
 
-(defn- extract-email-pattern
-  "Extract the email pattern from an email address"
-  [email]
-  (let [splitted (string/split email #"@")
-        domain   (last splitted)]
-    (str "[^@]+@" domain)))
-
 (defn- as-absolute-path
   "Takes a string as argument,
   and returns the absolate path of the file named FILE"
@@ -33,6 +26,13 @@
 ;;    |                  |
 ;;    \==================/
 
+
+(defn extract-email-pattern
+  "Extract the email pattern from an email address"
+  [email]
+  (let [splitted (string/split email #"@")
+        domain   (last splitted)]
+    (str "[^@]+@" domain)))
 
 (defn get-team-members
   "Retrieve informations about the other person of the same team"

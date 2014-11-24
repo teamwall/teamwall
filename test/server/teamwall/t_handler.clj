@@ -31,7 +31,8 @@
      ...password... =contains=> ""
      (db/retrieve-user ...email...
                        ...password...
-                       anything) => {:user :user})
+                       anything) => {:user :user}
+     (db/update-status anything :online) => nil)
     (let [response (app-routes (mock :get
                                      "/login"
                                      {:email    ...email...

@@ -41,11 +41,7 @@
 
 (def ^:private settings
   "Content of the setting file"
-  (let [db-settings (db/load-settings)]
-    (if-not (nil? db-settings)
-      db-settings
-      (db/store-settings {:salt (str (java.util.UUID/randomUUID))
-                          :port 3000}))))
+  (atom {}))
 
 (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
               connected-uids]}
@@ -73,6 +69,16 @@
 ;;    |                  |
 ;;    \==================/
 
+
+(defn- load-settings!
+  "Load the server settings"
+  []
+  (reset! settings (let [db-settings (db/load-settings)
+                         new-salt    (str (java.util.UUID/randomUUID))]
+                     (if-not (nil? db-settings)
+                       db-settings
+                       (db/store-settings {:salt new-salt
+                                           :port 3000})))))
 
 (defn- stub-user
   "Returns a sub map of user to protect sensitive data"
@@ -234,7 +240,7 @@
          (login! session
                  (:email params)
                  (:password params)
-                 (:salt settings))))
+                 (:salt @settings))))
 
   (GET "/current-user"
        {params :params}
@@ -302,7 +308,8 @@
 (defn -main
   "Initialization of the server"
   [& args]
+  (load-settings!)
   (run-server (site app-routes)
-              {:port (:port settings)})
-  (println (str "Server started on port " (:port settings)))
+              {:port (:port @settings)})
+  (println (str "Server started on port " (:port @settings)))
   (start-broadcaster!))

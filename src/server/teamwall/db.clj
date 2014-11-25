@@ -79,6 +79,17 @@
     (mg/disconnect conn)
     user))
 
+(defn user-exists
+  "Return true if a user with the provided EMAIL exists"
+  [email]
+  (let [conn (connect-to-mongo)
+        db   (mg/get-db conn db-name)
+        user (mc/find-one-as-map db
+                                 db-users
+                                 {:email email})]
+    (mg/disconnect conn)
+    (some? user)))
+
 (defn retrieve-user
   "Retrieves a user from the database using its email and password"
   [email password salt]

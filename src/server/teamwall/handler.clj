@@ -93,7 +93,9 @@
         (let [user (get-user-for-token uid)]
           (when-not (nil? user)
             (swap! tokens dissoc uid)
-            (db/update-status user :offline)))))))
+            (db/update-status user :offline)
+            (notify-team user
+                         "status-changed")))))))
 
 (defn- add-connections-watcher
   "Add a watcher for the connections"

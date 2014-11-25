@@ -87,11 +87,10 @@
 (defn- connections-watcher
   "Watcher over the sconnexion atom to set users offline"
   [_key _ref old-value new-value]
-  (let [[removed add _] (data/diff old-value new-value)]
+  (let [[removed added _] (data/diff (:any old-value) (:any new-value))]
     (doseq [uid removed]
       (when-not (nil? uid)
         (let [user (get-user-for-token uid)]
-          (println user)
           (when-not (nil? user)
             (swap! tokens dissoc uid)
             (db/update-status user :offline)))))))

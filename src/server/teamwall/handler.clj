@@ -31,10 +31,6 @@
   "Default value for a token Time-To-Live. Default is one year"
   (* 365 24 60 60 1000))
 
-(def ^:private setting-file-name
-  "Name of the setting file"
-  "settings.tw")
-
 (def ^:private tokens
   "Atom storing all the active tokens"
   (atom {}))
@@ -45,11 +41,11 @@
 
 (def ^:private settings
   "Content of the setting file"
-  (if (.exists (io/as-file setting-file-name))
-    (serializer/read-from-file setting-file-name)
-    (serializer/write-in-file {:salt (str (java.util.UUID/randomUUID))
-                               :port 3000}
-                              setting-file-name)))
+  (let [db-settings (db/load-settings)]
+    (if-not (nil? db-settings)
+      db-settings
+      (db/store-settings {:salt (str (java.util.UUID/randomUUID))
+                          :port 3000}))))
 
 (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
               connected-uids]}
@@ -307,8 +303,6 @@
   "Initialization of the server"
   [& args]
   (run-server (site app-routes)
-              ;;               {:port (:port settings)}
-              {:port 3000}
-              )
+              {:port (:port settings)})
   (println (str "Server started on port " (:port settings)))
   (start-broadcaster!))

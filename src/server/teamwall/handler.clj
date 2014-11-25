@@ -52,6 +52,25 @@
                                :port 3000}
                               setting-file-name)))
 
+(let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
+              connected-uids]}
+      (sente/make-channel-socket! {})]
+  (def ^:private ring-ajax-post
+    "Sente: post for handshake"
+    ajax-post-fn)
+  (def ^:private ring-ajax-get-or-ws-handshake
+    "Sente: get for handshake"
+    ajax-get-or-ws-handshake-fn)
+  (def ^:private ch-chsk
+    "Sente: Income channel"
+    ch-recv)
+  (def ^:private chsk-send!
+    "Sente: send function"
+    send-fn)
+  (def ^:private connected-uids
+    "Sente: open connections"
+    connected-uids))
+
 
 ;;    /==================\
 ;;    |                  |
@@ -77,28 +96,10 @@
             (swap! tokens dissoc uid)
             (db/update-status user :offline)))))))
 
-(defn- open-channel
-  "Open the notifiations channel"
+(defn- add-connections-watcher
+  "Add a watcher for the connections"
   []
-  (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
-                connected-uids]}
-        (sente/make-channel-socket! {})]
-    (def ^:private ring-ajax-post
-      "Sente: post for handshake"
-      ajax-post-fn)
-    (def ^:private ring-ajax-get-or-ws-handshake
-      "Sente: get for handshake"
-      ajax-get-or-ws-handshake-fn)
-    (def ^:private ch-chsk
-      "Sente: Income channel"
-      ch-recv)
-    (def ^:private chsk-send!
-      "Sente: send function"
-      send-fn)
-    (def ^:private connected-uids
-      "Sente: open connections"
-      connected-uids)
-    (add-watch connected-uids :connected-uids connections-watcher)))
+  (add-watch connected-uids :connected-uids connections-watcher))
 
 (defn- stub-user
   "Returns a sub map of user to protect sensitive data"
@@ -327,6 +328,6 @@
   [& args]
   (run-server (site app-routes)
               {:port (:port settings)})
-  (open-channel)
+  (add-connections-watcher)
   (println (str "Server started on port " (:port settings)))
   (start-broadcaster!))

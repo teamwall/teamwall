@@ -1,5 +1,8 @@
 language: clojure
-script: lein midje
+script: 
+  - lein midje
+  - lein bikeshed
+  - ./helpers/kibit-wrapper.sh
 after_success:
   - ./helpers/publish_doc.sh
 env:

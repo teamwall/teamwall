@@ -84,24 +84,6 @@
   [token]
   (:user (get @tokens token)))
 
-(defn- connections-watcher
-  "Watcher over the sconnexion atom to set users offline"
-  [_key _ref old-value new-value]
-  (let [[removed added _] (data/diff (:any old-value) (:any new-value))]
-    (doseq [uid removed]
-      (when-not (nil? uid)
-        (let [user (get-user-for-token uid)]
-          (when-not (nil? user)
-            (swap! tokens dissoc uid)
-            (db/update-status user :offline)
-            (notify-team user
-                         "status-changed")))))))
-
-(defn- add-connections-watcher
-  "Add a watcher for the connections"
-  []
-  (add-watch connected-uids :connected-uids connections-watcher))
-
 (defn- stub-user
   "Returns a sub map of user to protect sensitive data"
   [user]
@@ -206,6 +188,24 @@
       (chsk-send! uid
                   [(keyword "teamwall" event-type)
                    (merge {:user user} options)]))))
+
+(defn- connections-watcher
+  "Watcher over the sconnexion atom to set users offline"
+  [_key _ref old-value new-value]
+  (let [[removed added _] (data/diff (:any old-value) (:any new-value))]
+    (doseq [uid removed]
+      (when-not (nil? uid)
+        (let [user (get-user-for-token uid)]
+          (when-not (nil? user)
+            (swap! tokens dissoc uid)
+            (db/update-status user :offline)
+            (notify-team user
+                         "status-changed")))))))
+
+(defn- add-connections-watcher
+  "Add a watcher for the connections"
+  []
+  (add-watch connected-uids :connected-uids connections-watcher))
 
 
 ;;    /==================\

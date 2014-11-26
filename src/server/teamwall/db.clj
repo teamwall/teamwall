@@ -26,6 +26,9 @@
 (def ^:private db-photos
   "Name of the photo mongo collection"
   "teamwallPhotos")
+(def ^:private db-settings
+  "Private: name of the server settings mongo collection"
+  "teamwallServerSettings")
 
 
 ;;    /==================\
@@ -167,6 +170,28 @@
         result (first photo)]
     (mg/disconnect conn)
     result))
+
+(defn load-settings
+  "Return the server settings, or nil if none is found"
+  []
+  (let [conn     (connect-to-mongo)
+        db       (mg/get-db conn db-name)
+        settings (mc/find-one-as-map db
+                                     db-settings
+                                     {:_id "server settings"})]
+    (mg/disconnect conn)
+    settings))
+
+(defn store-settings
+  "Store new server side settings using the OPTIONS provided as argument"
+  [options]
+  (let [conn (connect-to-mongo)
+        db   (mg/get-db conn db-name)]
+    (mc/insert db
+               db-settings
+               (assoc options :_id "server settings"))
+    (mg/disconnect conn)
+    options))
 
 
 ;;    /==================\

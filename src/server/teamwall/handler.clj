@@ -1,6 +1,7 @@
 (ns teamwall.handler
   (:use org.httpkit.server
         [slingshot.slingshot :only [throw+ try+]])
+  (:import com.mongodb.MongoServerSelectionException)
   (:require [cheshire.core :refer :all]
             [clojure.core.async
              :as async
@@ -17,8 +18,7 @@
             [ring.util.response :as response]
             [taoensso.sente :as sente]
             [teamwall.api :as api]
-            [teamwall.db :as db]
-            [teamwall.serializer :as serializer]))
+            [teamwall.db :as db]))
 
 
 ;;    /==================\
@@ -32,10 +32,6 @@
   "Default value for a token Time-To-Live. Default is one year"
   (* 365 24 60 60 1000))
 
-(def ^:private setting-file-name
-  "Name of the setting file"
-  "settings.tw")
-
 (def ^:private tokens
   "Atom storing all the active tokens"
   (atom {}))
@@ -46,11 +42,7 @@
 
 (def ^:private settings
   "Content of the setting file"
-  (if (.exists (io/as-file setting-file-name))
-    (serializer/read-from-file setting-file-name)
-    (serializer/write-in-file {:salt (str (java.util.UUID/randomUUID))
-                               :port 3000}
-                              setting-file-name)))
+  (atom {}))
 
 (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
               connected-uids]}
@@ -83,6 +75,16 @@
   "Return the user corresponding to the provided token"
   [token]
   (:user (get @tokens token)))
+
+(defn- load-settings!
+  "Load the server settings"
+  []
+  (reset! settings (let [db-settings (db/load-settings)
+                         new-salt    (str (java.util.UUID/randomUUID))]
+                     (if-not (nil? db-settings)
+                       db-settings
+                       (db/store-settings {:salt new-salt
+                                           :port 3000})))))
 
 (defn- stub-user
   "Return a sub map of user to protect sensitive data"
@@ -275,7 +277,7 @@
          (login! session
                  (:email params)
                  (:password params)
-                 (:salt settings))))
+                 (:salt @settings))))
 
   (GET "/current-user"
        {params :params}
@@ -343,8 +345,14 @@
 (defn -main
   "Initialization of the server"
   [& args]
+  (try+
+   (load-settings!)
+   (catch com.mongodb.MongoServerSelectionException e
+     (println "Mongo database not found."
+              "Are you sure you have an instance running?")
+     (java.lang.System/exit 1)))
   (run-server (site app-routes)
-              {:port (:port settings)})
+              {:port (:port @settings)})
   (add-connections-watcher)
-  (println (str "Server started on port " (:port settings)))
+  (println (str "Server started on port " (:port @settings)))
   (start-broadcaster!))

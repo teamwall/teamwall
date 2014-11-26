@@ -1,6 +1,7 @@
 (ns teamwall.handler
   (:use org.httpkit.server
         [slingshot.slingshot :only [throw+ try+]])
+  (:import com.mongodb.MongoServerSelectionException)
   (:require [cheshire.core :refer :all]
             [clojure.core.async
              :as async
@@ -307,7 +308,12 @@
 (defn -main
   "Initialization of the server"
   [& args]
-  (load-settings!)
+  (try+
+   (load-settings!)
+   (catch com.mongodb.MongoServerSelectionException e
+     (println "Mongo database not found."
+              "Are you sure you have an instance running?")
+     (java.lang.System/exit 1)))
   (run-server (site app-routes)
               {:port (:port @settings)})
   (println (str "Server started on port " (:port @settings)))

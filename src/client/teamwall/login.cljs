@@ -2,23 +2,30 @@
   (:require [reagent.core :as reagent :refer [atom]]
             [repositories.repository :as repository]))
 
-(defn- login-action
+
+;;    /==================\
+;;    |                  |
+;;    |      PRIVATE     |
+;;    |                  |
+;;    \==================/
+
+
+(defn- submit-action
   "Callback invoked when the user submit the login form"
-  [e email password on-login]
-  (.preventDefault e)
+  [event email password on-login]
+  (.preventDefault event)
   (repository/login email
                     password
                     on-login))
 
 (defn- render-form
-  "Renders the login form"
+  "Render the login form"
   [on-login]
   (let [email    (reagent/atom "")
         password (reagent/atom "")]
     [:form {:name       "login-form"}
      "Email: "
      [:input {:type      "email"
-              ;;             :value     @email
               :on-change #(reset! email (-> % .-target .-value))
               :name      "email"}]
      "Password: "
@@ -26,12 +33,11 @@
               :on-change #(reset! password (-> % .-target .-value))
               :name      "password"}]
      [:input {:type      "submit"
-              :on-click  (fn [event] (login-action event
+              :on-click  (fn [event] (submit-action event
                                                    @email
                                                    @password
                                                    on-login))
               :value    "Log in"}]]))
-
 
 
 ;;    /==================\
@@ -42,7 +48,7 @@
 
 
 (defn render-content
-  "Main rendering function."
+  "Main rendering function"
   [on-login]
   [:div.login
    [:h1 "Login"]

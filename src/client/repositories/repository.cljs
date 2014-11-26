@@ -53,7 +53,7 @@
   (js/console.log "OPPPS " rest))
 
 (defn- async-get-json
-  "Does an async GET call and consider the response as JSON"
+  "Do an async GET call and consider the response as JSON"
   [& {:keys [handler url error params]}]
   (let [options (atom {:handler handler
                        :response-format :json
@@ -65,15 +65,12 @@
     (GET url @options)))
 
 (defn- event-handler
-  "Global event handler which will dispatch
-  to the correct function based on the event type"
+  "Dispatch the events based on the event type"
   [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]
   (match [id ?data]
          [:chsk/state {:first-open? true}] (js/console.log "Channel socket successfully established!")
-         [:chsk/state _]                   (js/console.log "Channel socket state change: %s" ?data)
-         ;;
+         [:chsk/state _] (js/console.log "Channel socket state change: %s" ?data)
          [:chsk/recv _] (event-received ?data)
-         ;;
          :else (js/console.log "Unmatched event:" ev-msg)))
 
 (defn- build-form-data
@@ -87,7 +84,7 @@
     form))
 
 (defn- now
-  "Returns a string representing now"
+  "Return a string representing now"
   []
   (str (js/Date.)))
 
@@ -103,17 +100,16 @@
   "Do a request over the login REST API"
   [email password callback]
   (async-get-json :handler callback
-                  :url login-url
-                  :params {:email    email
-                           :password password}))
+                  :url     login-url
+                  :params  {:email    email
+                            :password password}))
 
 (defn open-notification-channel
-  "Opens the notification channel with the server.
-  Keeps a WebSocket open"
+  "Open the notification channel with the server.
+  Keep a WebSocket open"
   [token]
-
-  (let [{:keys [chsk ch-recv send-fn state]}
-        (sente/make-channel-socket! "/notifications" {:type :auto})]
+  (let [channel (sente/make-channel-socket! "/notifications" {:type :auto})
+        {:keys [chsk ch-recv send-fn state]} channel]
     (def chsk       chsk)
     (def ch-chsk    ch-recv)
     (def chsk-send! send-fn)
@@ -132,13 +128,13 @@
   "Get the current user"
   [token callback on-error]
   (async-get-json :handler callback
-                  :error on-error
-                  :url get-current-user-url
-                  :params {:token token}))
+                  :error   on-error
+                  :url     get-current-user-url
+                  :params  {:token token}))
 
 (defn get-team-members
   "Get the team members for the current user"
   [token callback]
   (async-get-json :handler callback
-                  :url get-team-members-url
-                  :params {:token token}))
+                  :url     get-team-members-url
+                  :params  {:token token}))

@@ -25,8 +25,10 @@
                  [ring "1.3.1"]
                  [slingshot "0.12.1"]]
   :plugins [[codox "0.8.10"]
-            [lein-ring "0.8.13"]
-            [lein-cljsbuild "1.0.3"]]
+            [lein-bikeshed "0.1.8"]
+            [lein-cljsbuild "1.0.3"]
+            [lein-kibit "0.0.8"]
+            [lein-ring "0.8.13"]]
   :main teamwall.handler
   :source-paths ["src/server"]
   :cljsbuild {

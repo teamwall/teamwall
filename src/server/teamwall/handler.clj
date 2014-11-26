@@ -6,6 +6,7 @@
             [clojure.core.async
              :as async
              :refer (<! <!! >! >!! put! chan go go-loop)]
+            [clojure.data :as data]
             [clojure.java.io :as io]
             [compojure.core :refer :all]
             [compojure.handler :refer [site]]
@@ -70,6 +71,11 @@
 ;;    \==================/
 
 
+(defn- get-user-for-token
+  "Return the user corresponding to the provided token"
+  [token]
+  (:user (get @tokens token)))
+
 (defn- load-settings!
   "Load the server settings"
   []
@@ -83,7 +89,7 @@
 (defn- stub-user
   "Returns a sub map of user to protect sensitive data"
   [user]
-  (select-keys user [:username :email]))
+  (select-keys user [:username :email :status]))
 
 (defn- generate-api-token
   "Generates a new API token"
@@ -108,7 +114,9 @@
    (let [user (db/retrieve-user email
                                 password
                                 salt)
+         user (assoc user :status :online)
          token (generate-api-token)]
+     (db/update-status user :online)
      (swap! tokens assoc token {:user          user
                                 :ttl           default-ttl
                                 :creation-time (java.util.Date.)})
@@ -127,11 +135,6 @@
    (catch  Exception e
 ;;      (.printStackTrace e)
      {:status 500})))
-
-(defn- get-user-for-token
-  "Return the user corresponding to the provided token"
-  [token]
-  (:user (get @tokens token)))
 
 (defn- secure-routing
   "Encapsulate the check of token validity"
@@ -188,6 +191,24 @@
                   [(keyword "teamwall" event-type)
                    (merge {:user user} options)]))))
 
+(defn- connections-watcher
+  "Watcher over the sconnexion atom to set users offline"
+  [_key _ref old-value new-value]
+  (let [[removed added _] (data/diff (:any old-value) (:any new-value))]
+    (doseq [uid removed]
+      (when-not (nil? uid)
+        (let [user (get-user-for-token uid)]
+          (when-not (nil? user)
+            (swap! tokens dissoc uid)
+            (db/update-status user :offline)
+            (notify-team user
+                         "status-changed")))))))
+
+(defn- add-connections-watcher
+  "Add a watcher for the connections"
+  []
+  (add-watch connected-uids :connected-uids connections-watcher))
+
 
 ;;    /==================\
 ;;    |                  |
@@ -222,14 +243,19 @@
         (let [get-token @register-token]
           (reset! register-token (generate-api-token))
           (when (= get-token (:token params))
-            (let [user         (db/register-user (:username params)
-                                                 (:password params)
-                                                 (:email params)
-                                                 (:salt settings))
-                  stubbed-user (stub-user user)]
-              (notify-team stubbed-user
-                           "new-user"))
-            "User successfully created")))
+            (let [email          (:email params)
+                  already-exists (db/user-exists email)]
+              (if already-exists
+                {:status 403
+                 :body "Email already used"}
+                (let [user         (db/register-user (:username params)
+                                                     (:password params)
+                                                     (:email params)
+                                                     (:salt settings))
+                      stubbed-user (stub-user user)]
+                  (notify-team stubbed-user
+                               "new-user")
+                  "User successfully created"))))))
 
   (GET  "/notifications" req (ring-ajax-get-or-ws-handshake req))
   (POST "/notifications" req (ring-ajax-post                req))
@@ -250,7 +276,7 @@
   (GET "/team-members"
        {params :params}
        (secure-routing-json (:token params)
-                            api/get-team-members))
+                            #(map stub-user (api/get-team-members %))))
 
   (wrap-multipart-params
    (POST "/new-photo"
@@ -261,8 +287,8 @@
                                   (do
                                     (api/set-new-photo user
                                                        (:photo params))
-                                    (notify-all "new-photo"
-                                                {:user (stub-user user)}))
+                                    (notify-team (stub-user user)
+                                                 "new-photo"))
                                   (throw+ {:type ::request-error
                                            :status 400}))))))
 
@@ -316,5 +342,6 @@
      (java.lang.System/exit 1)))
   (run-server (site app-routes)
               {:port (:port @settings)})
+  (add-connections-watcher)
   (println (str "Server started on port " (:port @settings)))
   (start-broadcaster!))

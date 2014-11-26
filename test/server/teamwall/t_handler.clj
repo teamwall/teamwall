@@ -31,7 +31,8 @@
      ...password... =contains=> ""
      (db/retrieve-user ...email...
                        ...password...
-                       anything) => {:user :user})
+                       anything) => {:user :user}
+     (db/update-status anything :online) => nil)
     (let [response (app-routes (mock :get
                                      "/login"
                                      {:email    ...email...
@@ -55,8 +56,8 @@
         object if correct token is provided"
     (against-background
      ...token... =contains=> "correct token"
-     (#'teamwall.handler/get-user-for-token ...token...) => {:username "John Doe"
-                                                             :email "john@doe.com"
+     (#'teamwall.handler/get-user-for-token ...token...) => {:username "John"
+                                                             :email "j@ohn.com"
                                                              :hash "SECRET"}
      (#'teamwall.handler/valid-token? anything
                                       ...token...) => true)
@@ -65,8 +66,8 @@
                                      {:token ...token...}))
           body     (parse-string (:body response) true)]
       response => (contains {:status 200})
-      body     => {:username "John Doe"
-                   :email    "john@doe.com"}))
+      body     => {:username "John"
+                   :email    "j@ohn.com"}))
 
   (fact "team-members returns a 403
         if wrong token is provided"
@@ -85,8 +86,8 @@
      ...pattern... =contains=> ""
      ...token... =contains=> "correct token"
      (#'teamwall.api/extract-email-pattern anything) => ...pattern...
-     (db/get-users-for-email ...pattern...) => [{:username "John Doe"
-                                                 :email "john@doe.com"
+     (db/get-users-for-email ...pattern...) => [{:username "John"
+                                                 :email "j@ohn.com"
                                                  :hash "SECRET"}]
      (#'teamwall.handler/valid-token? anything
                                       ...token...) => true)
@@ -95,8 +96,8 @@
                                      {:token ...token...}))
           body     (parse-string (:body response) true)]
       response => (contains {:status 200})
-      body     => [{:username "John Doe"
-                    :email    "john@doe.com"}]))
+      body     => [{:username "John"
+                    :email    "j@ohn.com"}]))
 
   (fact "new-photo returns a 400
         if there is no `photo` param and a correct token"

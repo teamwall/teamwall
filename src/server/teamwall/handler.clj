@@ -16,8 +16,7 @@
             [ring.util.response :as response]
             [taoensso.sente :as sente]
             [teamwall.api :as api]
-            [teamwall.db :as db]
-            [teamwall.serializer :as serializer]))
+            [teamwall.db :as db]))
 
 
 ;;    /==================\

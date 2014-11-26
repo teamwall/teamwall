@@ -7,11 +7,25 @@
             [teamwall.db :as db]
             [teamwall.handler :refer :all]))
 
+
+;;    /==================\
+;;    |                  |
+;;    |      PRIVATE     |
+;;    |                  |
+;;    \==================/
+
+
 (defn- mock
   ([verb uri] (req/request verb uri))
   ([verb uri params] (assoc (req/request verb uri params) :params params)))
 
-;; (testable-privates teamwall.handler valid-token?)
+
+;;    /==================\
+;;    |                  |
+;;    |      TESTS       |
+;;    |                  |
+;;    \==================/
+
 
 (facts "About routes"
   (fact "Undefined routes returns a 403"
@@ -118,7 +132,7 @@
                               :filename "picture"}
      (slurp "file") => ...content...
      (#'teamwall.api/as-absolute-path "file") => ...path...
-     (db/add-photo anything
+     (db/add-photo! anything
                    "picture"
                    256
                    ...path...

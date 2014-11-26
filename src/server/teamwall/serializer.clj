@@ -3,8 +3,15 @@
   (:import [java.io File]))
 
 
+;;    /==================\
+;;    |                  |
+;;    |      PRIVATE     |
+;;    |                  |
+;;    \==================/
+
+
 (defn- serialize
-  "Serializes value, returns a byte array"
+  "Serialize value, returns a byte array"
   [v]
   (let [buff (java.io.ByteArrayOutputStream. 1024)]
     (with-open [dos (java.io.ObjectOutputStream. buff)]
@@ -12,19 +19,27 @@
     (.toByteArray buff)))
 
 (defn- deserialize
-  "Accepts a byte array, returns deserialized value"
+  "Accept a byte array, returns deserialized value"
   [bytes]
   (with-open [dis (java.io.ObjectInputStream.
                    (java.io.ByteArrayInputStream. bytes))]
     (.readObject dis)))
 
+
+;;    /==================\
+;;    |                  |
+;;    |       MAIN       |
+;;    |                  |
+;;    \==================/
+
+
 (defn serializable?
-  "Checks if V is serializale"
+  "Check if V is serializale"
   [v]
   (instance? java.io.Serializable v))
 
 (defn write-in-file
-  "Writes the object O into the file PATH via a ByteArray"
+  "Write the object O into the file PATH via a ByteArray"
   [o path]
   (if-not (.exists (as-file path))
     (.createNewFile (new File path)))
@@ -34,7 +49,7 @@
   o)
 
 (defn read-from-file
-  "Reads the file PATH via a ByteArray"
+  "Read the file PATH via a ByteArray"
   [path]
   (with-open [out (java.io.ByteArrayOutputStream.)]
     (clojure.java.io/copy (clojure.java.io/input-stream path) out)

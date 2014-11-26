@@ -3,6 +3,7 @@
             [monger.collection :as mc]
             [monger.core :as mg]
             [monger.json]
+            [monger.operators :refer :all]
             [monger.query :as mq])
   (:use [slingshot.slingshot :only [throw+ try+]])
   (:import [com.mongodb MongoOptions ServerAddress]
@@ -72,6 +73,7 @@
         user {:_id      email
               :username username
               :email    email
+              :status   :offline
               :hash     (hashed-password password salt)}]
     (mc/insert db
                db-users
@@ -99,6 +101,17 @@
       (throw+ {:type            ::login-failed
                :email           email
                :valid-password? valid-password?}))))
+
+(defn update-status
+  "Update the status of the provided USER to the new VALUE"
+  [user value]
+  (let [conn (connect-to-mongo)
+        db   (mg/get-db conn db-name)]
+    (mc/update db
+               db-users
+               {:_id (:email user)}
+               {$set {:status value}})
+    (mg/disconnect conn)))
 
 (defn get-users-for-email
   "Retrieve all the users whose email match the pattern provided"

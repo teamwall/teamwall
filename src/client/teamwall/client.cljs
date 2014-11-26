@@ -48,7 +48,8 @@
 (defn- append-content
   "Append the whole document to body"
   [current-document]
-  (reagent/render-component (fn [] [render-content current-document])
+  (reagent/render-component (fn []
+                              [render-content current-document])
                             (sel1 :body)))
 
 (defn- redirect
@@ -67,7 +68,7 @@
 
 
 (defn- snapshot-loop
-  "Runs an infinite loop of snapshot"
+  "Run an infinite loop of snapshot"
   [token]
   (go
    (loop []
@@ -81,14 +82,12 @@
   "Setup the environment variables and render the wall"
   [data]
   (states/set-token (:token data))
-  (states/set-user (:user data))
+  (states/set-user  (:user data))
   (repository/open-notification-channel (:token data))
   (repository/get-team-members (:token data)
                                (fn [members]
                                  (wall/set-team members)
                                  (append-content (wall/render-content))))
-
-  ;test
   (snapshot-loop (:token data)))
 
 (defn set-token-from-cookie!
@@ -114,14 +113,18 @@
 
 (defroute ^:no-doc wall-route "/"
   {:as params}
-  (let [token (get-token)]
+  (let [token          (get-token)
+        login-document (login/render-content (fn []
+                                               (dispatch (wall-route))))
+        on-success     (fn [user]
+                         (setup-wall {:user user
+                                      :token token}))
+        on-error       (fn [err]
+                         (states/reset-token!)
+                         (append-content login-document))]
     (repository/get-current-user token
-                                 (fn [user]
-                                   (setup-wall {:user user
-                                                :token token}))
-                                 (fn [err]
-                                   (states/reset-token!)
-                                   (append-content (login/render-content (fn [] (dispatch (wall-route)))))))))
+                                 on-success
+                                 on-error)))
 
 
 ;;    /==================\
@@ -136,4 +139,7 @@
   [uri]
   (secretary/dispatch! uri))
 
-(webrtc/start-video-stream!)
+(defn ^:export initialize
+  "Initialize the client"
+  []
+  (webrtc/start-video-stream!))

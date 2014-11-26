@@ -87,28 +87,40 @@
                                            :port 3000})))))
 
 (defn- stub-user
-  "Returns a sub map of user to protect sensitive data"
+  "Return a sub map of user to protect sensitive data"
   [user]
   (select-keys user [:username :email :status]))
 
 (defn- generate-api-token
-  "Generates a new API token"
+  "Generate a new API token"
   []
   (random/url-part 32))
 
+(defn- now
+  "Return the current time"
+  []
+  (java.util.Date.))
+
+(defn- milliseconds-between
+  "Return the number of milliseconds between
+  the two dates provided as arguments.
+  It is supposed here that the second argument is later in time that the first"
+  [first-date second-date]
+  (- (.getTime second-date) (.getTime first-date)))
+
 (defn- valid-token?
-  "Checks that the provided token exists and is still alive"
+  "Check that the provided token exists and is still alive"
   [tokens token]
   (if (contains? tokens token)
     (let [data (get tokens token)
           ttl (:ttl data)
-          creation-time (:creation-time data)
-          now (java.util.Date.)]
-      (< (- (.getTime now) (.getTime creation-time)) ttl))
+          creation-time (:creation-time data)]
+      (< (milliseconds-between (now) creation-time)
+         ttl))
     false))
 
 (defn- login!
-  "Checks if the user info are correct and generates an API token for the user"
+  "Check if the user info are correct and generate an API token for the user"
   [session email password salt]
   (try+
    (let [user (db/retrieve-user email
@@ -159,14 +171,13 @@
                       (if-not (nil? result)
                         {:status  200
                          :headers {"Content-Type" "application/json"}
-                         :body    (generate-string
-                                   result
-                                   {:pretty true})}
+                         :body    (generate-string result
+                                                   {:pretty true})}
                         {:status  200
                          :headers {"Content-Type" "application/json"}})))))
 
 (defmacro client-route
-  "Expands all the routes covered by the client side router"
+  "Expand all the routes covered by the client side router"
   [route]
   `(GET ~route
         {}
@@ -174,7 +185,7 @@
                                     {:root "public"})))
 
 (defn- notify-all
-  "Notifies all the clients"
+  "Notify all the clients"
   [event-type options]
   (doseq [uid (:any @connected-uids)]
     (chsk-send! uid
@@ -182,7 +193,7 @@
                  options])))
 
 (defn- notify-team
-  "Notifies all the clients"
+  "Notify all the members of the USER's team"
   [user event-type & [options]]
   (doseq [uid (:any @connected-uids)]
     (when (= (api/extract-email-pattern (:email user))
@@ -258,7 +269,7 @@
                   "User successfully created"))))))
 
   (GET  "/notifications" req (ring-ajax-get-or-ws-handshake req))
-  (POST "/notifications" req (ring-ajax-post                req))
+  (POST "/notifications" req (ring-ajax-post req))
 
   (GET "/login"
        req
@@ -289,7 +300,7 @@
                                                        (:photo params))
                                     (notify-team (stub-user user)
                                                  "new-photo"))
-                                  (throw+ {:type ::request-error
+                                  (throw+ {:type   ::request-error
                                            :status 400}))))))
 
   (GET "/:email/last-photo"

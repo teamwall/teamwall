@@ -8,6 +8,7 @@
         <script src="lib/polyfills.js"></script>
         <script src="js/cljs.js"></script>
         <script>
+            teamwall.client.initialize();
             teamwall.client.dispatch(window.location.pathname);
             window.onpopstate = function(event){
                 teamwall.client.dispatch(window.location.pathname)

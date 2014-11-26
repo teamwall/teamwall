@@ -18,13 +18,13 @@
 
 
 (def ^:private db-name
-  "Private: name of the mongo db to use"
+  "Name of the mongo db to use"
   "teamwall")
 (def ^:private db-users
-  "Private: name of the user mongo collection"
+  "Name of the user mongo collection"
   "teamwallUsers")
 (def ^:private db-photos
-  "Private: name of the photo mongo collection"
+  "Name of the photo mongo collection"
   "teamwallPhotos")
 (def ^:private db-settings
   "Private: name of the server settings mongo collection"
@@ -39,12 +39,12 @@
 
 
 (defn- connect-to-mongo
-  "Connects to the mongoDB instance"
+  "Connect to the mongoDB instance"
   []
   (mg/connect))
 
 (defn- hashed-password
-  "Generates a hashed password using Scrypt
+  "Generate a hashed password using Scrypt
   (https://www.tarsnap.com/scrypt/scrypt.pdf)"
   [password salt]
   (scrypt/encrypt (str password salt)
@@ -53,7 +53,7 @@
                   1))
 
 (defn- valid-password?
-  "Checks if the provided password matches the provided hash"
+  "Check if the provided password matches the provided hash"
   [password salt pw-hash]
   (if (nil? pw-hash)
     false
@@ -69,7 +69,7 @@
 
 
 (defn register-user
-  "Adds a new user to the user database"
+  "Add a new user to the user database"
   [username password email salt]
   (let [conn (connect-to-mongo)
         db   (mg/get-db conn db-name)
@@ -96,7 +96,7 @@
     (some? user)))
 
 (defn retrieve-user
-  "Retrieves a user from the database using its email and password"
+  "Retrieve a user from the database using its email and password"
   [email password salt]
   (let [conn (connect-to-mongo)
         db   (mg/get-db conn db-name)
@@ -137,9 +137,9 @@
                             {:email (re-pattern pattern)})]
     users))
 
-(defn add-photo
-  "Stores a new photo for the provided user.
-  If timelaps is false, erase first all the other photos"
+(defn add-photo!
+  "Store a new photo for the provided user.
+  If `timelaps` option is false, erase first all the other photos"
   [user filename size tempfile photo]
   (let [conn     (connect-to-mongo)
         db       (mg/get-db conn db-name)
@@ -159,13 +159,13 @@
     (mg/disconnect conn)))
 
 (defn get-last-photo
-  "Returns the last photo of the user provided as argument"
+  "Return the last photo of the user provided as argument"
   [email]
   (let [conn   (connect-to-mongo)
         db     (mg/get-db conn db-name)
         photo  (mq/with-collection db db-photos
-                 (mq/find {:user-id email})
-                 (mq/sort (array-map :_id -1))
+                 (mq/find  {:user-id email})
+                 (mq/sort  {:_id -1})
                  (mq/limit 1))
         result (first photo)]
     (mg/disconnect conn)

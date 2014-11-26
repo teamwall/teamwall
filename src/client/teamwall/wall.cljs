@@ -7,48 +7,53 @@
 
 ;;    /==================\
 ;;    |                  |
-;;    |      PRIVATE     |
+;;    |       VARS       |
 ;;    |                  |
 ;;    \==================/
 
 
 (def sources
-  "Maps of all the sources containing the users
+  "Map of all the sources containing the users
   as well as the src path for their picture"
   (atom {}))
-(def members (atom []))
+
+(def members
+  "List of all the team members"
+  (atom []))
+
+
+;;    /==================\
+;;    |                  |
+;;    |      PRIVATE     |
+;;    |                  |
+;;    \==================/
+
 
 (defn- now-as-milliseconds
-  "Returns the current time as a string"
+  "Return the current time as a string"
   []
   (str (.now js/Date)))
 
 (defn- timestamp-now
-  "Returns the current time as a timestamp string"
+  "Return the current time as a timestamp string"
   []
   (let [date (js/Date.)]
     (first (.split (.toTimeString date) " "))))
 
-(defn- get-team-members
-  "Returns the list of all the team members of the current user"
-  []
-  @members)
-
 (defn- update-img-url-for-user!
-  "Returns the image url for the provided user"
+  "Return the image url for the provided user"
   [user]
   (let [existing-atom (get @sources (:email user))
-        atom-to-use (or existing-atom (atom ""))
-        source (str "/"
-                    (url-encode   (:email user))
-                    "/last-photo?token="
-                    (states/get-token)
-                    "&time="
-                    (now-as-milliseconds))]
-
+        atom-to-use   (or existing-atom
+                          (atom ""))
+        source        (str "/"
+                           (url-encode   (:email user))
+                           "/last-photo?token="
+                           (states/get-token)
+                           "&time="
+                           (now-as-milliseconds))]
     (when-not existing-atom
       (swap! sources assoc (:email user) atom-to-use))
-
     (reset! atom-to-use source)
     atom-to-use))
 
@@ -62,10 +67,9 @@
 (defn- get-tiles
   "Return all teammate tiles."
   []
-  (let [team (get-team-members)]
-    (map (fn [user]
-           (update-img-url-for-user! user))
-         team)))
+  (map (fn [user]
+         (update-img-url-for-user! user))
+       @members))
 
 (defn- tile
   "Build a snapshot tile for the given SRC"
@@ -75,7 +79,7 @@
    [:span.timestamp (timestamp-now)]])
 
 (defn- build-title
-  "Return a title DOM element."
+  "Return a title DOM element"
   []
   [:h1.title "Teamwall"])
 
@@ -139,7 +143,7 @@
   (reset! members new-members))
 
 (defn render-content
-  "Main rendering function."
+  "Main rendering function"
   []
   [:div
    [build-navbar]

@@ -14,8 +14,7 @@
 
 
 (defn- as-absolute-path
-  "Takes a string as argument,
-  and returns the absolate path of the file named FILE"
+  "Return the absolate path of the file named FILE"
   [file]
   (.getAbsolutePath file))
 
@@ -35,7 +34,7 @@
     (str "[^@]+@" domain)))
 
 (defn get-team-members
-  "Retrieve informations about the other person of the same team"
+  "Return the other persons of the same team"
   [user]
   (let [email         (:email user)
         email-pattern (extract-email-pattern email)
@@ -48,14 +47,14 @@
   (let [tmp-file (:tempfile photo)
         size     (:size photo)
         filename (:filename photo)]
-    (db/add-photo user
+    (db/add-photo! user
                   filename
                   size
                   (as-absolute-path tmp-file)
                   (slurp tmp-file))))
 
 (defn last-photo
-  "Returns the last photo for the user provided as argument"
+  "Return the last photo for the user provided as argument"
   [user email]
   (let [user-pattern  (extract-email-pattern (:email user))
         email-pattern (extract-email-pattern email)]
@@ -69,7 +68,7 @@
            :headers {"Content-Type"   (mime/mime-type-of filename)
                      "Content-Length" (str size)}
            :body    (io/as-file tempfile)}
-          (throw+ {:type :teamwall.handler/request-error
+          (throw+ {:type   :teamwall.handler/request-error
                    :status 404})))
-      (throw+ {:type :teamwall.handler/request-error
+      (throw+ {:type   :teamwall.handler/request-error
                :status 400}))))

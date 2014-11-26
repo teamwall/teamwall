@@ -2,10 +2,35 @@
   "A clojureScript wrapper for webrtc.
   It provides support for taking a snapshot using the webcam")
 
+
+;;    /==================\
+;;    |                  |
+;;    |       VARS       |
+;;    |                  |
+;;    \==================/
+
+
+(declare create-dom-node)
+
 (defn- create-dom-node
-  "Creates a DOM element without appending it"
+  "Create a DOM element without appending it"
   [tag-name]
   (.createElement js/document tag-name))
+
+(def ^:private video-node
+  "A video DOM node to play the webcam stream"
+  (create-dom-node "video"))
+(def ^:private canvas-node
+  "A canvas DOM node to snapshot the video stream"
+  (create-dom-node "canvas"))
+
+
+;;    /==================\
+;;    |                  |
+;;    |      PRIVATE     |
+;;    |                  |
+;;    \==================/
+
 
 (defn- setup-dom-objects
   "Setup the video and canvas arguments width and height"
@@ -19,37 +44,30 @@
    (set! (.-width canvas) height)
    (set! (.-height canvas) height)))
 
-(def ^:private video-node
-  "A video DOM node to play the webcam stream"
-  (create-dom-node "video"))
-(def ^:private canvas-node
-  "A canvas DOM node to snapshot the video stream"
-  (create-dom-node "canvas"))
-
 (setup-dom-objects video-node canvas-node)
 
 (defn- navigator
-  "Wraps `window.navigator`"
+  "Wrap `window.navigator`"
   []
   (.-navigator js/window))
 
 (defn- get-user-media
-  "Wraps `navigator.getUserMedia()`"
+  "Wrap `navigator.getUserMedia()`"
   [navigator]
   (.-getUserMedia navigator))
 
 (defn- webkit-get-user-media
-  "Wraps `navigator.webkitGetUserMedia()`"
+  "Wrap `navigator.webkitGetUserMedia()`"
   [navigator]
   (.-webkitGetUserMedia navigator))
 
 (defn- moz-get-user-media
-  "Wraps `navigator.mozGetUserMedia()`"
+  "Wrap `navigator.mozGetUserMedia()`"
   [navigator]
   (.-mozGetUserMedia navigator))
 
 (defn- ms-get-user-media
-  "Wraps `navigator.msGetUserMedia()`"
+  "Wrap `navigator.msGetUserMedia()`"
   [navigator]
   (.-msGetUserMedia navigator))
 
@@ -69,25 +87,25 @@
   (.play video))
 
 (defn- create-object-url
-  "Wraps `url.createObjectURL(stream)`"
+  "Wrap `url.createObjectURL(stream)`"
   [url stream]
   (.createObjectURL url stream))
 
 (defn- url
-  "Wraps `window.URL || window.webkitURL`"
+  "Wrap `window.URL || window.webkitURL`"
   []
   (or (.-URL js/window)
       (.-webkitURL js/window)))
 
 (def ^:private navigator-get-media
-  "Returns the proper user media function to use based on the current navigator"
+  "Return the proper user media function to use based on the current navigator"
   (or (get-user-media (navigator))
       (webkit-get-user-media (navigator))
       (moz-get-user-media (navigator))
       (ms-get-user-media (navigator))))
 
 (defn- get-media
-  "Wraps calls using `navigator-get-media`"
+  "Wrap calls using `navigator-get-media`"
   [options on-success on-error]
   (.apply navigator-get-media
           js/navigator
@@ -106,11 +124,12 @@
                  (set-moz-video-src-object! video-node stream))
                (play-video video-node))
              (fn [err]
-               (.log js/console "OOOOOPS"))))
+               (js/console.log "Stream failed to initialize."
+                               "Is the webcam allowed to stream?"))))
 
 (defn take-picture
   "Take a picture using the stream open when calling `start-video-stream`.
-  A Blob object is returned"
+  Return a Blob object"
   [callback]
   (.drawImage (.getContext canvas-node "2d") video-node -80 0 640 480)
   (.toBlob canvas-node (fn [blob]

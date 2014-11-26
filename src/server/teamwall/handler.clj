@@ -241,14 +241,19 @@
         (let [get-token @register-token]
           (reset! register-token (generate-api-token))
           (when (= get-token (:token params))
-            (let [user         (db/register-user (:username params)
-                                                 (:password params)
-                                                 (:email params)
-                                                 (:salt settings))
-                  stubbed-user (stub-user user)]
-              (notify-team stubbed-user
-                           "new-user"))
-            "User successfully created")))
+            (let [email          (:email params)
+                  already-exists (db/user-exists email)]
+              (if already-exists
+                {:status 403
+                 :body "Email already used"}
+                (let [user         (db/register-user (:username params)
+                                                     (:password params)
+                                                     (:email params)
+                                                     (:salt settings))
+                      stubbed-user (stub-user user)]
+                  (notify-team stubbed-user
+                               "new-user")
+                  "User successfully created"))))))
 
   (GET  "/notifications" req (ring-ajax-get-or-ws-handshake req))
   (POST "/notifications" req (ring-ajax-post                req))

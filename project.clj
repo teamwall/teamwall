@@ -25,7 +25,7 @@
                  [ring "1.3.1"]
                  [slingshot "0.12.1"]]
   :plugins [[codox "0.8.10"]
-            [lein-bikeshed "0.1.8"]
+            [lein-bikeshed "0.2.0"]
             [lein-cljsbuild "1.0.3"]
             [lein-kibit "0.0.8"]
             [lein-ring "0.8.13"]]

@@ -1,5 +1,6 @@
 (ns teamwall.helper
-  "Various helper functions for teamwall that don't belong to a specific namespace"
+  "Various helper functions for teamwall
+  that don't belong to a specific namespace"
   (:require [goog.net.cookies :as gcookies]
             [cljs.reader :as reader]))
 

@@ -64,12 +64,24 @@
       (swap! options assoc :params params))
     (GET url @options)))
 
+(defn- connection-established
+  "Notify that the notification channel is opened"
+  []
+  (js/console.log "Channel socket successfully established!"))
+
+(defn- state-changed
+  "Notify that the notification channel state has changed"
+  [state]
+  (js/console.log "Channel socket state change: %s" state))
+
+
+
 (defn- event-handler
   "Dispatch the events based on the event type"
   [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]
   (match [id ?data]
-         [:chsk/state {:first-open? true}] (js/console.log "Channel socket successfully established!")
-         [:chsk/state _] (js/console.log "Channel socket state change: %s" ?data)
+         [:chsk/state {:first-open? true}] (connection-established)
+         [:chsk/state _] (state-changed ?data)
          [:chsk/recv _] (event-received ?data)
          :else (js/console.log "Unmatched event:" ev-msg)))
 
@@ -120,8 +132,11 @@
 (defn send-blob-picture
   "Send a blob object as a form data to the server"
   [blob token]
-  (let [form-data (build-form-data [["token" token]
-                                    ["photo" blob (str "snapshot-" (now) ".png")]])]
+  (let [form-data (build-form-data [["token"
+                                     token]
+                                    ["photo"
+                                     blob
+                                     (str "snapshot-" (now) ".png")]])]
     (POST "/new-photo" {:params form-data})))
 
 (defn get-current-user

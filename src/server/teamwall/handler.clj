@@ -119,6 +119,24 @@
          ttl))
     false))
 
+(defn- notify-all
+  "Notify all the clients"
+  [event-type options]
+  (doseq [uid (:any @connected-uids)]
+    (chsk-send! uid
+                [(keyword "teamwall" event-type)
+                 options])))
+
+(defn- notify-team
+  "Notify all the members of the USER's team"
+  [user event-type & [options]]
+  (doseq [uid (:any @connected-uids)]
+    (when (= (api/extract-email-pattern (:email user))
+             (api/extract-email-pattern (:email (get-user-for-token uid))))
+      (chsk-send! uid
+                  [(keyword "teamwall" event-type)
+                   (merge {:user user} options)]))))
+
 (defn- login!
   "Check if the user info are correct and generate an API token for the user"
   [session email password salt]
@@ -132,7 +150,8 @@
      (swap! tokens assoc token {:user          user
                                 :ttl           default-ttl
                                 :creation-time (java.util.Date.)})
-
+     (notify-team user
+                  "status-changed")
      {:status  200
       :cookies {"tw-token" {:value token}}
       :session (assoc session :uid token)
@@ -184,24 +203,6 @@
         (response/resource-response "index.html"
                                     {:root "public"})))
 
-(defn- notify-all
-  "Notify all the clients"
-  [event-type options]
-  (doseq [uid (:any @connected-uids)]
-    (chsk-send! uid
-                [(keyword "teamwall" event-type)
-                 options])))
-
-(defn- notify-team
-  "Notify all the members of the USER's team"
-  [user event-type & [options]]
-  (doseq [uid (:any @connected-uids)]
-    (when (= (api/extract-email-pattern (:email user))
-             (api/extract-email-pattern (:email (get-user-for-token uid))))
-      (chsk-send! uid
-                  [(keyword "teamwall" event-type)
-                   (merge {:user user} options)]))))
-
 (defn- connections-watcher
   "Watcher over the sconnexion atom to set users offline"
   [_key _ref old-value new-value]
@@ -212,7 +213,7 @@
           (when-not (nil? user)
             (swap! tokens dissoc uid)
             (db/update-status user :offline)
-            (notify-team user
+            (notify-team (assoc user :status :offline)
                          "status-changed")))))))
 
 (defn- add-connections-watcher
@@ -282,7 +283,11 @@
   (GET "/current-user"
        {params :params}
        (secure-routing-json (:token params)
-                            stub-user))
+                            (fn [user]
+                              (db/update-status user :online)
+                              (notify-team user
+                                           "status-changed")
+                              (stub-user (assoc user :status :online)))))
 
   (GET "/team-members"
        {params :params}

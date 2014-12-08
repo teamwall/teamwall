@@ -1,4 +1,38 @@
-@import "/bower_components/bootstrap/dist/css/bootstrap.css";
+@import "/bower_components/bootstrap/dist/css/bootstrap.min.css";
+@import "/bower_components/fontawesome/css/font-awesome.min.css";
+body.login {
+  color: #f0e7d5;
+  background: #2e4867;
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #2e4867), color-stop(100%, #464646));
+  background: -webkit-linear-gradient(#2e4867, #464646);
+  background: -moz-linear-gradient(#2e4867, #464646);
+  background: -o-linear-gradient(#2e4867, #464646);
+  background: -ms-linear-gradient(#2e4867, #464646);
+  background: linear-gradient(#2e4867, #464646);
+}
+.login {
+  background: #283f5a;
+  padding: 20px;
+  border-radius: 14px;
+}
+.login h1 {
+  color: white;
+  text-align: center;
+}
+.login h1 .fa {
+  padding-left: 10px;
+}
+@media (min-width: 768px) {
+  .login {
+    margin-top: 120px;
+  }
+}
+.login .alert.alert-danger {
+  max-width: 288px;
+  height: 34px;
+  line-height: 4px;
+  margin-bottom: 0;
+}
 html,
 body {
   height: 100%;

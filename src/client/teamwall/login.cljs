@@ -10,7 +10,7 @@
 ;;    \==================/
 
 
-(def error-message (atom ""))
+(def error-message (atom nil))
 
 
 ;;    /==================\
@@ -40,26 +40,40 @@
   [on-login]
   (let [email    (reagent/atom "")
         password (reagent/atom "")]
-    [:form {:name       "login-form"}
-     "Email: "
-     [:input {:type      "email"
-              :on-change #(reset! email (-> % .-target .-value))
-              :name      "email"}]
-     "Password: "
-     [:input {:type      "password"
-              :on-change #(reset! password (-> % .-target .-value))
-              :name      "password"}]
-     [:input {:type      "submit"
-              :on-click  (fn [event] (submit-action event
-                                                   @email
-                                                   @password
-                                                   on-login))
-              :value    "Log in"}]]))
+    [:div.login-form
+     [:form {:name "login-form"
+             :role "form"}
+      [:div.form-group
+       [:label {:for "email"}"Email: "]
+       [:input {:type        "email"
+                :class       "form-control"
+                :placeholder "Email address"
+                :on-change   #(reset! email (-> % .-target .-value))
+                :id          "email"}]]
+
+      [:div.form-group
+       [:label {:for "password"}"Password:"]
+       [:input {:type        "password"
+                :class       "form-control"
+                :on-change   #(reset! password (-> % .-target .-value))
+                :placeholder "Password"
+                :id          "password"}]]
+
+      [:button {:type      "submit"
+                :class     "btn btn-default pull-right"
+                :on-click  (fn [event]
+                             (submit-action event
+                                            @email
+                                            @password
+                                            on-login))}
+       "Log in"]]]))
 
 (defn- render-error
   "Render the login error"
   []
-  [:div.error.login-error @error-message])
+  (if (nil? @error-message)
+    [:div.hidden.alert.alert-danger @error-message]
+    [:div.alert.alert-danger @error-message]))
 
 
 ;;    /==================\
@@ -72,7 +86,9 @@
 (defn render-content
   "Main rendering function"
   [on-login]
-  [:div.login
-   [:h1 "Login"]
+  [:div.login.col-sm-4.col-sm-offset-4
+   [:h1
+    "Login"
+    [:i.fa.fa-unlock-alt]]
    [render-form on-login]
    [render-error]])

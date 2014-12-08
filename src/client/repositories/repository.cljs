@@ -110,8 +110,9 @@
 
 (defn login
   "Do a request over the login REST API"
-  [email password callback]
-  (async-get-json :handler callback
+  [email password on-success on-error]
+  (async-get-json :handler on-success
+                  :error   on-error
                   :url     login-url
                   :params  {:email    email
                             :password password}))

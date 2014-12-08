@@ -5,18 +5,35 @@
 
 ;;    /==================\
 ;;    |                  |
+;;    |       VARS       |
+;;    |                  |
+;;    \==================/
+
+
+(def error-message (atom ""))
+
+
+;;    /==================\
+;;    |                  |
 ;;    |      PRIVATE     |
 ;;    |                  |
 ;;    \==================/
 
 
+(defn- on-error
+  "Display the error message in the form"
+  [error]
+  (reset! error-message "Email or password incorrect"))
+
 (defn- submit-action
-  "Callback invoked when the user submit the login form"
+  "Submit the login info to the server"
   [event email password on-login]
   (.preventDefault event)
+  (reset! error-message nil)
   (repository/login email
                     password
-                    on-login))
+                    on-login
+                    on-error))
 
 (defn- render-form
   "Render the login form"
@@ -39,6 +56,11 @@
                                                    on-login))
               :value    "Log in"}]]))
 
+(defn- render-error
+  "Render the login error"
+  []
+  [:div.error.login-error @error-message])
+
 
 ;;    /==================\
 ;;    |                  |
@@ -52,4 +74,5 @@
   [on-login]
   [:div.login
    [:h1 "Login"]
-   [render-form on-login]])
+   [render-form on-login]
+   [render-error]])

@@ -39,7 +39,7 @@
   (let [email         (:email user)
         email-pattern (extract-email-pattern email)
         users         (db/get-users-for-email email-pattern)]
-         users))
+    users))
 
 (defn set-new-photo
   "Set a new photo for the user provided as argument"

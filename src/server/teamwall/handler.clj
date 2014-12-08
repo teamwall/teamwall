@@ -262,7 +262,7 @@
                 (let [user         (db/register-user (:username params)
                                                      (:password params)
                                                      (:email params)
-                                                     (:salt settings))
+                                                     (:salt @settings))
                       stubbed-user (stub-user user)]
                   (notify-team stubbed-user
                                "new-user")

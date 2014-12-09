@@ -47,10 +47,14 @@
 
 (defn- append-content
   "Append the whole document to body"
-  [current-document]
-  (reagent/render-component (fn []
-                              [render-content current-document])
-                            (sel1 :body)))
+  [current-document css-class]
+
+  (let [body (sel1 :body)]
+    (dommy/set-class! body "")
+    (dommy/add-class! body css-class)
+    (reagent/render-component (fn []
+                                [render-content current-document])
+                              body)))
 
 (defn- redirect
   "Redirect to the URL provided as argument
@@ -87,7 +91,8 @@
   (repository/get-team-members (:token data)
                                (fn [members]
                                  (wall/set-team members)
-                                 (append-content (wall/render-content))))
+                                 (append-content (wall/render-content)
+                                                 "wall")))
   (snapshot-loop (:token data)))
 
 (defn set-token-from-cookie!
@@ -121,7 +126,8 @@
                                       :token token}))
         on-error       (fn [err]
                          (states/reset-token!)
-                         (append-content login-document))]
+                         (append-content login-document
+                                         "login"))]
     (repository/get-current-user token
                                  on-success
                                  on-error)))

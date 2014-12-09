@@ -35,6 +35,15 @@
                     on-login
                     on-error))
 
+(defn- render-email-input
+  "Render the email input"
+  [data]
+  [:input {:type        "email"
+                :class       "form-control"
+                :placeholder "Email address"
+                :on-change   #(reset! data (-> % .-target .-value))
+                :id          "email"}])
+
 (defn- render-form
   "Render the login form"
   [on-login]
@@ -45,11 +54,8 @@
              :role "form"}
       [:div.form-group
        [:label {:for "email"}"Email: "]
-       [:input {:type        "email"
-                :class       "form-control"
-                :placeholder "Email address"
-                :on-change   #(reset! email (-> % .-target .-value))
-                :id          "email"}]]
+       [(with-meta render-email-input
+          {:component-did-mount #(.focus (reagent/dom-node %))}) email]]
 
       [:div.form-group
        [:label {:for "password"}"Password:"]

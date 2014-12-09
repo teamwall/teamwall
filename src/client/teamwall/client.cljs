@@ -50,6 +50,7 @@
   [current-document css-class]
 
   (let [body (sel1 :body)]
+    (dommy/set-class! body "")
     (dommy/add-class! body css-class)
     (reagent/render-component (fn []
                                 [render-content current-document])

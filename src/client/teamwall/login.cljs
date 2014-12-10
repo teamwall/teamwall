@@ -92,7 +92,7 @@
 (defn render-content
   "Main rendering function"
   [on-login]
-  [:div.login.col-sm-4.col-sm-offset-4
+  [:div.login.clearfix.col-sm-4.col-sm-offset-4
    [:h1
     "Login"
     [:i.fa.fa-unlock-alt]]

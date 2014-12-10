@@ -84,8 +84,7 @@
                       container
                       (fn [params]
                         (js/alert (pr-str params)))
-                      (fn [problems]
-                        (js/alert problems)))))
+                      )))
 
 
 ;;    /==================\
@@ -98,10 +97,10 @@
 (defn render-content
   "Main rendering function"
   []
-  [:div.login.col-sm-4.col-sm-offset-4
+  [:div.register.clearfix.col-sm-4.col-sm-offset-4
    [:h1
     "Register a new teammate"
-    [:i.fa.fa-unlock-alt]]
+    [:i.fa.fa-user]]
    [(with-meta render-form-container
       {:component-did-mount when-form-container-mounted})]
    [render-error]])

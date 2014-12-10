@@ -1,5 +1,27 @@
 @import "/bower_components/bootstrap/dist/css/bootstrap.min.css";
 @import "/bower_components/fontawesome/css/font-awesome.min.css";
+.problem.error .form-control {
+  border-color: #a94442;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+.alert.alert-error {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
+.problem.error .help-block,
+.problem.error .control-label,
+.problem.error .radio,
+.problem.error .checkbox,
+.problem.error .radio-inline,
+.problem.error .checkbox-inline,
+.problem.error.radio label,
+.problem.error.checkbox label,
+.problem.error.radio-inline label,
+.problem.error.checkbox-inline label {
+  color: #a94442;
+}
 body.login {
   color: #f0e7d5;
   background: #2e4867;
@@ -10,28 +32,61 @@ body.login {
   background: -ms-linear-gradient(#2e4867, #464646);
   background: linear-gradient(#2e4867, #464646);
 }
-.login {
+div.login {
   background: #283f5a;
   padding: 20px;
   border-radius: 14px;
 }
-.login h1 {
+div.login h1 {
   color: white;
   text-align: center;
 }
-.login h1 .fa {
+div.login h1 .fa {
   padding-left: 10px;
 }
 @media (min-width: 768px) {
-  .login {
+  div.login {
     margin-top: 120px;
   }
 }
-.login .alert.alert-danger {
+div.login .alert.alert-danger {
   max-width: 288px;
   height: 34px;
   line-height: 4px;
   margin-bottom: 0;
+}
+body.register {
+  color: #f0e7d5;
+  background: #2e4867;
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #2e4867), color-stop(100%, #464646));
+  background: -webkit-linear-gradient(#2e4867, #464646);
+  background: -moz-linear-gradient(#2e4867, #464646);
+  background: -o-linear-gradient(#2e4867, #464646);
+  background: -ms-linear-gradient(#2e4867, #464646);
+  background: linear-gradient(#2e4867, #464646);
+}
+div.register {
+  background: #283f5a;
+  padding: 20px;
+  border-radius: 14px;
+}
+div.register h1 {
+  color: white;
+  text-align: center;
+}
+div.register h1 .fa {
+  padding-left: 10px;
+}
+@media (min-width: 768px) {
+  div.register {
+    margin-top: 120px;
+  }
+}
+div.register .alert.alert-error ul {
+  padding-left: 20px;
+}
+div.register .fieldset-submit {
+  float: right;
 }
 html,
 body {

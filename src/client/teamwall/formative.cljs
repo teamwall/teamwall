@@ -19,17 +19,24 @@
                type (.-type el)
                value (.-value el)]
            (cond
-             (and (= "INPUT" node-name)
-                  (#{"checkbox" "radio"} type)) (when (.-checked el)
-                                                  (fu/encode-uri-kv name value))
-             (and (= "SELECT" node-name)
-                  (= "select-multiple" type)) (->> (for [opt (du/->Array (.-options el))
-                                                         :when (.-selected opt)]
-                                                     (fu/encode-uri-kv name (.-value opt)))
-                                                (string/join "&"))
-             (and (= "INPUT" node-name)
-                  (= "file" type)) nil
-             :else (fu/encode-uri-kv name value))))
+            (and (= "INPUT" node-name)
+                 (#{"checkbox" "radio"} type))
+            (when (.-checked el)
+              (fu/encode-uri-kv name value))
+
+            (and (= "SELECT" node-name)
+                 (= "select-multiple" type))
+            (->> (for [opt (du/->Array (.-options el))
+                       :when (.-selected opt)]
+                   (fu/encode-uri-kv name (.-value opt)))
+                 (string/join "&"))
+
+            (and (= "INPUT" node-name)
+                 (= "file" type))
+            nil
+
+            :else
+            (fu/encode-uri-kv name value))))
     (remove nil?)
     (string/join "&")))
 
@@ -75,7 +82,8 @@
   [form-spec container-or-form-el problems]
   (let [form-el (get-form-el container-or-form-el)]
     (clear-problems form-el)
-    (let [problems-el (crate/html (fr/render-problems problems (:fields form-spec)))]
+    (let [problems-el (crate/html (fr/render-problems problems
+                                                      (:fields form-spec)))]
       (d/insert-before! problems-el form-el)
       (scroll-to-el problems-el))
     (doseq [problem problems

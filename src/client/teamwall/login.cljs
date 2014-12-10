@@ -39,10 +39,10 @@
   "Render the email input"
   [data]
   [:input {:type        "email"
-                :class       "form-control"
-                :placeholder "Email address"
-                :on-change   #(reset! data (-> % .-target .-value))
-                :id          "email"}])
+           :class       "form-control"
+           :placeholder "Email address"
+           :on-change   #(reset! data (-> % .-target .-value))
+           :id          "email"}])
 
 (defn- render-form
   "Render the login form"

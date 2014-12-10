@@ -233,6 +233,7 @@
 
   (client-route "/")
   (client-route "/wall")
+  (client-route "/register")
 
   (GET "/register"
        {}

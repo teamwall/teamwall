@@ -1,10 +1,11 @@
 (defproject teamwall "0.1.0-SNAPSHOT"
   :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+  :url "www.teamwall.io"
   :min-lein-version "2.0.0"
   :dependencies [[cljs-ajax "0.3.3"]
                  [cheshire "5.3.1"]
                  [clj-http "1.0.1"]
+                 [clj-time "0.8.0"]
                  [cljs-http "0.1.21"]
                  [clojurewerkz/scrypt "1.2.0"]
                  [com.cemerick/url "0.1.1"]
@@ -13,7 +14,9 @@
                  [com.novemberain/pantomime "2.3.0"]
                  [com.taoensso/sente "1.2.0"]
                  [compojure "1.3.1"]
+                 [crate "0.2.4"]
                  [crypto-random "1.2.0"]
+                 [formative "0.8.8"]
                  [http-kit "2.1.19"]
                  [org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2411"]

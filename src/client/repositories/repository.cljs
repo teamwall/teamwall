@@ -154,3 +154,7 @@
   (async-get-json :handler callback
                   :url     get-team-members-url
                   :params  {:token token}))
+
+(defn register
+  "Register a new teammate with the info provided"
+  [username email password on-success on-error])

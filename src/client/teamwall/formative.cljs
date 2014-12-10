@@ -3,6 +3,7 @@
             [formative.parse :as fp]
             [formative.render :as fr]
             [dommy.core :as d :refer-macros [sel sel1]]
+            [dommy.utils :as du]
             [clojure.string :as string]
             [crate.core :as crate])
   (:require-macros [formative.macros :refer [with-fallback]]))
@@ -11,7 +12,7 @@
   "Returns a form data string for the given form element, suitable for Ajax
   GET/POST, or passing to formative.parse/parse-params."
   [form-el]
-  (->> (for [el (d/->Array (.-elements form-el))
+  (->> (for [el (du/->Array (.-elements form-el))
              :let [name (.-name el)]
              :when (not (string/blank? name))]
          (let [node-name (.-nodeName el)
@@ -22,7 +23,7 @@
                   (#{"checkbox" "radio"} type)) (when (.-checked el)
                                                   (fu/encode-uri-kv name value))
              (and (= "SELECT" node-name)
-                  (= "select-multiple" type)) (->> (for [opt (d/->Array (.-options el))
+                  (= "select-multiple" type)) (->> (for [opt (du/->Array (.-options el))
                                                          :when (.-selected opt)]
                                                      (fu/encode-uri-kv name (.-value opt)))
                                                 (string/join "&"))
@@ -105,4 +106,4 @@
                  (with-fallback failure
                    (clear-problems form-el)
                    (success
-                     (fp/parse-params form-spec (serialize form-el))))))))
+                    (fp/parse-params form-spec (serialize form-el))))))))

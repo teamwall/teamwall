@@ -8,6 +8,7 @@
             [secretary.core :as secretary :refer-macros [defroute]]
             [teamwall.helper :as helper]
             [teamwall.login :as login]
+            [teamwall.register :as register]
             [teamwall.states :as states]
             [teamwall.wall :as wall]
             [webrtc.core :as webrtc])
@@ -48,7 +49,6 @@
 (defn- append-content
   "Append the whole document to body"
   [current-document css-class]
-
   (let [body (sel1 :body)]
     (dommy/set-class! body "")
     (dommy/add-class! body css-class)
@@ -131,6 +131,12 @@
     (repository/get-current-user token
                                  on-success
                                  on-error)))
+
+(defroute ^:no-doc register-route "/register"
+  {:as params}
+  (let [document (register/render-content)]
+    (append-content document
+                    "register")))
 
 
 ;;    /==================\

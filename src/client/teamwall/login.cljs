@@ -39,10 +39,10 @@
   "Render the email input"
   [data]
   [:input {:type        "email"
-                :class       "form-control"
-                :placeholder "Email address"
-                :on-change   #(reset! data (-> % .-target .-value))
-                :id          "email"}])
+           :class       "form-control"
+           :placeholder "Email address"
+           :on-change   #(reset! data (-> % .-target .-value))
+           :id          "email"}])
 
 (defn- render-form
   "Render the login form"
@@ -92,7 +92,7 @@
 (defn render-content
   "Main rendering function"
   [on-login]
-  [:div.login.col-sm-4.col-sm-offset-4
+  [:div.login.clearfix.col-sm-4.col-sm-offset-4
    [:h1
     "Login"
     [:i.fa.fa-unlock-alt]]

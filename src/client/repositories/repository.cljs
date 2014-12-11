@@ -5,6 +5,7 @@
             [cemerick.url :refer [url url-encode]]
             [cljs.core.async :as async  :refer [<! >! put! chan]]
             [cljs.core.match]
+            [clojure.string :as string]
             [cognitect.transit :as transit]
             [goog.string :as gstring]
             [goog.string.format :as gformat]
@@ -30,6 +31,10 @@
   "URL for the current user route"
   "/current-user")
 
+(def ^:private register-url
+  "URL for the user registration route"
+  "/register")
+
 
 ;;    /==================\
 ;;    |                  |
@@ -52,11 +57,32 @@
   (let [options (atom {:handler handler
                        :response-format :json
                        :keywords? true})]
-    (if-not (nil? error)
+    (when-not (nil? error)
       (swap! options assoc :error-handler error))
-    (if-not (nil? params)
+    (when-not (nil? params)
       (swap! options assoc :params params))
     (GET url @options)))
+
+(defn- params->query-string
+  "Return a query string from a map"
+  [m]
+  (clojure.string/join "&"
+                       (for [[k v] m]
+                         (str (cemerick.url/url-encode (name k))
+                              "="
+                              (cemerick.url/url-encode v)))))
+
+(defn- async-post-json
+  "Do an async POST call and consider the response as JSON"
+  [& {:keys [handler url error params]}]
+  (let [options (atom {:handler handler
+                       :format  :json
+                       :keywords? true})]
+    (when-not (nil? error)
+      (swap! options assoc :error-handler error))
+    (when-not (nil? params)
+      (swap! options assoc :params params))
+    (POST url @options)))
 
 (defn- connection-established
   "Notify that the notification channel is opened"
@@ -136,15 +162,25 @@
 
 (defn get-current-user
   "Get the current user"
-  [token callback on-error]
-  (async-get-json :handler callback
+  [token on-success on-error]
+  (async-get-json :handler on-success
                   :error   on-error
                   :url     get-current-user-url
                   :params  {:token token}))
 
 (defn get-team-members
   "Get the team members for the current user"
-  [token callback]
-  (async-get-json :handler callback
+  [token on-success]
+  (async-get-json :handler on-success
                   :url     get-team-members-url
                   :params  {:token token}))
+
+(defn register
+  "Register a new teammate with the info provided"
+  [username email password on-success on-error]
+  (async-post-json :handler on-success
+                   :error   on-error
+                   :url     register-url
+                   :params  {:username username
+                             :email    email
+                             :password password}))

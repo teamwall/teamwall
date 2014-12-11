@@ -12,19 +12,27 @@ html, body {
 }
 
 body {
- background: #444;
+  background: #2E4867;
+  background: url("../img/background.png") repeat center 59px;
+  background-size: 100%;
+
+  @media(max-width: @screen-md-min){
+    background-image: url("../img/background_2tiles.png");
+  }
+}
+
+div.wall {
 }
 
 h1.title {
   text-align: center;
-  font-weight: bold;
-  color: #eee;
+  color: white;
   font-size: 26px;
 }
 
 .navbar {
   border: 0 none;
-  background: #0088cc;
+  background: #283f5a;
   margin: 0;
   border-radius: 0;
 
@@ -36,7 +44,7 @@ h1.title {
 
     a {
       cursor: pointer;
-      color: #EEE;
+      color: white;
 
       &.link {
         line-height: 1.6;
@@ -57,8 +65,9 @@ h1.title {
 
       &:hover {
         background: transparent;
-        color: #F5BB54;
-        text-decoration: underline;
+        color: #FFC59F;
+        text-decoration: none;
+        cursor: pointer;
       }
     }
   }

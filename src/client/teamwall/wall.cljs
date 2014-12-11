@@ -121,7 +121,7 @@
   "Build the wall of mate tiles"
   []
   (let [imgs (map (fn [src]
-                    [:div.col-xs-12.col-sm-6.col-md-6.col-lg-4.mate
+                    [:div.col-xs-12.col-sm-6.col-md-4.col-lg-4.mate
                      [tile (:src src)
                            (:user src)]])
                   (get-tiles))]

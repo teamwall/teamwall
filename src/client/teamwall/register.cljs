@@ -55,7 +55,7 @@
 (defn- on-register
   "Callback invoked when the register is successful"
   []
-  (js/console.log "REGISTER")
+  (.pushState js/history {} "" "/")
   (secretary/dispatch! "/"))
 
 (defn- submit-action
@@ -123,7 +123,7 @@
 (defn render-content
   "Main rendering function"
   []
-  [:div.register.clearfix.col-sm-4.col-sm-offset-4
+  [:div.register.clearfix.col-md-4.col-md-offset-4
    [:h1
     "Register a new teammate"
     [:i.fa.fa-user]]

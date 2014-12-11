@@ -43,12 +43,6 @@
   via the communication channel"
   first)
 
-(defmethod event-received :teamwall/ping [[_ data]]
-  (js/console.log "PONG: " (:data data)))
-
-(defmethod event-received :teamwall/test [[_ data]]
-  (js/console.log "TEST: " (:what-is-this data)))
-
 (defmethod event-received :default [& rest]
   (js/console.log "OPPPS " rest))
 

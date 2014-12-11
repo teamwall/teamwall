@@ -332,21 +332,6 @@
 ;;    \==================/
 
 
-(defn start-broadcaster!
-  "Debug: Used to ping clients every 10s"
-  []
-  (go-loop [i 0]
-           (<! (async/timeout 10000))
-           (println (format "Broadcasting server>user: %s" @connected-uids))
-           (doseq [uid (:any @connected-uids)]
-             (chsk-send! uid
-                         [:teamwall/test
-                          {:what-is-this "A broadcast pushed from server"
-                           :how-often    "Every 10 seconds"
-                           :to-whom uid
-                           :i i}]))
-           (recur (inc i))))
-
 (defn -main
   "Initialization of the server"
   [& args]
@@ -359,5 +344,4 @@
   (run-server (site app-routes)
               {:port (:port @settings)})
   (add-connections-watcher)
-  (println (str "Server started on port " (:port @settings)))
-  (start-broadcaster!))
+  (println (str "Server started on port " (:port @settings))))

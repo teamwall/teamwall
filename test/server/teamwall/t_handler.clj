@@ -69,6 +69,8 @@
   (fact "current-user returns a 200 and a the user data as a JSON
         object if correct token is provided"
     (against-background
+     (db/update-status anything
+                       :online) => true
      ...token... =contains=> "correct token"
      (#'teamwall.handler/get-user-for-token ...token...) => {:username "John"
                                                              :email "j@ohn.com"
@@ -81,6 +83,7 @@
           body     (parse-string (:body response) true)]
       response => (contains {:status 200})
       body     => {:username "John"
+                   :status   "online"
                    :email    "j@ohn.com"}))
 
   (fact "team-members returns a 403

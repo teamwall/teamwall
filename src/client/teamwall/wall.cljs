@@ -64,19 +64,31 @@
   (swap! members conj user)
   (update-img-url-for-user! user))
 
+(defn- status-changed!
+  "Updates the status of the user provided as argument"
+  [user]
+  (let [status (:status user)
+        email  (:email user)
+        index  (first (first (filter #(= (:email (second %)) email)
+                                     (map-indexed vector @members))))]
+    (swap! members assoc index user)))
+
 (defn- get-tiles
   "Return all teammate tiles."
   []
   (map (fn [user]
-         (update-img-url-for-user! user))
+         {:src  (update-img-url-for-user! user)
+          :user user})
        @members))
 
 (defn- tile
   "Build a snapshot tile for the given SRC"
-  [src]
+  [src user]
   [:div
    [:img {:src @src}]
-   [:span.timestamp (timestamp-now)]])
+   (if (= (name (:status user)) "online")
+     [:span.timestamp (timestamp-now)]
+     [:span.timestamp "OFFLINE"])])
 
 (defn- build-title
   "Return a title DOM element"
@@ -110,7 +122,8 @@
   []
   (let [imgs (map (fn [src]
                     [:div.col-xs-12.col-sm-6.col-md-6.col-lg-4.mate
-                     [tile src]])
+                     [tile (:src src)
+                           (:user src)]])
                   (get-tiles))]
     [:div.container-fluid
      [:div.row.mates imgs]]))
@@ -128,6 +141,9 @@
 
 (defmethod repository/event-received :teamwall/new-user [[_ data]]
   (add-new-user! (:user data)))
+
+(defmethod repository/event-received :teamwall/status-changed [[_ data]]
+  (status-changed! (:user data)))
 
 
 ;;    /==================\

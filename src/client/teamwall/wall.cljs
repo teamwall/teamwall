@@ -114,8 +114,7 @@
    [:div.container-fluid
     [build-title]
     [:ul.nav.navbar-nav.navbar-right
-     [:li [build-user-link]]
-     [:li [build-settings-button]]]]])
+     [:li [build-user-link]]]]])
 
 (defn- build-content
   "Build the wall of mate tiles"

@@ -68,7 +68,8 @@
            :headers {"Content-Type"   (mime/mime-type-of filename)
                      "Content-Length" (str size)}
            :body    (io/as-file tempfile)}
-          (throw+ {:type   :teamwall.handler/request-error
-                   :status 404})))
+          {:status  200
+           :headers {"Content-Type"   "image/png"}
+           :body    (io/as-file "resources/public/img/user.png")}))
       (throw+ {:type   :teamwall.handler/request-error
                :status 400}))))

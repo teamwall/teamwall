@@ -235,9 +235,6 @@
         {params :params}
         (let [email          (:email params)
               already-exists (db/user-exists email)]
-          (println params)
-          (println email)
-          (println already-exists)
           (if already-exists
             {:status 403
              :body "Email already used"}

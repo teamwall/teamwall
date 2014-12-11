@@ -26,6 +26,7 @@
                  [secretary "1.2.1"]
                  [reagent "0.4.3"]
                  [ring "1.3.2"]
+                 [ring/ring-json "0.3.1"]
                  [slingshot "0.12.1"]]
   :plugins [[codox "0.8.10"]
             [lein-bikeshed "0.2.0"]

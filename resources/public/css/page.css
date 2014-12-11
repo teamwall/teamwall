@@ -88,6 +88,13 @@ div.register .alert.alert-error ul {
 div.register .fieldset-submit {
   float: right;
 }
+div.register .alert.alert-danger {
+  max-width: 288px;
+  height: 34px;
+  line-height: 4px;
+  margin-bottom: 0;
+  margin-top: -49px;
+}
 html,
 body {
   height: 100%;

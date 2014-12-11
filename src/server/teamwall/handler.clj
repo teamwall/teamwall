@@ -36,10 +36,6 @@
   "Atom storing all the active tokens"
   (atom {}))
 
-(def ^:private register-token
-  "Random token used to check the registration form"
-  (atom ""))
-
 (def ^:private settings
   "Content of the setting file"
   (atom {}))
@@ -235,39 +231,24 @@
   (client-route "/wall")
   (client-route "/register")
 
-  (GET "/register"
-       {}
-       (do
-         (reset! register-token (generate-api-token))
-         (str "<form name=\"input\" action=\"register\" method=\"post\">
-              Username: <input type=\"text\" name=\"username\"><br>
-              Email: <input type=\"email\" name=\"email\"><br>
-              Password: <input type=\"password\" name=\"password\"><br>
-              Confirm Password: <input type=\"password\" name=\"cfm-pwd\"><br>
-              <input type=\"hidden\" name=\"token\" value="
-              @register-token
-              ">
-              <input type=\"submit\" value=\"Register\">
-              </form>")))
-
   (POST "/register"
         {params :params}
-        (let [get-token @register-token]
-          (reset! register-token (generate-api-token))
-          (when (= get-token (:token params))
-            (let [email          (:email params)
-                  already-exists (db/user-exists email)]
-              (if already-exists
-                {:status 403
-                 :body "Email already used"}
-                (let [user         (db/register-user (:username params)
-                                                     (:password params)
-                                                     (:email params)
-                                                     (:salt @settings))
-                      stubbed-user (stub-user user)]
-                  (notify-team stubbed-user
-                               "new-user")
-                  "User successfully created"))))))
+        (let [email          (:email params)
+              already-exists (db/user-exists email)]
+          (println params)
+          (println email)
+          (println already-exists)
+          (if already-exists
+            {:status 403
+             :body "Email already used"}
+            (let [user         (db/register-user (:username params)
+                                                 (:password params)
+                                                 (:email params)
+                                                 (:salt @settings))
+                  stubbed-user (stub-user user)]
+              (notify-team stubbed-user
+                           "new-user")
+              {:status 200}))))
 
   (GET  "/notifications" req (ring-ajax-get-or-ws-handshake req))
   (POST "/notifications" req (ring-ajax-post req))

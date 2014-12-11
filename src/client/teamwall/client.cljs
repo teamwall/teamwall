@@ -132,7 +132,7 @@
                                  on-success
                                  on-error)))
 
-(defroute ^:no-doc wall-route "/register"
+(defroute ^:no-doc register-route "/register"
   {:as params}
   (let [document (register/render-content)]
     (append-content document

@@ -232,8 +232,9 @@
   (client-route "/register")
 
   (POST "/register"
-        {params :params}
-        (let [email          (:email params)
+        {body :body}
+        (let [params         (parse-string (slurp body) true)
+              email          (:email params)
               already-exists (db/user-exists email)]
           (if already-exists
             {:status 403

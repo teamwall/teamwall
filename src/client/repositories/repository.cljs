@@ -63,9 +63,9 @@
   (let [options (atom {:handler handler
                        :response-format :json
                        :keywords? true})]
-    (if-not (nil? error)
+    (when-not (nil? error)
       (swap! options assoc :error-handler error))
-    (if-not (nil? params)
+    (when-not (nil? params)
       (swap! options assoc :params params))
     (GET url @options)))
 
@@ -82,17 +82,13 @@
   "Do an async POST call and consider the response as JSON"
   [& {:keys [handler url error params]}]
   (let [options (atom {:handler handler
-                       :response-format :json
+                       :format  :json
                        :keywords? true})]
     (when-not (nil? error)
-      (swap! options assoc :error-handler (fn [e]
-                                            (if (= 200 (:status e))
-                                              (handler e)
-                                              (error e)))))
-    (if (nil? params)
-      (POST url @options)
-      (POST (str url "?" (params->query-string params))
-            @options))))
+      (swap! options assoc :error-handler error))
+    (when-not (nil? params)
+      (swap! options assoc :params params))
+    (POST url @options)))
 
 (defn- connection-established
   "Notify that the notification channel is opened"

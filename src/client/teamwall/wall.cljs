@@ -84,11 +84,13 @@
 (defn- tile
   "Build a snapshot tile for the given SRC"
   [src user]
-  [:div
-   [:img {:src @src}]
    (if (= (name (:status user)) "online")
-     [:span.timestamp (timestamp-now)]
-     [:span.timestamp "OFFLINE"])])
+     [:div
+      [:img {:src @src}]
+      [:span.timestamp (timestamp-now)]]
+     [:div
+      [:img.offline {:src @src}]
+      [:span.timestamp "OFFLINE"]]))
 
 (defn- build-title
   "Return a title DOM element"

@@ -18,7 +18,8 @@
             [ring.util.response :as response]
             [taoensso.sente :as sente]
             [teamwall.api :as api]
-            [teamwall.db :as db]))
+            [teamwall.db :as db])
+   (:gen-class))
 
 
 ;;    /==================\

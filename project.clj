@@ -34,6 +34,7 @@
             [lein-kibit "0.0.8"]
             [lein-ring "0.8.13"]]
   :main teamwall.handler
+  :aot [teamwall.handler]
   :source-paths ["src/server"]
   :cljsbuild {
     :builds {

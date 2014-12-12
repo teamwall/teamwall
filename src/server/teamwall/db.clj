@@ -140,7 +140,7 @@
 (defn add-photo!
   "Store a new photo for the provided user.
   If `timelaps` option is false, erase first all the other photos"
-  [user filename size tempfile photo]
+  [user filename size content]
   (let [conn     (connect-to-mongo)
         db       (mg/get-db conn db-name)
         timelaps (:timelaps user)]
@@ -154,8 +154,7 @@
                 :user-id  (:email user)
                 :filename filename
                 :size     size
-                :tempfile tempfile
-                :content  photo})
+                :content  content})
     (mg/disconnect conn)))
 
 (defn get-last-photo

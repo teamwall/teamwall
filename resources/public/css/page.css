@@ -24,18 +24,12 @@
 }
 body.login {
   color: #f0e7d5;
-  background: #2e4867;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #2e4867), color-stop(100%, #464646));
-  background: -webkit-linear-gradient(#2e4867, #464646);
-  background: -moz-linear-gradient(#2e4867, #464646);
-  background: -o-linear-gradient(#2e4867, #464646);
-  background: -ms-linear-gradient(#2e4867, #464646);
-  background: linear-gradient(#2e4867, #464646);
 }
 div.login {
-  background: #283f5a;
+  border-radius: 0px;
+  background: #213e61;
   padding: 20px;
-  border-radius: 14px;
+  padding-top: 10px;
 }
 div.login h1 {
   color: white;
@@ -46,7 +40,7 @@ div.login h1 .fa {
 }
 @media (min-width: 768px) {
   div.login {
-    margin-top: 120px;
+    margin-top: 59px;
   }
 }
 div.login .alert.alert-danger {
@@ -57,18 +51,12 @@ div.login .alert.alert-danger {
 }
 body.register {
   color: #f0e7d5;
-  background: #2e4867;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #2e4867), color-stop(100%, #464646));
-  background: -webkit-linear-gradient(#2e4867, #464646);
-  background: -moz-linear-gradient(#2e4867, #464646);
-  background: -o-linear-gradient(#2e4867, #464646);
-  background: -ms-linear-gradient(#2e4867, #464646);
-  background: linear-gradient(#2e4867, #464646);
 }
 div.register {
-  background: #283f5a;
+  border-radius: 0px;
+  background: #213e61;
   padding: 20px;
-  border-radius: 14px;
+  padding-top: 10px;
 }
 div.register h1 {
   color: white;
@@ -79,7 +67,7 @@ div.register h1 .fa {
 }
 @media (min-width: 768px) {
   div.register {
-    margin-top: 120px;
+    margin-top: 59px;
   }
 }
 div.register .alert.alert-error ul {
@@ -100,17 +88,23 @@ body {
   height: 100%;
 }
 body {
-  background: #444;
+  background: #2E4867;
+  background: url("../img/background.png") repeat center 59px;
+  background-size: 100%;
+}
+@media (max-width: 992px) {
+  body {
+    background-image: url("../img/background_2tiles.png");
+  }
 }
 h1.title {
   text-align: center;
-  font-weight: bold;
-  color: #eee;
+  color: white;
   font-size: 26px;
 }
 .navbar {
   border: 0 none;
-  background: #0088cc;
+  background: #283f5a;
   margin: 0;
   border-radius: 0;
 }
@@ -121,8 +115,8 @@ h1.title {
   margin-right: 0;
 }
 .navbar .navbar-right a {
-  cursor: pointer;
-  color: #EEE;
+  /*       cursor: pointer; */
+  color: white;
 }
 .navbar .navbar-right a.link {
   line-height: 1.6;
@@ -138,14 +132,20 @@ h1.title {
 }
 .navbar .navbar-right a:hover {
   background: transparent;
-  color: #F5BB54;
-  text-decoration: underline;
+  /*         color: #FFC59F; */
+  text-decoration: none;
+  /*         cursor: pointer; */
 }
 .mates .mate {
   padding: 0;
 }
 .mates .mate img {
   width: 100%;
+}
+.mates .mate img.offline {
+  -webkit-filter: grayscale(100%);
+  -moz-filter: grayscale(100%);
+  filter: grayscale(100%);
 }
 .mates .mate .timestamp {
   position: absolute;

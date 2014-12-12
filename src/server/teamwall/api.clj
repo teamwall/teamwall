@@ -18,6 +18,13 @@
   [file]
   (.getAbsolutePath file))
 
+(defn- slurp-bytes
+  "Slurp the bytes from a slurpable thing"
+  [path]
+  (with-open [out (java.io.ByteArrayOutputStream.)]
+    (clojure.java.io/copy (clojure.java.io/input-stream path) out)
+    (.toByteArray out)))
+
 
 ;;    /==================\
 ;;    |                  |
@@ -44,14 +51,14 @@
 (defn set-new-photo
   "Set a new photo for the user provided as argument"
   [user photo]
-  (let [tmp-file (:tempfile photo)
+  (let [tempfile (:tempfile photo)
         size     (:size photo)
-        filename (:filename photo)]
+        filename (:filename photo)
+        tmp-path (as-absolute-path tempfile)]
     (db/add-photo! user
                   filename
                   size
-                  (as-absolute-path tmp-file)
-                  (slurp tmp-file))))
+                  (slurp-bytes tmp-path))))
 
 (defn last-photo
   "Return the last photo for the user provided as argument"
@@ -60,15 +67,17 @@
         email-pattern (extract-email-pattern email)]
     (if (= user-pattern email-pattern)
       (let [photo    (db/get-last-photo email)
-            tempfile (:tempfile photo)
             filename (:filename photo)
-            size     (:size     photo)]
+            content  (:content photo)
+            size     (:size photo)]
+
         (if-not (nil? photo)
           {:status  200
            :headers {"Content-Type"   (mime/mime-type-of filename)
                      "Content-Length" (str size)}
-           :body    (io/as-file tempfile)}
-          (throw+ {:type   :teamwall.handler/request-error
-                   :status 404})))
+           :body    (new java.io.ByteArrayInputStream content)}
+          {:status  200
+           :headers {"Content-Type" "image/png"}
+           :body    (io/as-file "resources/public/img/user.png")}))
       (throw+ {:type   :teamwall.handler/request-error
                :status 400}))))

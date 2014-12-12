@@ -84,11 +84,13 @@
 (defn- tile
   "Build a snapshot tile for the given SRC"
   [src user]
-  [:div
-   [:img {:src @src}]
    (if (= (name (:status user)) "online")
-     [:span.timestamp (timestamp-now)]
-     [:span.timestamp "OFFLINE"])])
+     [:div
+      [:img {:src @src}]
+      [:span.timestamp (timestamp-now)]]
+     [:div
+      [:img.offline {:src @src}]
+      [:span.timestamp "OFFLINE"]]))
 
 (defn- build-title
   "Return a title DOM element"
@@ -114,14 +116,13 @@
    [:div.container-fluid
     [build-title]
     [:ul.nav.navbar-nav.navbar-right
-     [:li [build-user-link]]
-     [:li [build-settings-button]]]]])
+     [:li [build-user-link]]]]])
 
 (defn- build-content
   "Build the wall of mate tiles"
   []
   (let [imgs (map (fn [src]
-                    [:div.col-xs-12.col-sm-6.col-md-6.col-lg-4.mate
+                    [:div.col-xs-12.col-sm-6.col-md-4.col-lg-4.mate
                      [tile (:src src)
                            (:user src)]])
                   (get-tiles))]

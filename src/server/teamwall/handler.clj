@@ -127,11 +127,15 @@
   "Notify all the members of the USER's team"
   [user event-type & [options]]
   (doseq [uid (:any @connected-uids)]
-    (when (= (api/extract-email-pattern (:email user))
-             (api/extract-email-pattern (:email (get-user-for-token uid))))
-      (chsk-send! uid
-                  [(keyword "teamwall" event-type)
-                   (merge {:user user} options)]))))
+    (let [user-email (:email user)
+          mate-email (:email (get-user-for-token uid))]
+      (when (and user-email
+                 mate-email
+                 (= (api/extract-email-pattern user-email)
+                    (api/extract-email-pattern mate-email)))
+        (chsk-send! uid
+                    [(keyword "teamwall" event-type)
+                     (merge {:user user} options)])))))
 
 (defn- login!
   "Check if the user info are correct and generate an API token for the user"

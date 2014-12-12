@@ -10,12 +10,14 @@
 ;;    \==================/
 
 
-(declare create-dom-node)
-
 (defn- create-dom-node
   "Create a DOM element without appending it"
   [tag-name]
   (.createElement js/document tag-name))
+
+(def ^:private running
+  "A boolean telling if the webcam is running"
+  (atom false))
 
 (def ^:private video-node
   "A video DOM node to play the webcam stream"
@@ -119,6 +121,7 @@
   (get-media {:video true
               :audio false}
              (fn [stream]
+               (reset! running true)
                (if (nil? (moz-get-user-media (navigator)))
                  (set-video-src! video-node (create-object-url (url) stream))
                  (set-moz-video-src-object! video-node stream))
@@ -131,6 +134,9 @@
   "Take a picture using the stream open when calling `start-video-stream`.
   Return a Blob object"
   [callback]
-  (.drawImage (.getContext canvas-node "2d") video-node -80 0 640 480)
-  (.toBlob canvas-node (fn [blob]
-                         (callback blob))))
+  (if @running
+    (do
+      (.drawImage (.getContext canvas-node "2d") video-node -80 0 640 480)
+      (.toBlob canvas-node (fn [blob]
+                             (callback blob))))
+    nil))

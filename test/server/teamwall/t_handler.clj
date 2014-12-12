@@ -184,4 +184,4 @@
                                      "/john@d.se/last-photo"
                                      {:token ...token...}))]
       response => (contains {:status 200})
-      (.getPath (:body response)) => "resources/public/img/user.png")))
+      (type (:body response)) => java.io.BufferedInputStream)))

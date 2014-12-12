@@ -131,15 +131,14 @@
         if there is a `photo` param and a correct token"
     (against-background
      ...token... =contains=> "correct token"
-     ...photo... =contains=> {:tempfile "file"
+     ...photo... =contains=> {:tempfile ...file...
                               :size 256
                               :filename "picture"}
-     (slurp "file") => ...content...
-     (#'teamwall.api/as-absolute-path "file") => ...path...
+     (#'teamwall.api/as-absolute-path ...file...) => ...path...
+     (#'teamwall.api/slurp-bytes ...path...) => ...content...
      (db/add-photo! anything
                    "picture"
                    256
-                   ...path...
                    ...content...) => ...body...
      (#'teamwall.handler/valid-token? anything
                                       ...token...) => true)
@@ -172,8 +171,9 @@
                                      {:token ...token...}))]
       response => (contains {:status 400})))
 
-  (fact "last-photo returns a 404
-        if there is no picture available"
+  (fact "last-photo returns a 200
+        if there is no picture available
+        as it returns a default picture"
     (against-background
      ...token... =contains=> "correct token"
      (#'teamwall.handler/get-user-for-token ...token...) => {:email "bob@d.se"}
@@ -183,4 +183,5 @@
     (let [response (app-routes (mock :get
                                      "/john@d.se/last-photo"
                                      {:token ...token...}))]
-      response => (contains {:status 404}))))
+      response => (contains {:status 200})
+      (.getPath (:body response)) => "resources/public/img/user.png")))

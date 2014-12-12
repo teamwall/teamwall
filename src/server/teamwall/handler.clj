@@ -131,7 +131,8 @@
           mate-email (:email (get-user-for-token uid))]
       (when (and user-email
                  mate-email
-                 (= (api/extract-email-pattern user-email) (api/extract-email-pattern mate-email)))
+                 (= (api/extract-email-pattern user-email)
+                    (api/extract-email-pattern mate-email)))
         (chsk-send! uid
                     [(keyword "teamwall" event-type)
                      (merge {:user user} options)])))))

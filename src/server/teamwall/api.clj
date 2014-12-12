@@ -58,7 +58,6 @@
     (db/add-photo! user
                   filename
                   size
-                  tmp-path
                   (slurp-bytes tmp-path))))
 
 (defn last-photo
@@ -67,12 +66,10 @@
   (let [user-pattern  (extract-email-pattern (:email user))
         email-pattern (extract-email-pattern email)]
     (if (= user-pattern email-pattern)
-      (let [photo        (db/get-last-photo email)
-            tempfile     (:tempfile photo)
-            filename     (:filename photo)
-            content      (:content photo)
-            content-type (mime/mime-type-of filename)
-            size         (:size     photo)]
+      (let [photo    (db/get-last-photo email)
+            filename (:filename photo)
+            content  (:content photo)
+            size     (:size photo)]
 
         (if-not (nil? photo)
           {:status  200
@@ -80,7 +77,7 @@
                      "Content-Length" (str size)}
            :body    (new java.io.ByteArrayInputStream content)}
           {:status  200
-           :headers {"Content-Type"   "image/png"}
+           :headers {"Content-Type" "image/png"}
            :body    (io/as-file "resources/public/img/user.png")}))
       (throw+ {:type   :teamwall.handler/request-error
                :status 400}))))

@@ -1,6 +1,9 @@
-(defproject teamwall "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
+(defproject teamwall "1.0.0-SNAPSHOT"
+  :description "An open source software used to build a wall of picture for your team"
   :url "www.teamwall.io"
+  :license {:name "GNU GENERAL PUBLIC LICENSE - version 3"
+            :url "http://www.gnu.org/copyleft/gpl.html"
+            :distribution :repo}
   :min-lein-version "2.0.0"
   :dependencies [[cljs-ajax "0.3.3"]
                  [cheshire "5.3.1"]

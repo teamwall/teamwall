@@ -1,4 +1,4 @@
-(defproject teamwall "1.0.0-SNAPSHOT"
+(defproject teamwall "1.0.0"
   :description "An open source software used to build a wall of picture for your team"
   :url "www.teamwall.io"
   :license {:name "GNU GENERAL PUBLIC LICENSE - version 3"

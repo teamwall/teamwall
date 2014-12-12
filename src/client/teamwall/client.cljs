@@ -77,8 +77,9 @@
   (go
    (loop []
      (webrtc/take-picture (fn [blob]
-                            (repository/send-blob-picture blob
-                                                          token)))
+                            (when blob
+                              (repository/send-blob-picture blob
+                                                            token))))
      (<! (timeout @snapshot-sleep-time))
      (recur))))
 

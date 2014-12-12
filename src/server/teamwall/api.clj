@@ -69,8 +69,8 @@
       (let [photo    (db/get-last-photo email)
             filename (:filename photo)
             content  (:content photo)
-            size     (:size photo)]
-
+            size     (:size photo)
+            resource (io/resource "public/img/user.png")]
         (if-not (nil? photo)
           {:status  200
            :headers {"Content-Type"   (mime/mime-type-of filename)
@@ -78,6 +78,6 @@
            :body    (new java.io.ByteArrayInputStream content)}
           {:status  200
            :headers {"Content-Type" "image/png"}
-           :body    (io/as-file "resources/public/img/user.png")}))
+           :body    (io/input-stream resource)}))
       (throw+ {:type   :teamwall.handler/request-error
                :status 400}))))

@@ -3,6 +3,7 @@
             [monger.collection :as mc]
             [monger.core :as mg]
             [monger.json]
+            [monger.operators :refer :all]
             [monger.query :as mq])
   (:use [slingshot.slingshot :only [throw+ try+]])
   (:import [com.mongodb MongoOptions ServerAddress]
@@ -17,14 +18,17 @@
 
 
 (def ^:private db-name
-  "Private: name of the mongo db to use"
+  "Name of the mongo db to use"
   "teamwall")
 (def ^:private db-users
-  "Private: name of the user mongo collection"
+  "Name of the user mongo collection"
   "teamwallUsers")
 (def ^:private db-photos
-  "Private: name of the photo mongo collection"
+  "Name of the photo mongo collection"
   "teamwallPhotos")
+(def ^:private db-settings
+  "Private: name of the server settings mongo collection"
+  "teamwallServerSettings")
 
 
 ;;    /==================\
@@ -35,12 +39,12 @@
 
 
 (defn- connect-to-mongo
-  "Connects to the mongoDB instance"
+  "Connect to the mongoDB instance"
   []
   (mg/connect))
 
 (defn- hashed-password
-  "Generates a hashed password using Scrypt
+  "Generate a hashed password using Scrypt
   (https://www.tarsnap.com/scrypt/scrypt.pdf)"
   [password salt]
   (scrypt/encrypt (str password salt)
@@ -49,7 +53,7 @@
                   1))
 
 (defn- valid-password?
-  "Checks if the provided password matches the provided hash"
+  "Check if the provided password matches the provided hash"
   [password salt pw-hash]
   (if (nil? pw-hash)
     false
@@ -65,20 +69,34 @@
 
 
 (defn register-user
-  "Adds a new user to the user database"
+  "Add a new user to the user database"
   [username password email salt]
   (let [conn (connect-to-mongo)
-        db   (mg/get-db conn db-name)]
+        db   (mg/get-db conn db-name)
+        user {:_id      email
+              :username username
+              :email    email
+              :status   :offline
+              :hash     (hashed-password password salt)}]
     (mc/insert db
                db-users
-               {:_id      email
-                :username username
-                :email    email
-                :hash     (hashed-password password salt)})
-    (mg/disconnect conn)))
+               user)
+    (mg/disconnect conn)
+    user))
+
+(defn user-exists
+  "Return true if a user with the provided EMAIL exists"
+  [email]
+  (let [conn (connect-to-mongo)
+        db   (mg/get-db conn db-name)
+        user (mc/find-one-as-map db
+                                 db-users
+                                 {:email email})]
+    (mg/disconnect conn)
+    (some? user)))
 
 (defn retrieve-user
-  "Retrieves a user from the database using its email and password"
+  "Retrieve a user from the database using its email and password"
   [email password salt]
   (let [conn (connect-to-mongo)
         db   (mg/get-db conn db-name)
@@ -98,6 +116,17 @@
                :email           email
                :valid-password? valid-password?}))))
 
+(defn update-status
+  "Update the status of the provided USER to the new VALUE"
+  [user value]
+  (let [conn (connect-to-mongo)
+        db   (mg/get-db conn db-name)]
+    (mc/update db
+               db-users
+               {:_id (:email user)}
+               {$set {:status value}})
+    (mg/disconnect conn)))
+
 (defn get-users-for-email
   "Retrieve all the users whose email match the pattern provided"
   [pattern]
@@ -108,10 +137,10 @@
                             {:email (re-pattern pattern)})]
     users))
 
-(defn add-photo
-  "Stores a new photo for the provided user.
-  If timelaps is false, erase first all the other photos"
-  [user filename size tempfile photo]
+(defn add-photo!
+  "Store a new photo for the provided user.
+  If `timelaps` option is false, erase first all the other photos"
+  [user filename size content]
   (let [conn     (connect-to-mongo)
         db       (mg/get-db conn db-name)
         timelaps (:timelaps user)]
@@ -125,22 +154,44 @@
                 :user-id  (:email user)
                 :filename filename
                 :size     size
-                :tempfile tempfile
-                :content  photo})
+                :content  content})
     (mg/disconnect conn)))
 
 (defn get-last-photo
-  "Returns the last photo of the user provided as argument"
+  "Return the last photo of the user provided as argument"
   [email]
   (let [conn   (connect-to-mongo)
         db     (mg/get-db conn db-name)
         photo  (mq/with-collection db db-photos
-                 (mq/find {:user-id email})
-                 (mq/sort (array-map :_id -1))
+                 (mq/find  {:user-id email})
+                 (mq/sort  {:_id -1})
                  (mq/limit 1))
         result (first photo)]
     (mg/disconnect conn)
     result))
+
+(defn load-settings
+  "Return the server settings, or nil if none is found"
+  []
+  (let [conn     (connect-to-mongo)
+        db       (mg/get-db conn db-name)
+        settings (mc/find-one-as-map db
+                                     db-settings
+                                     {:_id "server settings"})]
+    (mg/disconnect conn)
+    settings))
+
+(defn store-settings
+  "Store new server side settings using the OPTIONS provided as argument"
+  [options]
+  (let [conn (connect-to-mongo)
+        db   (mg/get-db conn db-name)]
+    (mc/insert db
+               db-settings
+               (assoc options :_id "server settings"))
+    (mg/disconnect conn)
+    options))
+
 
 ;;    /==================\
 ;;    |                  |

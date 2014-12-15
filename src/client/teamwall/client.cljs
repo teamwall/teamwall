@@ -8,6 +8,7 @@
             [secretary.core :as secretary :refer-macros [defroute]]
             [teamwall.helper :as helper]
             [teamwall.login :as login]
+            [teamwall.register :as register]
             [teamwall.states :as states]
             [teamwall.wall :as wall]
             [webrtc.core :as webrtc])
@@ -47,9 +48,13 @@
 
 (defn- append-content
   "Append the whole document to body"
-  [current-document]
-  (reagent/render-component (fn [] [render-content current-document])
-                            (sel1 :body)))
+  [current-document css-class]
+  (let [body (sel1 :body)]
+    (dommy/set-class! body "")
+    (dommy/add-class! body css-class)
+    (reagent/render-component (fn []
+                                [render-content current-document])
+                              body)))
 
 (defn- redirect
   "Redirect to the URL provided as argument
@@ -67,13 +72,14 @@
 
 
 (defn- snapshot-loop
-  "Runs an infinite loop of snapshot"
+  "Run an infinite loop of snapshot"
   [token]
   (go
    (loop []
      (webrtc/take-picture (fn [blob]
-                            (repository/send-blob-picture blob
-                                                          token)))
+                            (when blob
+                              (repository/send-blob-picture blob
+                                                            token))))
      (<! (timeout @snapshot-sleep-time))
      (recur))))
 
@@ -81,14 +87,13 @@
   "Setup the environment variables and render the wall"
   [data]
   (states/set-token (:token data))
-  (states/set-user (:user data))
+  (states/set-user  (:user data))
   (repository/open-notification-channel (:token data))
   (repository/get-team-members (:token data)
                                (fn [members]
                                  (wall/set-team members)
-                                 (append-content (wall/render-content))))
-
-  ;test
+                                 (append-content (wall/render-content)
+                                                 "wall")))
   (snapshot-loop (:token data)))
 
 (defn set-token-from-cookie!
@@ -114,14 +119,25 @@
 
 (defroute ^:no-doc wall-route "/"
   {:as params}
-  (let [token (get-token)]
+  (let [token          (get-token)
+        login-document (login/render-content (fn []
+                                               (dispatch (wall-route))))
+        on-success     (fn [user]
+                         (setup-wall {:user user
+                                      :token token}))
+        on-error       (fn [err]
+                         (states/reset-token!)
+                         (append-content login-document
+                                         "login"))]
     (repository/get-current-user token
-                                 (fn [user]
-                                   (setup-wall {:user user
-                                                :token token}))
-                                 (fn [err]
-                                   (states/reset-token!)
-                                   (append-content (login/render-content (fn [] (dispatch (wall-route)))))))))
+                                 on-success
+                                 on-error)))
+
+(defroute ^:no-doc register-route "/register"
+  {:as params}
+  (let [document (register/render-content)]
+    (append-content document
+                    "register")))
 
 
 ;;    /==================\
@@ -136,4 +152,7 @@
   [uri]
   (secretary/dispatch! uri))
 
-(webrtc/start-video-stream!)
+(defn ^:export initialize
+  "Initialize the client"
+  []
+  (webrtc/start-video-stream!))

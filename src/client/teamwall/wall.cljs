@@ -7,70 +7,127 @@
 
 ;;    /==================\
 ;;    |                  |
-;;    |      PRIVATE     |
+;;    |       VARS       |
 ;;    |                  |
 ;;    \==================/
 
 
 (def sources
-  "Maps of all the sources containing the users
+  "Map of all the sources containing the users
   as well as the src path for their picture"
   (atom {}))
-(def members (atom []))
 
-(defn- now
-  "Returns the current time as a string"
+(def members
+  "List of all the team members"
+  (atom []))
+
+
+;;    /==================\
+;;    |                  |
+;;    |      PRIVATE     |
+;;    |                  |
+;;    \==================/
+
+
+(defn- now-as-milliseconds
+  "Return the current time as a string"
   []
   (str (.now js/Date)))
 
-(defn- get-team-members
-  "Returns the list of all the team members of the current user"
+(defn- timestamp-now
+  "Return the current time as a timestamp string"
   []
-  @members)
+  (let [date (js/Date.)]
+    (first (.split (.toTimeString date) " "))))
 
-(defn- update-img-url-for-user
-  "Returns the image url for the provided user"
+(defn- update-img-url-for-user!
+  "Return the image url for the provided user"
   [user]
   (let [existing-atom (get @sources (:email user))
-        atom-to-use (or existing-atom (atom ""))
-        source (str "/"
-                    (url-encode   (:email user))
-                    "/last-photo?token="
-                    (states/get-token)
-                    "&time="
-                    (now))]
-
+        atom-to-use   (or existing-atom
+                          (atom ""))
+        source        (str "/"
+                           (url-encode   (:email user))
+                           "/last-photo?token="
+                           (states/get-token)
+                           "&time="
+                           (now-as-milliseconds))]
     (when-not existing-atom
       (swap! sources assoc (:email user) atom-to-use))
-
     (reset! atom-to-use source)
     atom-to-use))
+
+(defn- add-new-user!
+  "Add a new user to the local cache as a new user
+  registered to the server"
+  [user]
+  (swap! members conj user)
+  (update-img-url-for-user! user))
+
+(defn- status-changed!
+  "Updates the status of the user provided as argument"
+  [user]
+  (let [status (:status user)
+        email  (:email user)
+        index  (first (first (filter #(= (:email (second %)) email)
+                                     (map-indexed vector @members))))]
+    (swap! members assoc index user)))
 
 (defn- get-tiles
   "Return all teammate tiles."
   []
-  (let [team (get-team-members)]
-    (map (fn [user]
-           (update-img-url-for-user user))
-         team)))
+  (map (fn [user]
+         {:src  (update-img-url-for-user! user)
+          :user user})
+       @members))
 
 (defn- tile
   "Build a snapshot tile for the given SRC"
-  [src]
-  [:img {:src @src}])
+  [src user]
+   (if (= (name (:status user)) "online")
+     [:div
+      [:img {:src @src}]
+      [:span.timestamp (timestamp-now)]]
+     [:div
+      [:img.offline {:src @src}]
+      [:span.timestamp "OFFLINE"]]))
+
+(defn- build-title
+  "Return a title DOM element"
+  []
+  [:h1.title "Teamwall"])
+
+(defn- build-settings-button
+  "Build the settings button as a cog icon"
+  []
+  [:a.link.glyphicon.glyphicon-cog])
+
+(defn- build-user-link
+  "Build the user anchor"
+  []
+  [:a.link
+   [:span.glyphicon.glyphicon-user]
+   (:username (states/get-user))])
+
+(defn- build-navbar
+  "Build the main navbar of the page"
+  []
+  [:div.navbar.navbar-fixed
+   [:div.container-fluid
+    [build-title]
+    [:ul.nav.navbar-nav.navbar-right
+     [:li [build-user-link]]]]])
 
 (defn- build-content
   "Build the wall of mate tiles"
   []
   (let [imgs (map (fn [src]
-                    [:li.mate [tile src]])
+                    [:div.col-xs-12.col-sm-6.col-md-4.col-lg-4.mate
+                     [tile (:src src)
+                           (:user src)]])
                   (get-tiles))]
-    [:ul.mates imgs]))
-
-(defn- build-title
-  "Return a title DOM element."
-  []
-  [:h1.title "Teamwall"])
+    [:div.container-fluid
+     [:div.row.mates imgs]]))
 
 
 ;;    /==================\
@@ -81,7 +138,13 @@
 
 
 (defmethod repository/event-received :teamwall/new-photo [[_ data]]
-  (update-img-url-for-user (:user data)))
+  (update-img-url-for-user! (:user data)))
+
+(defmethod repository/event-received :teamwall/new-user [[_ data]]
+  (add-new-user! (:user data)))
+
+(defmethod repository/event-received :teamwall/status-changed [[_ data]]
+  (status-changed! (:user data)))
 
 
 ;;    /==================\
@@ -97,8 +160,9 @@
   (reset! members new-members))
 
 (defn render-content
-  "Main rendering function."
+  "Main rendering function"
   []
-  [:div.wall
-   [build-title]
-   [build-content]])
+  [:div
+   [build-navbar]
+   [:div.wall
+    [build-content]]])

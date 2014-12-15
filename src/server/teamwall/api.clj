@@ -13,18 +13,17 @@
 ;;    \==================/
 
 
-(defn- extract-email-pattern
-  "Extract the email pattern from an email address"
-  [email]
-  (let [splitted (string/split email #"@")
-        domain   (last splitted)]
-    (str "[^@]+@" domain)))
-
 (defn- as-absolute-path
-  "Takes a string as argument,
-  and returns the absolate path of the file named FILE"
+  "Return the absolate path of the file named FILE"
   [file]
   (.getAbsolutePath file))
+
+(defn- slurp-bytes
+  "Slurp the bytes from a slurpable thing"
+  [path]
+  (with-open [out (java.io.ByteArrayOutputStream.)]
+    (clojure.java.io/copy (clojure.java.io/input-stream path) out)
+    (.toByteArray out)))
 
 
 ;;    /==================\
@@ -34,45 +33,51 @@
 ;;    \==================/
 
 
+(defn extract-email-pattern
+  "Extract the email pattern from an email address"
+  [email]
+  (let [splitted (string/split email #"@")
+        domain   (last splitted)]
+    (str "[^@]+@" domain)))
+
 (defn get-team-members
-  "Retrieve informations about the other person of the same team"
+  "Return the other persons of the same team"
   [user]
   (let [email         (:email user)
         email-pattern (extract-email-pattern email)
         users         (db/get-users-for-email email-pattern)]
-    (map (fn [user]
-           {:username (:username user)
-            :email    (:email user)})
-         users)))
+    users))
 
 (defn set-new-photo
   "Set a new photo for the user provided as argument"
   [user photo]
-  (let [tmp-file (:tempfile photo)
+  (let [tempfile (:tempfile photo)
         size     (:size photo)
-        filename (:filename photo)]
-    (db/add-photo user
+        filename (:filename photo)
+        tmp-path (as-absolute-path tempfile)]
+    (db/add-photo! user
                   filename
                   size
-                  (as-absolute-path tmp-file)
-                  (slurp tmp-file))))
+                  (slurp-bytes tmp-path))))
 
 (defn last-photo
-  "Returns the last photo for the user provided as argument"
+  "Return the last photo for the user provided as argument"
   [user email]
   (let [user-pattern  (extract-email-pattern (:email user))
         email-pattern (extract-email-pattern email)]
     (if (= user-pattern email-pattern)
       (let [photo    (db/get-last-photo email)
-            tempfile (:tempfile photo)
             filename (:filename photo)
-            size     (:size     photo)]
+            content  (:content photo)
+            size     (:size photo)
+            resource (io/resource "public/img/user.png")]
         (if-not (nil? photo)
           {:status  200
            :headers {"Content-Type"   (mime/mime-type-of filename)
                      "Content-Length" (str size)}
-           :body    (io/as-file tempfile)}
-          (throw+ {:type :teamwall.handler/request-error
-                   :status 404})))
-      (throw+ {:type :teamwall.handler/request-error
+           :body    (new java.io.ByteArrayInputStream content)}
+          {:status  200
+           :headers {"Content-Type" "image/png"}
+           :body    (io/input-stream resource)}))
+      (throw+ {:type   :teamwall.handler/request-error
                :status 400}))))

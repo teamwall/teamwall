@@ -16,3 +16,4 @@ R.png
 resources/public/js
 resources/public/bower_components
 .DS_Store
+/.tern-port

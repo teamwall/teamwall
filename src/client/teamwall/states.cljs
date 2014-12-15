@@ -1,10 +1,26 @@
 (ns teamwall.states)
 
+
+;;    /==================\
+;;    |                  |
+;;    |       VARS       |
+;;    |                  |
+;;    \==================/
+
+
 (def ^:private token (atom nil))
 (def ^:private user (atom nil))
 
+
+;;    /==================\
+;;    |                  |
+;;    |       MAIN       |
+;;    |                  |
+;;    \==================/
+
+
 (defn get-token
-  "Returns the value of TOKEN"
+  "Return the value of TOKEN"
   []
   @token)
 
@@ -19,7 +35,7 @@
   (set-token nil))
 
 (defn get-user
-  "Returns the value of USER"
+  "Return the value of USER"
   []
   @user)
 

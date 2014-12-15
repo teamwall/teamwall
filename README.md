@@ -47,10 +47,19 @@ You will need [Leiningen][1] 2.0.0 or above installed.
 
 You will also need [Mongo][2] database running.
 
+Other dependencies can be installed running:
+
+    $ bower install
+
 [1]: https://github.com/technomancy/leiningen
 [2]: http://www.mongodb.org/
 
 ## Running
+
+The first time you want to run the application,
+you first need to build the client part. To do so, run:
+
+    $ lein cljsbuild once
 
 To start a web server for the application, run:
 

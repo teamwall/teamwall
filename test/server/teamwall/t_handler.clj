@@ -7,11 +7,25 @@
             [teamwall.db :as db]
             [teamwall.handler :refer :all]))
 
+
+;;    /==================\
+;;    |                  |
+;;    |      PRIVATE     |
+;;    |                  |
+;;    \==================/
+
+
 (defn- mock
   ([verb uri] (req/request verb uri))
   ([verb uri params] (assoc (req/request verb uri params) :params params)))
 
-;; (testable-privates teamwall.handler valid-token?)
+
+;;    /==================\
+;;    |                  |
+;;    |      TESTS       |
+;;    |                  |
+;;    \==================/
+
 
 (facts "About routes"
   (fact "Undefined routes returns a 403"
@@ -31,7 +45,8 @@
      ...password... =contains=> ""
      (db/retrieve-user ...email...
                        ...password...
-                       anything) => {:user :user})
+                       anything) => {:user :user}
+     (db/update-status anything :online) => nil)
     (let [response (app-routes (mock :get
                                      "/login"
                                      {:email    ...email...
@@ -54,9 +69,11 @@
   (fact "current-user returns a 200 and a the user data as a JSON
         object if correct token is provided"
     (against-background
+     (db/update-status anything
+                       :online) => true
      ...token... =contains=> "correct token"
-     (#'teamwall.handler/get-user-for-token ...token...) => {:username "John Doe"
-                                                             :email "john@doe.com"
+     (#'teamwall.handler/get-user-for-token ...token...) => {:username "John"
+                                                             :email "j@ohn.com"
                                                              :hash "SECRET"}
      (#'teamwall.handler/valid-token? anything
                                       ...token...) => true)
@@ -65,8 +82,9 @@
                                      {:token ...token...}))
           body     (parse-string (:body response) true)]
       response => (contains {:status 200})
-      body     => {:username "John Doe"
-                   :email    "john@doe.com"}))
+      body     => {:username "John"
+                   :status   "online"
+                   :email    "j@ohn.com"}))
 
   (fact "team-members returns a 403
         if wrong token is provided"
@@ -85,8 +103,8 @@
      ...pattern... =contains=> ""
      ...token... =contains=> "correct token"
      (#'teamwall.api/extract-email-pattern anything) => ...pattern...
-     (db/get-users-for-email ...pattern...) => [{:username "John Doe"
-                                                 :email "john@doe.com"
+     (db/get-users-for-email ...pattern...) => [{:username "John"
+                                                 :email "j@ohn.com"
                                                  :hash "SECRET"}]
      (#'teamwall.handler/valid-token? anything
                                       ...token...) => true)
@@ -95,8 +113,8 @@
                                      {:token ...token...}))
           body     (parse-string (:body response) true)]
       response => (contains {:status 200})
-      body     => [{:username "John Doe"
-                    :email    "john@doe.com"}]))
+      body     => [{:username "John"
+                    :email    "j@ohn.com"}]))
 
   (fact "new-photo returns a 400
         if there is no `photo` param and a correct token"
@@ -113,15 +131,14 @@
         if there is a `photo` param and a correct token"
     (against-background
      ...token... =contains=> "correct token"
-     ...photo... =contains=> {:tempfile "file"
+     ...photo... =contains=> {:tempfile ...file...
                               :size 256
                               :filename "picture"}
-     (slurp "file") => ...content...
-     (#'teamwall.api/as-absolute-path "file") => ...path...
-     (db/add-photo anything
+     (#'teamwall.api/as-absolute-path ...file...) => ...path...
+     (#'teamwall.api/slurp-bytes ...path...) => ...content...
+     (db/add-photo! anything
                    "picture"
                    256
-                   ...path...
                    ...content...) => ...body...
      (#'teamwall.handler/valid-token? anything
                                       ...token...) => true)
@@ -154,8 +171,9 @@
                                      {:token ...token...}))]
       response => (contains {:status 400})))
 
-  (fact "last-photo returns a 404
-        if there is no picture available"
+  (fact "last-photo returns a 200
+        if there is no picture available
+        as it returns a default picture"
     (against-background
      ...token... =contains=> "correct token"
      (#'teamwall.handler/get-user-for-token ...token...) => {:email "bob@d.se"}
@@ -165,4 +183,5 @@
     (let [response (app-routes (mock :get
                                      "/john@d.se/last-photo"
                                      {:token ...token...}))]
-      response => (contains {:status 404}))))
+      response => (contains {:status 200})
+      (type (:body response)) => java.io.BufferedInputStream)))

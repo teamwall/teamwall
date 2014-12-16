@@ -177,7 +177,7 @@
         db       (mg/get-db conn db-name)
         settings (mc/find-one-as-map db
                                      db-settings
-                                     {:_id "server settings"})]
+                                     {:_id "server_settings"})]
     (mg/disconnect conn)
     settings))
 
@@ -186,9 +186,11 @@
   [options]
   (let [conn (connect-to-mongo)
         db   (mg/get-db conn db-name)]
-    (mc/insert db
+    (mc/update db
                db-settings
-               (assoc options :_id "server settings"))
+               {:_id "server_settings"}
+               {$set options}
+               {:upsert true})
     (mg/disconnect conn)
     options))
 

@@ -1,4 +1,4 @@
-(defproject teamwall "1.0.1"
+(defproject teamwall "1.0.2"
   :description "An open source software used to build a wall of picture for your team"
   :url "www.teamwall.io"
   :license {:name "GNU GENERAL PUBLIC LICENSE - version 3"
@@ -21,7 +21,7 @@
                  [crypto-random "1.2.0"]
                  [formative "0.8.8"]
                  [http-kit "2.1.19"]
-                 [lein-cljsbuild/cljs-compat "1.0.0-SNAPSHOT"]
+                 [lein-cljsbuild/cljs-compat "1.0.0-20141215.132312-28"]
                  [org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2411"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]

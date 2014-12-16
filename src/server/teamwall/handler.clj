@@ -8,6 +8,8 @@
              :refer (<! <!! >! >!! put! chan go go-loop)]
             [clojure.data :as data]
             [clojure.java.io :as io]
+            [clojure.string :as string]
+            [clojure.tools.cli :refer [parse-opts]]
             [compojure.core :refer :all]
             [compojure.handler :refer [site]]
             [compojure.route :as route]
@@ -19,7 +21,7 @@
             [taoensso.sente :as sente]
             [teamwall.api :as api]
             [teamwall.db :as db])
-   (:gen-class))
+  (:gen-class))
 
 
 ;;    /==================\
@@ -37,9 +39,23 @@
   "Atom storing all the active tokens"
   (atom {}))
 
+(def ^:private default-settings
+  "Default values for the server-side settings"
+  {:salt (str (java.util.UUID/randomUUID))
+   :port 3000})
+
+(def ^:private default-db-settings
+  "Default values for the database settings"
+  {:db-port 27017
+   :db-host "localhost"})
+
 (def ^:private settings
   "Content of the setting file"
   (atom {}))
+
+(def ^:private db-settings
+  "Content of the setting file"
+  (atom default-db-settings))
 
 (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
               connected-uids]}
@@ -60,6 +76,25 @@
     "Sente: open connections"
     connected-uids))
 
+(def ^:private cli-options
+  "CLI options to handle optional arguments"
+  [[nil  "--db-host URL" "Set the URL to reach the Mongo database"
+    :default "localhost"]
+   [nil  "--db-port PORT" "Set the port to reach the Mongo database"
+    :default 27017
+    :parse-fn #(Integer/parseInt %)]
+   [nil  "--db-username STRING" "Set username to login to the Mongo database"]
+   [nil  "--db-password STRING" "Set password to login to the Mongo database"]
+   ["-h" "--help" "Display this message"]])
+
+(def ^:private cli-configure-options
+  "CLI options for the `configure` command"
+  [["-p" "--port PORT" "Set the server port"
+    :parse-fn #(Integer/parseInt %)
+    :default 3000
+    :validate [#(< 1024 % 0x10000) "Must be a number between 1024 and 65536"]]
+   ["-h" "--help" "Display this message"]])
+
 
 ;;    /==================\
 ;;    |                  |
@@ -67,6 +102,11 @@
 ;;    |                  |
 ;;    \==================/
 
+
+(defn- as-integer
+  "Convert the provided String or Integer to Integer"
+  [arg]
+  (Integer. arg))
 
 (defn- get-user-for-token
   "Return the user corresponding to the provided token"
@@ -76,12 +116,10 @@
 (defn- load-settings!
   "Load the server settings"
   []
-  (reset! settings (let [db-settings (db/load-settings)
-                         new-salt    (str (java.util.UUID/randomUUID))]
-                     (if-not (nil? db-settings)
-                       db-settings
-                       (db/store-settings {:salt new-salt
-                                           :port 3000})))))
+  (reset! settings (let [new-settings (db/load-settings @db-settings)]
+                     (if-not (nil? new-settings)
+                       new-settings
+                       (db/store-settings default-settings @db-settings)))))
 
 (defn- stub-user
   "Return a sub map of user to protect sensitive data"
@@ -144,10 +182,11 @@
   (try+
    (let [user (db/retrieve-user email
                                 password
-                                salt)
+                                salt
+                                @db-settings)
          user (assoc user :status :online)
          token (generate-api-token)]
-     (db/update-status user :online)
+     (db/update-status user :online @db-settings)
      (swap! tokens assoc token {:user          user
                                 :ttl           default-ttl
                                 :creation-time (java.util.Date.)})
@@ -165,7 +204,7 @@
    (catch [:type :teamwall.db/login-failed] {:keys [email valid-password?]}
      {:status 403})
    (catch  Exception e
-;;      (.printStackTrace e)
+     ;;      (.printStackTrace e)
      {:status 500})))
 
 (defn- secure-routing
@@ -204,6 +243,15 @@
         (response/resource-response "index.html"
                                     {:root "public"})))
 
+(defn- update-status
+  "Update the user status"
+  [user status]
+  (let [updated-user (assoc user :status status)]
+    (db/update-status user status @db-settings)
+    (notify-team updated-user
+                 "status-changed")
+    updated-user))
+
 (defn- connections-watcher
   "Watcher over the sconnexion atom to set users offline"
   [_key _ref old-value new-value]
@@ -213,14 +261,50 @@
         (let [user (get-user-for-token uid)]
           (when-not (nil? user)
             (swap! tokens dissoc uid)
-            (db/update-status user :offline)
-            (notify-team (assoc user :status :offline)
-                         "status-changed")))))))
+            (update-status user
+                           :offline)))))))
 
 (defn- add-connections-watcher
   "Add a watcher for the connections"
   []
   (add-watch connected-uids :connected-uids connections-watcher))
+
+(defn- error-msg [errors]
+  "Build an error message for the provided ERRORS"
+  (str "The following errors occurred while parsing your command:\n\t- "
+       (string/join "\n\t- " errors)))
+
+(defn- exit [status msg]
+  "Exit the application and displays a message"
+  (println msg)
+  (java.lang.System/exit status))
+
+(defn usage [options-summary]
+  (->> ["An open source software used to build a wall of picture for your team"
+        ""
+        "Options:"
+        options-summary
+        ""
+        "Sub commands:"
+        "  config    Set server-side settings"]
+       (string/join \newline)))
+
+(defn- set-settings
+  "Store the server side settings"
+  [{:keys [options arguments errors summary]}]
+  (cond
+   (:help options) (exit 0 summary)
+   errors (exit 1 (error-msg errors)))
+  (let [old-settings (try+
+                      (db/load-settings @db-settings)
+                      (catch com.mongodb.MongoServerSelectionException e
+                        default-settings))
+        new-settings (merge (or old-settings default-settings) options)]
+    (when-not old-settings
+      (println "Note that a new salt has been generated for the database"))
+    (reset! settings new-settings)
+    (db/store-settings new-settings @db-settings))
+  (exit 0 "Settings updated"))
 
 
 ;;    /==================\
@@ -241,14 +325,15 @@
         {body :body}
         (let [params         (parse-string (slurp body) true)
               email          (:email params)
-              already-exists (db/user-exists email)]
+              already-exists (db/user-exists email @db-settings)]
           (if already-exists
             {:status 403
              :body "Email already used"}
             (let [user         (db/register-user (:username params)
                                                  (:password params)
                                                  (:email params)
-                                                 (:salt @settings))
+                                                 (:salt @settings)
+                                                 @db-settings)
                   stubbed-user (stub-user user)]
               (notify-team stubbed-user
                            "new-user")
@@ -269,15 +354,14 @@
        {params :params}
        (secure-routing-json (:token params)
                             (fn [user]
-                              (db/update-status user :online)
-                              (notify-team user
-                                           "status-changed")
-                              (stub-user (assoc user :status :online)))))
+                              (stub-user (update-status user
+                                                        :online)))))
 
   (GET "/team-members"
        {params :params}
        (secure-routing-json (:token params)
-                            #(map stub-user (api/get-team-members %))))
+                            #(map stub-user (api/get-team-members %
+                                                                  @db-settings))))
 
   (wrap-multipart-params
    (POST "/new-photo"
@@ -287,7 +371,8 @@
                                 (if (:photo params)
                                   (do
                                     (api/set-new-photo user
-                                                       (:photo params))
+                                                       (:photo params)
+                                                       @db-settings)
                                     (notify-team (stub-user user)
                                                  "new-photo"))
                                   (throw+ {:type   ::request-error
@@ -298,7 +383,8 @@
        (secure-routing (:token params)
                        (fn [user]
                          (api/last-photo user
-                                         (:email params)))))
+                                         (:email params)
+                                         @db-settings))))
 
   (route/resources "/")
   (ANY "/*" [] {:status 403}))
@@ -311,9 +397,9 @@
 ;;    \==================/
 
 
-(defn -main
-  "Initialization of the server"
-  [& args]
+(defn- run-app
+  "Start the server on port precised in the settings"
+  []
   (try+
    (load-settings!)
    (catch com.mongodb.MongoServerSelectionException e
@@ -321,6 +407,25 @@
               "Are you sure you have an instance running?")
      (java.lang.System/exit 1)))
   (run-server (site app-routes)
-              {:port (:port @settings)})
+              {:port (as-integer (:port @settings))})
   (add-connections-watcher)
   (println (str "Server started on port " (:port @settings))))
+
+(defn -main
+  "Initialization of the server"
+  [& args]
+  (let [{:keys [options arguments errors summary]} (parse-opts args
+                                                               cli-options
+                                                               :in-order true)]
+    (cond
+     (:help options) (exit 0 (usage summary))
+     errors (exit 1 (error-msg errors)))
+
+    (swap! db-settings merge options)
+    (case (first arguments)
+      "config" (set-settings (parse-opts (rest arguments)
+                                         cli-configure-options))
+      nil      (run-app)
+      (exit 1 (str "Unknown command '"
+                   (first arguments)
+                   "'")))))

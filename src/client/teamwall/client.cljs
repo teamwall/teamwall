@@ -30,7 +30,7 @@
 
 (def ^:private snapshot-sleep-time
   "Time between two snapshots in milliseconds"
-  (atom 1000))
+  (atom (* 60 1000)))
 
 
 ;;    /==================\

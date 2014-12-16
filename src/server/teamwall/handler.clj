@@ -269,25 +269,29 @@
   []
   (add-watch connected-uids :connected-uids connections-watcher))
 
-(defn- error-msg [errors]
+(defn- error-msg
   "Build an error message for the provided ERRORS"
+  [errors]
   (str "The following errors occurred while parsing your command:\n\t- "
        (string/join "\n\t- " errors)))
 
-(defn- exit [status msg]
+(defn- exit
   "Exit the application and displays a message"
+  [status msg]
   (println msg)
   (java.lang.System/exit status))
 
-(defn usage [options-summary]
-  (->> ["An open source software used to build a wall of picture for your team"
-        ""
-        "Options:"
-        options-summary
-        ""
-        "Sub commands:"
-        "  config    Set server-side settings"]
-       (string/join \newline)))
+(defn usage
+  "Display the full hepl text with usages"
+  [options-summary]
+  (string/join \newline
+               ["Build a wall of picture for your team"
+                ""
+                "Options:"
+                options-summary
+                ""
+                "Sub commands:"
+                "  config    Set server-side settings"]))
 
 (defn- set-settings
   "Store the server side settings"
@@ -360,8 +364,9 @@
   (GET "/team-members"
        {params :params}
        (secure-routing-json (:token params)
-                            #(map stub-user (api/get-team-members %
-                                                                  @db-settings))))
+                            #(map stub-user
+                                  (api/get-team-members %
+                                                        @db-settings))))
 
   (wrap-multipart-params
    (POST "/new-photo"

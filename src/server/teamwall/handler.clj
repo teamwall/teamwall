@@ -1,5 +1,5 @@
 (ns teamwall.handler
-  (:use org.httpkit.server
+  (:use [org.httpkit.server]
         [slingshot.slingshot :only [throw+ try+]])
   (:import com.mongodb.MongoServerSelectionException)
   (:require [cheshire.core :refer :all]

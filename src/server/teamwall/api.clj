@@ -57,9 +57,9 @@
         filename (:filename photo)
         tmp-path (as-absolute-path tempfile)]
     (db/add-photo! user
-                  filename
-                  size
-                  (slurp-bytes tmp-path)
+                   filename
+                   size
+                   (slurp-bytes tmp-path)
                    db-settings)))
 
 (defn last-photo

@@ -5,7 +5,7 @@
             [reagent.core :as reagent :refer [atom]]
             [repositories.repository :as repository]
             [secretary.core :as secretary]
-            [teamwall.formative :as fd]))
+            [formative.dom :as fd]))
 
 
 ;;    /==================\

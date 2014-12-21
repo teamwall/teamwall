@@ -42,31 +42,34 @@
 
 (defn get-team-members
   "Return the other persons of the same team"
-  [user]
+  [user db-settings]
   (let [email         (:email user)
         email-pattern (extract-email-pattern email)
-        users         (db/get-users-for-email email-pattern)]
+        users         (db/get-users-for-email email-pattern
+                                              db-settings)]
     users))
 
 (defn set-new-photo
   "Set a new photo for the user provided as argument"
-  [user photo]
+  [user photo db-settings]
   (let [tempfile (:tempfile photo)
         size     (:size photo)
         filename (:filename photo)
         tmp-path (as-absolute-path tempfile)]
     (db/add-photo! user
-                  filename
-                  size
-                  (slurp-bytes tmp-path))))
+                   filename
+                   size
+                   (slurp-bytes tmp-path)
+                   db-settings)))
 
 (defn last-photo
   "Return the last photo for the user provided as argument"
-  [user email]
+  [user email db-settings]
   (let [user-pattern  (extract-email-pattern (:email user))
         email-pattern (extract-email-pattern email)]
     (if (= user-pattern email-pattern)
-      (let [photo    (db/get-last-photo email)
+      (let [photo    (db/get-last-photo email
+                                        db-settings)
             filename (:filename photo)
             content  (:content photo)
             size     (:size photo)

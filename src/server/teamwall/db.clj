@@ -40,8 +40,20 @@
 
 (defn- connect-to-mongo
   "Connect to the mongoDB instance"
-  []
-  (mg/connect))
+  [options db-name]
+  (let [conn (mg/connect {:host (:db-host options)
+                          :port (:db-port options)})
+        db   (mg/get-db conn db-name)]
+    (when (and (:db-username options)
+               (:db-password options))
+      (when-not (mg/authenticate db
+                                 (:db-username options)
+                                 (.toCharArray (:db-password options)))
+        (throw+ {:type     ::connection-failed
+                 :host     (:db-host options)
+                 :port     (:db-port options)
+                 :username (:db-username options)})))
+    [conn db]))
 
 (defn- hashed-password
   "Generate a hashed password using Scrypt
@@ -70,14 +82,14 @@
 
 (defn register-user
   "Add a new user to the user database"
-  [username password email salt]
-  (let [conn (connect-to-mongo)
-        db   (mg/get-db conn db-name)
-        user {:_id      email
-              :username username
-              :email    email
-              :status   :offline
-              :hash     (hashed-password password salt)}]
+  [username password email salt settings]
+  (let [[conn db] (connect-to-mongo settings
+                                    db-name)
+        user      {:_id      email
+                   :username username
+                   :email    email
+                   :status   :offline
+                   :hash     (hashed-password password salt)}]
     (mc/insert db
                db-users
                user)
@@ -86,23 +98,23 @@
 
 (defn user-exists
   "Return true if a user with the provided EMAIL exists"
-  [email]
-  (let [conn (connect-to-mongo)
-        db   (mg/get-db conn db-name)
-        user (mc/find-one-as-map db
-                                 db-users
-                                 {:email email})]
+  [email settings]
+  (let [[conn db] (connect-to-mongo settings
+                                    db-name)
+        user      (mc/find-one-as-map db
+                                      db-users
+                                      {:email email})]
     (mg/disconnect conn)
     (some? user)))
 
 (defn retrieve-user
   "Retrieve a user from the database using its email and password"
-  [email password salt]
-  (let [conn (connect-to-mongo)
-        db   (mg/get-db conn db-name)
-        user (mc/find-one-as-map db
-                                 db-users
-                                 {:email email})
+  [email password salt settings]
+  (let [[conn db]       (connect-to-mongo settings
+                                          db-name)
+        user            (mc/find-one-as-map db
+                                            db-users
+                                            {:email email})
         valid-password? (valid-password? password
                                          salt
                                          (:hash user))
@@ -118,9 +130,9 @@
 
 (defn update-status
   "Update the status of the provided USER to the new VALUE"
-  [user value]
-  (let [conn (connect-to-mongo)
-        db   (mg/get-db conn db-name)]
+  [user value settings]
+  (let [[conn db] (connect-to-mongo settings
+                                    db-name)]
     (mc/update db
                db-users
                {:_id (:email user)}
@@ -129,9 +141,9 @@
 
 (defn get-users-for-email
   "Retrieve all the users whose email match the pattern provided"
-  [pattern]
-  (let [conn  (connect-to-mongo)
-        db    (mg/get-db conn db-name)
+  [pattern settings]
+  (let [[conn db]  (connect-to-mongo settings
+                                     db-name)
         users (mc/find-maps db
                             db-users
                             {:email (re-pattern pattern)})]
@@ -140,10 +152,10 @@
 (defn add-photo!
   "Store a new photo for the provided user.
   If `timelaps` option is false, erase first all the other photos"
-  [user filename size content]
-  (let [conn     (connect-to-mongo)
-        db       (mg/get-db conn db-name)
-        timelaps (:timelaps user)]
+  [user filename size content settings]
+  (let [[conn db] (connect-to-mongo settings
+                                    db-name)
+        timelaps  (:timelaps user)]
     (if-not timelaps
       (mc/remove db
                  db-photos
@@ -159,36 +171,38 @@
 
 (defn get-last-photo
   "Return the last photo of the user provided as argument"
-  [email]
-  (let [conn   (connect-to-mongo)
-        db     (mg/get-db conn db-name)
-        photo  (mq/with-collection db db-photos
-                 (mq/find  {:user-id email})
-                 (mq/sort  {:_id -1})
-                 (mq/limit 1))
+  [email settings]
+  (let [[conn db] (connect-to-mongo settings
+                                    db-name)
+        photo     (mq/with-collection db db-photos
+                    (mq/find  {:user-id email})
+                    (mq/sort  {:_id -1})
+                    (mq/limit 1))
         result (first photo)]
     (mg/disconnect conn)
     result))
 
 (defn load-settings
   "Return the server settings, or nil if none is found"
-  []
-  (let [conn     (connect-to-mongo)
-        db       (mg/get-db conn db-name)
-        settings (mc/find-one-as-map db
-                                     db-settings
-                                     {:_id "server settings"})]
+  [settings]
+  (let [[conn db] (connect-to-mongo settings
+                                    db-name)
+        settings  (mc/find-one-as-map db
+                                      db-settings
+                                      {:_id "server_settings"})]
     (mg/disconnect conn)
     settings))
 
 (defn store-settings
   "Store new server side settings using the OPTIONS provided as argument"
-  [options]
-  (let [conn (connect-to-mongo)
-        db   (mg/get-db conn db-name)]
-    (mc/insert db
+  [options settings]
+  (let [[conn db] (connect-to-mongo settings
+                                    db-name)]
+    (mc/update db
                db-settings
-               (assoc options :_id "server settings"))
+               {:_id "server_settings"}
+               {$set options}
+               {:upsert true})
     (mg/disconnect conn)
     options))
 

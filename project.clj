@@ -25,6 +25,7 @@
                  [org.clojure/clojurescript "0.0-2498"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [org.clojure/core.match "0.2.2"]
+                 [org.clojure/tools.cli "0.3.1"]
                  [prismatic/dommy "1.0.0"]
                  [reagent "0.4.3"]
                  [ring "1.3.2"]

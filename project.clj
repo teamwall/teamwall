@@ -32,7 +32,7 @@
                  [ring/ring-json "0.3.1"]
                  [secretary "1.2.1"]
                  [slingshot "0.12.1"]
-                 [teamwall/formative "0.9.0"]]
+                 [teamwall/formative "0.9.1"]]
   :plugins [[codox "0.8.10"]
             [lein-bikeshed "0.2.0"]
             [lein-cljsbuild "1.0.3"]

@@ -84,8 +84,8 @@
   "Render the login error"
   []
   (if (nil? @error-message)
-    [:div.hidden.alert.alert-danger @error-message]
-    [:div.alert.alert-danger @error-message]))
+    [:div.hidden.alert.alert-danger.error-message @error-message]
+    [:div.alert.alert-danger.error-message @error-message]))
 
 
 ;;    /==================\

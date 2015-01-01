@@ -1,11 +1,11 @@
 (ns teamwall.register
   (:require [crate.core :as crate]
             [dommy.core :as dommy :refer-macros [sel sel1]]
-            [formative.core :as f]
+            [formidable.core :as f]
             [reagent.core :as reagent :refer [atom]]
             [repositories.repository :as repository]
             [secretary.core :as secretary]
-            [formative.dom :as fd]))
+            [formidable.dom :as fd]))
 
 
 ;;    /==================\
@@ -89,8 +89,8 @@
   "Render the login error"
   []
   (if (nil? @error-message)
-    [:div.hidden.alert.alert-danger @error-message]
-    [:div.alert.alert-danger @error-message]))
+    [:div.hidden.alert.alert-danger.error-message @error-message]
+    [:div.alert.alert-danger.error-message @error-message]))
 
 (defn- render-register-form
   "Render the register form"

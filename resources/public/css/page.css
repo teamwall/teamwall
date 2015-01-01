@@ -1,33 +1,11 @@
 @import "/bower_components/bootstrap/dist/css/bootstrap.min.css";
 @import "/bower_components/fontawesome/css/font-awesome.min.css";
-.problem.error .form-control {
-  border-color: #a94442;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-}
-.alert.alert-error {
-  color: #a94442;
-  background-color: #f2dede;
-  border-color: #ebccd1;
-}
-.problem.error .help-block,
-.problem.error .control-label,
-.problem.error .radio,
-.problem.error .checkbox,
-.problem.error .radio-inline,
-.problem.error .checkbox-inline,
-.problem.error.radio label,
-.problem.error.checkbox label,
-.problem.error.radio-inline label,
-.problem.error.checkbox-inline label {
-  color: #a94442;
-}
 body.login {
-  color: #f0e7d5;
+  color: #F0E7D5;
 }
 div.login {
   border-radius: 0px;
-  background: #213e61;
+  background: #213E61;
   padding: 20px;
   padding-top: 10px;
 }
@@ -43,11 +21,20 @@ div.login h1 .fa {
     margin-top: 59px;
   }
 }
-div.login .alert.alert-danger {
+div.login .alert.alert-danger.error-message {
   max-width: 288px;
   height: 34px;
   line-height: 4px;
   margin-bottom: 0;
+}
+.register-link a {
+  color: #F0E7D5;
+  text-decoration: underline;
+  float: right;
+  margin-top: 10px;
+}
+.register-link a:visited {
+  color: #c5bfb5;
 }
 body.register {
   color: #f0e7d5;
@@ -70,13 +57,13 @@ div.register h1 .fa {
     margin-top: 59px;
   }
 }
-div.register .alert.alert-error ul {
-  padding-left: 20px;
-}
 div.register .fieldset-submit {
   float: right;
 }
-div.register .alert.alert-danger {
+div.register .alert.alert-danger ul {
+  padding-left: 20px;
+}
+div.register .alert.alert-danger .error-message {
   max-width: 288px;
   height: 34px;
   line-height: 4px;

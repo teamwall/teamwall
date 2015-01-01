@@ -74,12 +74,18 @@
                                             on-login))}
        "Log in"]]]))
 
+(defn- render-link-to-register
+  "Render the link to register page"
+  []
+  [:div.register-link
+   [:a {:href "/register"} "Register a new mate"]])
+
 (defn- render-error
   "Render the login error"
   []
   (if (nil? @error-message)
-    [:div.hidden.alert.alert-danger @error-message]
-    [:div.alert.alert-danger @error-message]))
+    [:div.hidden.alert.alert-danger.error-message @error-message]
+    [:div.alert.alert-danger.error-message @error-message]))
 
 
 ;;    /==================\
@@ -96,5 +102,7 @@
    [:h1
     "Login"
     [:i.fa.fa-unlock-alt]]
-   [render-form on-login]
-   [render-error]])
+   [:div.login-form.clearfix
+    [render-form on-login]
+    [render-error]]
+   [render-link-to-register]])

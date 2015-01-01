@@ -21,7 +21,7 @@ div.login h1 .fa {
     margin-top: 59px;
   }
 }
-div.login .alert.alert-danger {
+div.login .alert.alert-danger.error-message {
   max-width: 288px;
   height: 34px;
   line-height: 4px;
@@ -57,13 +57,13 @@ div.register h1 .fa {
     margin-top: 59px;
   }
 }
-div.register .alert.alert-error ul {
-  padding-left: 20px;
-}
 div.register .fieldset-submit {
   float: right;
 }
-div.register .alert.alert-danger {
+div.register .alert.alert-danger ul {
+  padding-left: 20px;
+}
+div.register .alert.alert-danger .error-message {
   max-width: 288px;
   height: 34px;
   line-height: 4px;

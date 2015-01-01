@@ -19,7 +19,7 @@
                  [compojure "1.3.1"]
                  [crate "0.2.5"]
                  [crypto-random "1.2.0"]
-                 [formidable "0.1.3"]
+                 [formidable "0.1.4"]
                  [http-kit "2.1.19"]
                  [lein-cljsbuild/cljs-compat "1.0.0-20141215.132312-28"]
                  [org.clojure/clojure "1.6.0"]

@@ -117,7 +117,7 @@
   "Load the server settings"
   []
   (reset! settings (let [new-settings (db/load-settings @db-settings)]
-                     (if-not (nil? new-settings)
+                     (if new-settings
                        new-settings
                        (db/store-settings default-settings @db-settings)))))
 
@@ -253,7 +253,7 @@
     updated-user))
 
 (defn- connections-watcher
-  "Watcher over the sconnexion atom to set users offline"
+  "Watcher over the connections atom to set users offline"
   [_key _ref old-value new-value]
   (let [[removed added _] (data/diff (:any old-value) (:any new-value))]
     (doseq [uid removed]

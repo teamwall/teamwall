@@ -48,6 +48,13 @@
 ;;    \==================/
 
 
+(defn ^{:export  true
+        :private true} redirect-to-wall
+  "Redirect the current page to the wall"
+  []
+  (.pushState js/history {} "" "/")
+  (secretary/dispatch! "/"))
+
 (defn- sleep-time-validator [values]
   (let [sleep-time (:sleep-time values)
         error (js/isNaN (:sleep-time values))]
@@ -63,8 +70,7 @@
   "Callback invoked when the settings is successfully saved"
   [user]
   (states/set-user user)
-  (.pushState js/history {} "" "/")
-  (secretary/dispatch! "/"))
+  (redirect-to-wall))
 
 (defn- submit-action
   "Submit the login info to the server"
@@ -79,7 +85,7 @@
 (def settings-form
   "Settings form specification"
   {:renderer :bootstrap3-stacked
-   :cancel-href "/"
+   :cancel-options {:onclick "teamwall.settings.redirect_to_wall()"}
    :fields [{:name :h1
              :type :heading
              :text "App settings"}
@@ -102,13 +108,20 @@
 (defn- render-settings-form
   "Render the settings form"
   []
-  (let [sleep-time (-> (states/get-user)
+  (let [user       (states/get-user)
+        sleep-time (-> user
                        :settings
                        :sleep-time)
         sleep-time (or sleep-time
-                       (/ states/default-snapshot-sleep-time 1000))]
+                       states/default-sleep-time)
+        timelaps   (-> user
+                       :settings
+                       :timelaps)
+        timelaps   (or timelaps
+                       states/default-timelaps)]
     (f/render-form (assoc settings-form
-                     :values {:sleep-time sleep-time}))))
+                     :values {:sleep-time sleep-time
+                              :timelaps   timelaps}))))
 
 (defn- render-form-container
   "Render the registration form container"

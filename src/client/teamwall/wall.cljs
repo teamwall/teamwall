@@ -2,6 +2,7 @@
   (:require [cemerick.url :refer [url url-encode]]
             [reagent.core :as reagent :refer [atom]]
             [repositories.repository :as repository]
+            [secretary.core :as secretary]
             [teamwall.states :as states]))
 
 
@@ -28,6 +29,13 @@
 ;;    |                  |
 ;;    \==================/
 
+
+(defn- redirect-to-settings
+  "Redirect the current page to settings"
+  [event]
+  (.preventDefault event)
+  (.pushState js/history {} "" "/settings")
+  (secretary/dispatch! "/settings"))
 
 (defn- now-as-milliseconds
   "Return the current time as a string"
@@ -105,9 +113,15 @@
 (defn- build-user-link
   "Build the user anchor"
   []
-  [:a.link {:href "/settings"}
+  [:a.link.user
    [:span.glyphicon.glyphicon-user]
    (:username (states/get-user))])
+
+(defn- build-user-settings
+  "Build the settings icon"
+  []
+  [:a.link.settings.glyphicon.glyphicon-cog
+   {:on-click redirect-to-settings}])
 
 (defn- build-navbar
   "Build the main navbar of the page"
@@ -116,7 +130,8 @@
    [:div.container-fluid
     [build-title]
     [:ul.nav.navbar-nav.navbar-right
-     [:li [build-user-link]]]]])
+     [:li [build-user-link]]
+     [:li [build-user-settings]]]]])
 
 (defn- build-content
   "Build the wall of mate tiles"

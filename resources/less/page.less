@@ -51,6 +51,11 @@ h1.title {
         padding: 0;
         margin: 18px;
         margin-left: 0;
+        cursor: pointer;
+
+        &.user { //TEMP
+          cursor: normal;
+        }
 
         .glyphicon {
           margin-right: 5px;
@@ -68,6 +73,12 @@ h1.title {
 /*         color: #FFC59F; */
         text-decoration: none;
 /*         cursor: pointer; */
+      }
+
+      &.settings {
+        &.glyphicon:hover {
+          text-decoration: underline;
+        }
       }
     }
   }

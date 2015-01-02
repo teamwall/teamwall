@@ -103,6 +103,18 @@ div.settings .alert.alert-danger.error-message {
   line-height: 4px;
   margin-bottom: 10px;
 }
+div.settings .cancel-link .cancel-form {
+  margin: 6px 12px;
+  padding: 0;
+}
+div.settings .cancel-link .cancel-form:hover {
+  color: #6199CD;
+  text-decoration: underline;
+}
+div.settings .cancel-link .cancel-form:active {
+  box-shadow: none;
+  -webkit-box-shadow: none;
+}
 html,
 body {
   height: 100%;
@@ -143,6 +155,10 @@ h1.title {
   padding: 0;
   margin: 18px;
   margin-left: 0;
+  cursor: pointer;
+}
+.navbar .navbar-right a.link.user {
+  cursor: normal;
 }
 .navbar .navbar-right a.link .glyphicon {
   margin-right: 5px;
@@ -155,6 +171,9 @@ h1.title {
   /*         color: #FFC59F; */
   text-decoration: none;
   /*         cursor: pointer; */
+}
+.navbar .navbar-right a.settings.glyphicon:hover {
+  text-decoration: underline;
 }
 .mates .mate {
   padding: 0;

@@ -127,6 +127,6 @@
    [:h1
     "Register a new teammate"
     [:i.fa.fa-user]]
+   [render-error]
    [(with-meta render-form-container
-      {:component-did-mount when-form-container-mounted})]
-   [render-error]])
+      {:component-did-mount when-form-container-mounted})]])

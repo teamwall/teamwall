@@ -155,8 +155,8 @@
   [user filename size content settings]
   (let [[conn db] (connect-to-mongo settings
                                     db-name)
-        timelaps  (:timelaps user)]
-    (if-not timelaps
+        timelaps  (-> user :settings :timelaps)]
+    (when-not timelaps
       (mc/remove db
                  db-photos
                  {:user-id (:email user)}))

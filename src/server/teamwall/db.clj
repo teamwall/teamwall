@@ -206,6 +206,18 @@
     (mg/disconnect conn)
     options))
 
+(defn update-settings!
+  "Update the provided user info in db"
+  [user settings]
+  (let [[conn db] (connect-to-mongo settings
+                                    db-name)]
+    (mc/update db
+               db-users
+               {:_id (:email user)}
+               {$set {:settings (:settings user)}}
+               {:upsert true})
+    (mg/disconnect conn)))
+
 
 ;;    /==================\
 ;;    |                  |

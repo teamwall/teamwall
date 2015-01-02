@@ -69,6 +69,40 @@ div.register .alert.alert-danger .error-message {
   line-height: 4px;
   margin-bottom: 0;
   margin-top: -49px;
+body.settings {
+  color: #f0e7d5;
+}
+div.settings {
+  border-radius: 0px;
+  background: #213e61;
+  padding: 20px;
+  padding-top: 10px;
+}
+div.settings h1 {
+  color: white;
+  text-align: center;
+}
+div.settings h1 .fa {
+  padding-left: 10px;
+}
+div.settings h3 {
+  color: white;
+}
+@media (min-width: 768px) {
+  div.settings {
+    margin-top: 59px;
+  }
+}
+div.settings .fieldset-submit {
+  float: right;
+}
+div.settings .alert.alert-danger ul {
+  padding-left: 20px;
+}
+div.settings .alert.alert-danger.error-message {
+  height: 34px;
+  line-height: 4px;
+  margin-bottom: 10px;
 }
 html,
 body {

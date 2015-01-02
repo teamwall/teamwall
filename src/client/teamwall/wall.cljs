@@ -105,7 +105,7 @@
 (defn- build-user-link
   "Build the user anchor"
   []
-  [:a.link
+  [:a.link {:href "/settings"}
    [:span.glyphicon.glyphicon-user]
    (:username (states/get-user))])
 

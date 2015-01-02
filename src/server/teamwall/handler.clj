@@ -124,7 +124,7 @@
 (defn- stub-user
   "Return a sub map of user to protect sensitive data"
   [user]
-  (select-keys user [:username :email :status]))
+  (select-keys user [:username :email :status :settings]))
 
 (defn- generate-api-token
   "Generate a new API token"
@@ -324,6 +324,7 @@
   (client-route "/")
   (client-route "/wall")
   (client-route "/register")
+  (client-route "/settings")
 
   (POST "/register"
         {body :body}
@@ -342,6 +343,21 @@
               (notify-team stubbed-user
                            "new-user")
               {:status 200}))))
+
+  (POST "/settings"
+        {body :body}
+        (let [params   (parse-string (slurp body) true)
+              user     (:user params)
+              token    (:token params)
+              data     (get @tokens token)
+              new-data (assoc data :user user)]
+          (secure-routing-json token
+                               (fn [old-user]
+                                 (db/update-settings! user
+                                                      @db-settings)
+                                 (swap! tokens assoc
+                                        token  new-data)
+                                 user))))
 
   (GET  "/notifications" req (ring-ajax-get-or-ws-handshake req))
   (POST "/notifications" req (ring-ajax-post req))

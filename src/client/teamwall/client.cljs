@@ -9,6 +9,7 @@
             [teamwall.helper :as helper]
             [teamwall.login :as login]
             [teamwall.register :as register]
+            [teamwall.settings :as settings]
             [teamwall.states :as states]
             [teamwall.wall :as wall]
             [webrtc.core :as webrtc])
@@ -30,7 +31,7 @@
 
 (def ^:private snapshot-sleep-time
   "Time between two snapshots in milliseconds"
-  (atom (* 60 1000)))
+  (atom states/default-snapshot-sleep-time))
 
 
 ;;    /==================\
@@ -87,7 +88,9 @@
   "Setup the environment variables and render the wall"
   [data]
   (states/set-token (:token data))
-  (states/set-user  (:user data))
+  (states/set-user (:user data))
+  (when-let [new-time (-> data :user :settings :sleep-time)]
+    (reset! snapshot-sleep-time new-time))
   (repository/open-notification-channel (:token data))
   (repository/get-team-members (:token data)
                                (fn [members]
@@ -95,6 +98,17 @@
                                  (append-content (wall/render-content)
                                                  "wall")))
   (snapshot-loop (:token data)))
+
+(defn- setup-settings
+  "Setup the settings page"
+  [data]
+  (states/set-token (:token data))
+  (states/set-user (:user data))
+  (when-let [new-time (-> data :user :settings :sleep-time)]
+    (reset! snapshot-sleep-time new-time))
+  (repository/open-notification-channel (:token data))
+  (append-content (settings/render-content)
+                  "settings"))
 
 (defn set-token-from-cookie!
   "Set the state token from the document cookie. If the cookie is
@@ -138,6 +152,20 @@
   (let [document (register/render-content)]
     (append-content document
                     "register")))
+
+(defroute ^:no-doc settings-route "/settings"
+  {:as params}
+  (let [token          (get-token)
+        document   (settings/render-content)
+        on-success (fn [user]
+                     (setup-settings {:user user
+                                      :token token}))
+        on-error   (fn [err]
+                     (states/reset-token!)
+                     (redirect (wall-route)))]
+    (repository/get-current-user token
+                                 on-success
+                                 on-error)))
 
 
 ;;    /==================\

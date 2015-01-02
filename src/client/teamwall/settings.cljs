@@ -80,9 +80,15 @@
   "Settings form specification"
   {:renderer :bootstrap3-stacked
    :cancel-href "/"
-   :fields [{:name :h1 :type :heading :text "App settings"}
-            {:name :sleep-time :placeholder "60" :label "Sleep time (in seconds)" }
-            {:name :timelaps :type :checkbox :label "Store daily pictures to make a animated timelaps"}]
+   :fields [{:name :h1
+             :type :heading
+             :text "App settings"}
+            {:name :sleep-time
+             :placeholder "60"
+             :label "Sleep time (in seconds)" }
+            {:name :timelaps
+             :type :checkbox
+             :label "Store daily pictures to make a animated timelaps"}]
    :validations [[:required [:sleep-time]]]
    :validator sleep-time-validator})
 

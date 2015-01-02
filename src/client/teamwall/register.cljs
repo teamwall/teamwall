@@ -2,10 +2,10 @@
   (:require [crate.core :as crate]
             [dommy.core :as dommy :refer-macros [sel sel1]]
             [formidable.core :as f]
+            [formidable.dom :as fd]
             [reagent.core :as reagent :refer [atom]]
             [repositories.repository :as repository]
-            [secretary.core :as secretary]
-            [formidable.dom :as fd]))
+            [secretary.core :as secretary]))
 
 
 ;;    /==================\

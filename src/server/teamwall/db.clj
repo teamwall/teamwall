@@ -184,8 +184,8 @@
 
 (defn load-settings
   "Return the server settings, or nil if none is found"
-  [settings]
-  (let [[conn db] (connect-to-mongo settings
+  [database-settings]
+  (let [[conn db] (connect-to-mongo database-settings
                                     db-name)
         settings  (mc/find-one-as-map db
                                       db-settings

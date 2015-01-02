@@ -371,11 +371,21 @@
                  (:salt @settings))))
 
   (GET "/current-user"
-       {params :params}
-       (secure-routing-json (:token params)
-                            (fn [user]
-                              (stub-user (update-status user
-                                                        :online)))))
+       req
+       (let [{:keys [session params]} req
+             token (:token params)]
+         (secure-routing token
+                         (fn [user]
+                           (let [updated-user (update-status user
+                                                             :online)
+                                 stubbed-user (stub-user updated-user)
+                                 body         (generate-string stubbed-user
+                                                               {:pretty true})]
+                             {:status  200
+                              :cookies {"tw-token" {:value token}}
+                              :headers {"Content-Type" "application/json"}
+                              :session (assoc session :uid token)
+                              :body    body})))))
 
   (GET "/team-members"
        {params :params}
@@ -424,9 +434,9 @@
   (try+
    (load-settings!)
    (catch com.mongodb.MongoServerSelectionException e
-     (println "Mongo database not found."
-              "Are you sure you have an instance running?")
-     (java.lang.System/exit 1)))
+     (exit 1
+           "Mongo database not found."
+           "Are you sure you have an instance running?")))
   (run-server (site app-routes)
               {:port (as-integer (:port @settings))})
   (add-connections-watcher)

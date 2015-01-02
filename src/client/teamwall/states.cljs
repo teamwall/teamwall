@@ -11,9 +11,14 @@
 (def ^:private token (atom nil))
 (def ^:private user (atom nil))
 
-(def default-snapshot-sleep-time
-  "Default time between two snapshots in milliseconds"
-  (* 60 1000))
+(def default-sleep-time
+  "Default time between two snapshots in seconds"
+  60)
+
+(def default-timelaps
+  "Default timelaps options value"
+  false)
+
 
 ;;    /==================\
 ;;    |                  |

@@ -24,18 +24,6 @@
 
 ;;    /==================\
 ;;    |                  |
-;;    |      PRIVATE     |
-;;    |                  |
-;;    \==================/
-
-
-(def ^:private snapshot-sleep-time
-  "Time between two snapshots in milliseconds"
-  (atom states/default-snapshot-sleep-time))
-
-
-;;    /==================\
-;;    |                  |
 ;;    |     RENDERING    |
 ;;    |                  |
 ;;    \==================/
@@ -81,7 +69,9 @@
                             (when blob
                               (repository/send-blob-picture blob
                                                             token))))
-     (<! (timeout @snapshot-sleep-time))
+     (<! (timeout (* 1000 (-> (states/get-user)
+                              :settings
+                              :sleep-time))))
      (recur))))
 
 (defn- setup-wall
@@ -89,8 +79,6 @@
   [data]
   (states/set-token (:token data))
   (states/set-user (:user data))
-  (when-let [new-time (-> data :user :settings :sleep-time)]
-    (reset! snapshot-sleep-time new-time))
   (repository/open-notification-channel (:token data))
   (repository/get-team-members (:token data)
                                (fn [members]
@@ -104,8 +92,6 @@
   [data]
   (states/set-token (:token data))
   (states/set-user (:user data))
-  (when-let [new-time (-> data :user :settings :sleep-time)]
-    (reset! snapshot-sleep-time new-time))
   (repository/open-notification-channel (:token data))
   (append-content (settings/render-content)
                   "settings"))

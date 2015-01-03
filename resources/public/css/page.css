@@ -16,6 +16,9 @@ div.login h1 {
 div.login h1 .fa {
   padding-left: 10px;
 }
+div.login #row-field-submit span {
+  float: right;
+}
 @media (min-width: 768px) {
   div.login {
     margin-top: 59px;

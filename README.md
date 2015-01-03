@@ -62,7 +62,7 @@ Other dependencies can be installed running:
 The first time you want to run the application,
 you first need to build the client part. To do so, run:
 
-    $ lein cljsbuild once
+    $ lein setup
 
 To start a web server for the application, run:
 

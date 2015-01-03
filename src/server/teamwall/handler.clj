@@ -117,14 +117,14 @@
   "Load the server settings"
   []
   (reset! settings (let [new-settings (db/load-settings @db-settings)]
-                     (if-not (nil? new-settings)
+                     (if new-settings
                        new-settings
                        (db/store-settings default-settings @db-settings)))))
 
 (defn- stub-user
   "Return a sub map of user to protect sensitive data"
   [user]
-  (select-keys user [:username :email :status]))
+  (select-keys user [:username :email :status :settings]))
 
 (defn- generate-api-token
   "Generate a new API token"
@@ -253,7 +253,7 @@
     updated-user))
 
 (defn- connections-watcher
-  "Watcher over the sconnexion atom to set users offline"
+  "Watcher over the connections atom to set users offline"
   [_key _ref old-value new-value]
   (let [[removed added _] (data/diff (:any old-value) (:any new-value))]
     (doseq [uid removed]
@@ -324,6 +324,7 @@
   (client-route "/")
   (client-route "/wall")
   (client-route "/register")
+  (client-route "/settings")
 
   (POST "/register"
         {body :body}
@@ -343,6 +344,21 @@
                            "new-user")
               {:status 200}))))
 
+  (POST "/settings"
+        {body :body}
+        (let [params   (parse-string (slurp body) true)
+              user     (:user params)
+              token    (:token params)
+              data     (get @tokens token)
+              new-data (assoc data :user user)]
+          (secure-routing-json token
+                               (fn [old-user]
+                                 (db/update-settings! user
+                                                      @db-settings)
+                                 (swap! tokens assoc
+                                        token  new-data)
+                                 user))))
+
   (GET  "/notifications" req (ring-ajax-get-or-ws-handshake req))
   (POST "/notifications" req (ring-ajax-post req))
 
@@ -355,11 +371,21 @@
                  (:salt @settings))))
 
   (GET "/current-user"
-       {params :params}
-       (secure-routing-json (:token params)
-                            (fn [user]
-                              (stub-user (update-status user
-                                                        :online)))))
+       req
+       (let [{:keys [session params]} req
+             token                    (:token params)]
+         (secure-routing token
+                         (fn [user]
+                           (let [updated-user (update-status user
+                                                             :online)
+                                 stubbed-user (stub-user updated-user)
+                                 body         (generate-string stubbed-user
+                                                               {:pretty true})]
+                             {:status  200
+                              :cookies {"tw-token" {:value token}}
+                              :headers {"Content-Type" "application/json"}
+                              :session (assoc session :uid token)
+                              :body    body})))))
 
   (GET "/team-members"
        {params :params}
@@ -408,9 +434,13 @@
   (try+
    (load-settings!)
    (catch com.mongodb.MongoServerSelectionException e
-     (println "Mongo database not found."
-              "Are you sure you have an instance running?")
-     (java.lang.System/exit 1)))
+     (exit 1
+           (str `"Mongo database not found. "
+                "Are you sure you have an instance running?")))
+   (catch com.mongodb.MongoTimeoutException e
+     (exit 1
+           (str `"Mongo database not found. "
+                "Are you sure you have an instance running?"))))
   (run-server (site app-routes)
               {:port (as-integer (:port @settings))})
   (add-connections-watcher)

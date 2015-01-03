@@ -19,7 +19,7 @@
                  [compojure "1.3.1"]
                  [crate "0.2.5"]
                  [crypto-random "1.2.0"]
-                 [formidable "0.1.4"]
+                 [formidable "0.1.9"]
                  [http-kit "2.1.19"]
                  [lein-cljsbuild/cljs-compat "1.0.0-20141215.132312-28"]
                  [org.clojure/clojure "1.6.0"]
@@ -37,10 +37,13 @@
             [lein-bikeshed "0.2.0"]
             [lein-cljsbuild "1.0.3"]
             [lein-kibit "0.0.8"]
+            [lein-less "1.7.2"]
             [lein-ring "0.8.13"]]
   :main teamwall.handler
   :aot [teamwall.handler]
   :source-paths ["src/server"]
+  :less {:source-paths ["resources/less/page.less"]
+         :target-path "resources/public/css/page.css"}
   :cljsbuild {
     :builds {
       :main {
@@ -78,4 +81,10 @@
                                :src-linenum-anchor-prefix "L"}}}
   :aliases {"doc" ["do"
                    ["with-profile" "doc-cljs" "doc"]
-                   ["with-profile" "doc-clj" "doc"]]})
+                   ["with-profile" "doc-clj" "doc"]]
+            "setup" ["do"
+                     ["cljsbuild" "once"]
+                     ["less" "once"]]
+            "clean" ["do"
+                     ["cljsbuild" "clean"]
+                     ["clean"]]})

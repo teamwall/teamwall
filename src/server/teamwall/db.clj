@@ -155,8 +155,8 @@
   [user filename size content settings]
   (let [[conn db] (connect-to-mongo settings
                                     db-name)
-        timelaps  (:timelaps user)]
-    (if-not timelaps
+        timelaps  (-> user :settings :timelaps)]
+    (when-not timelaps
       (mc/remove db
                  db-photos
                  {:user-id (:email user)}))
@@ -184,8 +184,8 @@
 
 (defn load-settings
   "Return the server settings, or nil if none is found"
-  [settings]
-  (let [[conn db] (connect-to-mongo settings
+  [database-settings]
+  (let [[conn db] (connect-to-mongo database-settings
                                     db-name)
         settings  (mc/find-one-as-map db
                                       db-settings
@@ -205,6 +205,18 @@
                {:upsert true})
     (mg/disconnect conn)
     options))
+
+(defn update-settings!
+  "Update the provided user info in db"
+  [user settings]
+  (let [[conn db] (connect-to-mongo settings
+                                    db-name)]
+    (mc/update db
+               db-users
+               {:_id (:email user)}
+               {$set {:settings (:settings user)}}
+               {:upsert true})
+    (mg/disconnect conn)))
 
 
 ;;    /==================\

@@ -35,6 +35,10 @@
   "URL for the user registration route"
   "/register")
 
+(def ^:private settings-url
+  "URL for the user settings route"
+  "/settings")
+
 
 ;;    /==================\
 ;;    |                  |
@@ -72,11 +76,24 @@
                               "="
                               (cemerick.url/url-encode v)))))
 
+(defn- async-post
+  "Do an async POST call"
+  [& {:keys [handler url error params]}]
+  (let [options (atom {:handler handler
+                       :format  :json
+                       :keywords? true})]
+    (when-not (nil? error)
+      (swap! options assoc :error-handler error))
+    (when-not (nil? params)
+      (swap! options assoc :params params))
+    (POST url @options)))
+
 (defn- async-post-json
   "Do an async POST call and consider the response as JSON"
   [& {:keys [handler url error params]}]
   (let [options (atom {:handler handler
                        :format  :json
+                       :response-format :json
                        :keywords? true})]
     (when-not (nil? error)
       (swap! options assoc :error-handler error))
@@ -178,9 +195,18 @@
 (defn register
   "Register a new teammate with the info provided"
   [username email password on-success on-error]
+  (async-post :handler on-success
+              :error   on-error
+              :url     register-url
+              :params  {:username username
+                        :email    email
+                        :password password}))
+
+(defn save-settings
+  "Send the current user settings to the server"
+  [token user settings on-success on-error]
   (async-post-json :handler on-success
                    :error   on-error
-                   :url     register-url
-                   :params  {:username username
-                             :email    email
-                             :password password}))
+                   :url     settings-url
+                   :params  {:user (assoc user :settings settings)
+                             :token token}))

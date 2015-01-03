@@ -67,11 +67,56 @@ div.register .alert.alert-danger ul {
   padding-left: 20px;
 }
 div.register .alert.alert-danger .error-message {
-  max-width: 288px;
   height: 34px;
   line-height: 4px;
-  margin-bottom: 0;
-  margin-top: -49px;
+  margin-bottom: 10px;
+}
+body.settings {
+  color: #f0e7d5;
+}
+div.settings {
+  border-radius: 0px;
+  background: #213e61;
+  padding: 20px;
+  padding-top: 10px;
+}
+div.settings h1 {
+  color: white;
+  text-align: center;
+}
+div.settings h1 .fa {
+  padding-left: 10px;
+}
+div.settings h3 {
+  color: white;
+}
+@media (min-width: 768px) {
+  div.settings {
+    margin-top: 59px;
+  }
+}
+div.settings .fieldset-submit {
+  float: right;
+}
+div.settings .alert.alert-danger ul {
+  padding-left: 20px;
+}
+div.settings .alert.alert-danger.error-message {
+  height: 34px;
+  line-height: 4px;
+  margin-bottom: 10px;
+}
+div.settings .cancel-link .cancel-form {
+  margin: 6px 12px;
+  padding: 0;
+}
+div.settings .cancel-link .cancel-form:hover {
+  color: #6199CD;
+  text-decoration: underline;
+}
+div.settings .cancel-link .cancel-form:active {
+  box-shadow: none;
+  -webkit-box-shadow: none;
 }
 html,
 body {
@@ -113,6 +158,10 @@ h1.title {
   padding: 0;
   margin: 18px;
   margin-left: 0;
+  cursor: pointer;
+}
+.navbar .navbar-right a.link.user {
+  cursor: normal;
 }
 .navbar .navbar-right a.link .glyphicon {
   margin-right: 5px;
@@ -125,6 +174,9 @@ h1.title {
   /*         color: #FFC59F; */
   text-decoration: none;
   /*         cursor: pointer; */
+}
+.navbar .navbar-right a.settings.glyphicon:hover {
+  text-decoration: underline;
 }
 .mates .mate {
   padding: 0;

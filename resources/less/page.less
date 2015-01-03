@@ -5,6 +5,7 @@
 @import "../public/bower_components/bootstrap/less/variables.less";
 @import "./login.less";
 @import "./register.less";
+@import "./settings.less";
 
 html, body {
   height: 100%;
@@ -50,6 +51,11 @@ h1.title {
         padding: 0;
         margin: 18px;
         margin-left: 0;
+        cursor: pointer;
+
+        &.user { //TEMP
+          cursor: normal;
+        }
 
         .glyphicon {
           margin-right: 5px;
@@ -67,6 +73,12 @@ h1.title {
 /*         color: #FFC59F; */
         text-decoration: none;
 /*         cursor: pointer; */
+      }
+
+      &.settings {
+        &.glyphicon:hover {
+          text-decoration: underline;
+        }
       }
     }
   }

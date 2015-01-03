@@ -130,9 +130,7 @@
   "Main rendering function"
   []
   [:div.settings.clearfix.col-md-4.col-md-offset-4
-   [:h1
-    "Settings"
-    [:i.fa.fa-user]]
+   [:h1 "Settings"]
    [render-error]
    [(with-meta render-form-container
       {:component-did-mount when-form-container-mounted})]])

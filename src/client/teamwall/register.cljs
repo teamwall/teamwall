@@ -1,4 +1,5 @@
 (ns teamwall.register
+  "Render the register page and handle the register request"
   (:require [crate.core :as crate]
             [dommy.core :as dommy :refer-macros [sel sel1]]
             [formidable.core :as f]

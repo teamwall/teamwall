@@ -1,4 +1,5 @@
 (ns teamwall.client
+  "Render the client. Entry point for the client side"
   (:require [cljs.core.async :as async
              :refer [<! timeout]]
             [dommy.core :as dommy :refer-macros [sel sel1]]

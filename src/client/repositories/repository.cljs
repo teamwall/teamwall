@@ -1,4 +1,5 @@
 (ns repositories.repository
+  "Handle the communication with the server"
   (:require-macros [cljs.core.async.macros :as asyncm :refer [go go-loop]]
                    [cljs.core.match.macros :refer (match)])
   (:require [ajax.core :refer [GET POST]]

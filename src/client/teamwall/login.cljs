@@ -1,4 +1,5 @@
 (ns teamwall.login
+  "Render the login page and handle the login request"
   (:require [crate.core :as crate]
             [dommy.core :as dommy :refer-macros [sel sel1]]
             [formidable.core :as f]

@@ -1,4 +1,5 @@
 (ns teamwall.db
+  "Communicate with the Mongo database"
   (:require [clojurewerkz.scrypt.core :as scrypt]
             [monger.collection :as mc]
             [monger.core :as mg]

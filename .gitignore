@@ -17,3 +17,7 @@ resources/public/js
 resources/public/bower_components
 .DS_Store
 /.tern-port
+*.crt
+*.csr
+*.key
+nginx.conf

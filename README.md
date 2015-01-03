@@ -11,6 +11,9 @@ An open source software used to build a wall of picture for your team
 
 - [Prerequisites](#prerequisites)
 - [Running](#running)
+- [Server configuration](#server-configuration)
+    - [config subcommand](#config-subcommand)
+    - [CLI arguments](#cli-arguments)
 - [API](#api)
     - [Login](#login)
         - [Path & Verb](#path-verb)
@@ -63,9 +66,35 @@ you first need to build the client part. To do so, run:
 
 To start a web server for the application, run:
 
-    lein run
+    $ lein run
 
 The web server should be reachable at `localhost:3000`.
+
+By default, _Teamwall_ is served using HTTP but it is highly recommended to serve it using HTTPS.
+This can be easily done using [Nginx](http://nginx.org/en/) as detailled [here](https://github.com/teamwall/teamwall/wiki/HTTPS).
+
+## Server configuration
+
+There is two kind of settings which can be provided to _Teamwall_.
+The first kind contains the settings that can be stored into the databse.
+The second kind contains the databases settings.
+
+### config subcommand
+
+The `config` subcommand can be used to set the port used to serve the application.
+
+    $ lein run config --port PORT
+
+The help text can be seen using the command:
+
+    $ lein run config --help
+
+### CLI arguments
+
+This settings concern mainly the database access.
+The list of available options can be found running: 
+
+    $ lein run -- --help
 
 ## API
 

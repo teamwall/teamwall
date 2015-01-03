@@ -1,4 +1,5 @@
 (ns teamwall.wall
+  "Render the wall page and the pictures"
   (:require [cemerick.url :refer [url url-encode]]
             [reagent.core :as reagent :refer [atom]]
             [repositories.repository :as repository]

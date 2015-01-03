@@ -1,4 +1,5 @@
 (ns teamwall.settings
+  "Render the settings page and handle the settings request"
   (:require  [crate.core :as crate]
              [dommy.core :as dommy :refer-macros [sel sel1]]
              [formidable.core :as f]

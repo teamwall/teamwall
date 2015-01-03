@@ -1,4 +1,5 @@
 (ns teamwall.handler
+  "Handle clients requests. This is the entry point of the application"
   (:use [org.httpkit.server]
         [slingshot.slingshot :only [throw+ try+]])
   (:import com.mongodb.MongoServerSelectionException)

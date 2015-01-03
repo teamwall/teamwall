@@ -1,4 +1,5 @@
 (ns server.teamwall.t-handler
+  "Tests for the server handler"
   (:use midje.sweet
         [midje.util :only [testable-privates]])
   (:require [cheshire.core :refer :all]

@@ -1,4 +1,5 @@
-(ns teamwall.states)
+(ns teamwall.states
+  "Store some shared states through the client application")
 
 
 ;;    /==================\

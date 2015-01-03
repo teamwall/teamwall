@@ -1,4 +1,5 @@
 (ns teamwall.api
+  "Compute client requests and eventually reverberate request to the database"
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
             [pantomime.mime :as mime]

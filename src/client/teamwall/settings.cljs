@@ -20,26 +20,6 @@
   "Error message state holder"
   (atom nil))
 
-(def ^:private lowercase-error-message
-  "Error message when no lowercase letter"
-  "must contain at least one lowercase letter")
-
-(def ^:private uppercase-error-message
-  "Error message when no uppercase letter"
-  "must contain at least one uppercase letter")
-
-(def ^:private number-error-message
-  "Error message when no number"
-  "must contain at least one number")
-
-(def ^:private special-error-message
-  "Error message when no special character"
-  "must contain at least special character among: !?@#$%'\"`~&*+=-_()[]{}<>")
-
-(def ^:private special-regex
-  "Regex for special characters"
-  #".*[!?@#$%'\"`~&*+=-_\(\)\[\]\{\}\<\>].*")
-
 
 ;;    /==================\
 ;;    |                  |

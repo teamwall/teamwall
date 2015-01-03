@@ -373,7 +373,7 @@
   (GET "/current-user"
        req
        (let [{:keys [session params]} req
-             token (:token params)]
+             token                    (:token params)]
          (secure-routing token
                          (fn [user]
                            (let [updated-user (update-status user
@@ -435,8 +435,12 @@
    (load-settings!)
    (catch com.mongodb.MongoServerSelectionException e
      (exit 1
-           "Mongo database not found."
-           "Are you sure you have an instance running?")))
+           (str `"Mongo database not found. "
+                "Are you sure you have an instance running?")))
+   (catch com.mongodb.MongoTimeoutException e
+     (exit 1
+           (str `"Mongo database not found. "
+                "Are you sure you have an instance running?"))))
   (run-server (site app-routes)
               {:port (as-integer (:port @settings))})
   (add-connections-watcher)

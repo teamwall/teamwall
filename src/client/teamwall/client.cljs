@@ -141,7 +141,7 @@
 
 (defroute ^:no-doc settings-route "/settings"
   {:as params}
-  (let [token          (get-token)
+  (let [token      (get-token)
         document   (settings/render-content)
         on-success (fn [user]
                      (setup-settings {:user user

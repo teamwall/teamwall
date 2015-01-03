@@ -85,6 +85,6 @@
             "setup" ["do"
                      ["cljsbuild" "once"]
                      ["less" "once"]]
-            "clean" ["do"
+            "cleanup" ["do"
                      ["cljsbuild" "clean"]
                      ["clean"]]})

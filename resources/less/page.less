@@ -35,12 +35,14 @@ h1.title {
   background: #283f5a;
   margin: 0;
   border-radius: 0;
+  z-index: 2;
 
   .navbar-right {
     position: absolute;
     right: 0;
     top: 0;
     margin-right: 0;
+    margin-top: 0;
 
     a {
 /*       cursor: pointer; */
@@ -48,13 +50,13 @@ h1.title {
 
       &.link {
         line-height: 1.6;
-        padding: 0;
-        margin: 18px;
+        padding: 18px;
+        background: #283f5a;
         margin-left: 0;
         cursor: pointer;
 
         &.user { //TEMP
-          cursor: normal;
+          cursor: default;
         }
 
         .glyphicon {
@@ -69,15 +71,43 @@ h1.title {
       }
 
       &:hover {
-        background: transparent;
-/*         color: #FFC59F; */
         text-decoration: none;
-/*         cursor: pointer; */
       }
 
       &.settings {
         &.glyphicon:hover {
           text-decoration: underline;
+        }
+      }
+    }
+
+    li.menu:hover ul {
+      display: block;
+    }
+    li.menu ul {
+      display: none;
+      background: #283f5a;
+      box-shadow: 0 0 1px 1px white;
+      padding-left: 18px;
+
+      li {
+        display: block;
+
+        .menu-item {
+          cursor: pointer;
+
+          .glyphicon {
+            padding-right: 10px;
+            padding-bottom: 20px;
+          }
+
+          &:hover {
+            text-decoration: none;
+
+            .item {
+              border-bottom: 1px solid white;
+            }
+          }
         }
       }
     }

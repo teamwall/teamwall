@@ -15,6 +15,10 @@ An open source software used to build a wall of picture for your team
     - [config subcommand](#config-subcommand)
     - [CLI arguments](#cli-arguments)
 - [API](#api)
+    - [Register a new user](#register-a-new-user)
+        - [Path & Verb](#path-verb)
+        - [Parameters](#parameters)
+        - [Status](#status)
     - [Login](#login)
         - [Path & Verb](#path-verb)
         - [Parameters](#parameters)
@@ -24,6 +28,10 @@ An open source software used to build a wall of picture for your team
         - [Path & Verb](#path-verb)
         - [Parameters](#parameters)
         - [Response](#response)
+        - [Status](#status)
+    - [Update user settings](#update-user-settings)
+        - [Path & Verb](#path-verb)
+        - [Parameters](#parameters)
         - [Status](#status)
     - [Get team members](#get-team-members)
         - [Path & Verb](#path-verb)
@@ -98,6 +106,35 @@ The list of available options can be found running:
 
 ## API
 
+### Register a new user
+
+#### Path & Verb
+
+To register a new mate, a **POST** request needs to be done against the path:
+
+    /register
+
+#### Parameters
+
+The payload must be JSON.
+
+| Params | Type | Description|
+--------|--------|--------
+| email | payload | The new user email. It should be unique |
+| username | payload | The new user user name |
+| password | payload | The new user password |
+
+cURL example:
+
+    $ curl -H "Content-Type: application/json" -d '{"email":"user1@mycompany.com", "username": "John Doe", "password": "password"}' localhost:3000/register
+
+#### Status
+
+| Cause | Status |
+--------|--------
+| Success | 200 OK |
+| Email already used | 403 Forbidden |
+
 ### Login
 
 First step is to login to retrieve an API token which will be used for every other request.
@@ -117,7 +154,7 @@ To login, a **GET** request needs to be done against the path:
 
 cURL example:
 
-    $ curl "localhost:3000/login?email=email&password=password"
+    $ curl "localhost:3000/login?email=user1@mycompany.com&password=password"
 
 #### Response
 
@@ -183,6 +220,34 @@ Example:
   "email" : "user1@mycompany.com"
 }
 ~~~
+
+#### Status
+
+| Cause | Status |
+--------|--------
+| Success | 200 OK |
+| Field _token_ missing or invalid | 403 Forbidden |
+
+### Update user settings
+
+#### Path & Verb
+
+To update the current user's settings, a **POST** request needs to be done against the path:
+
+    /settings
+
+#### Parameters
+
+The payload must be JSON.
+
+| Params | Type | Description|
+--------|--------|--------
+| token | payload | the API token received during the login |
+| settings | payload | a json map of the user settings |
+
+cURL example:
+
+    $ curl -H "Content-Type: application/json" -d '{"sleep-time": 60, "token":"JSzvjh_Qq0zGjLu7pL-9tvGrl84DwgMNT4vZ_F4IxC"}' localhost:3000/settings
 
 #### Status
 

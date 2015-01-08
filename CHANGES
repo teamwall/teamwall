@@ -1,0 +1,11 @@
+1.1.0 Adds settings
+
+  * Adds server settings via CLI
+  * Adds user settings via a in-app menu
+
+
+1.0.2 Fixes jar generation
+
+1.0.1 Fixes the default snapshot time
+
+1.0.0 Initial public release

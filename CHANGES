@@ -1,8 +1,9 @@
 1.1.0 Adds settings
 
-  * Adds server settings via CLI
-  * Adds user settings via a in-app menu
-
+  * Adds server settings via CLI (TW-35)
+  * Adds user settings via a in-app menu (TW-36)
+  * Adds logout (TW-48)
+  * Adds a link to register page (TW-39)
 
 1.0.2 Fixes jar generation
 

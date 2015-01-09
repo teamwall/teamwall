@@ -110,7 +110,7 @@
 (defn- build-avatar-src
   "Build the avatar path for the provided user"
   [user]
-  (str "http://www.gravatar.com/avatar/"
+  (str "https://www.gravatar.com/avatar/"
        (md5/md5 (:email user))
        "?s=32"))
 

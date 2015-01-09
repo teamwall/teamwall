@@ -1,4 +1,5 @@
 (ns server.teamwall.t-handler
+  "Tests for the server handler"
   (:use midje.sweet
         [midje.util :only [testable-privates]])
   (:require [cheshire.core :refer :all]
@@ -45,8 +46,9 @@
      ...password... =contains=> ""
      (db/retrieve-user ...email...
                        ...password...
+                       anything
                        anything) => {:user :user}
-     (db/update-status anything :online) => nil)
+     (db/update-status anything :online anything) => nil)
     (let [response (app-routes (mock :get
                                      "/login"
                                      {:email    ...email...
@@ -70,7 +72,8 @@
         object if correct token is provided"
     (against-background
      (db/update-status anything
-                       :online) => true
+                       :online
+                       anything) => true
      ...token... =contains=> "correct token"
      (#'teamwall.handler/get-user-for-token ...token...) => {:username "John"
                                                              :email "j@ohn.com"
@@ -103,7 +106,7 @@
      ...pattern... =contains=> ""
      ...token... =contains=> "correct token"
      (#'teamwall.api/extract-email-pattern anything) => ...pattern...
-     (db/get-users-for-email ...pattern...) => [{:username "John"
+     (db/get-users-for-email ...pattern... anything) => [{:username "John"
                                                  :email "j@ohn.com"
                                                  :hash "SECRET"}]
      (#'teamwall.handler/valid-token? anything
@@ -139,7 +142,8 @@
      (db/add-photo! anything
                    "picture"
                    256
-                   ...content...) => ...body...
+                   ...content...
+                   anything) => ...body...
      (#'teamwall.handler/valid-token? anything
                                       ...token...) => true)
     (let [response (app-routes (mock :post
@@ -177,7 +181,7 @@
     (against-background
      ...token... =contains=> "correct token"
      (#'teamwall.handler/get-user-for-token ...token...) => {:email "bob@d.se"}
-     (db/get-last-photo "john@d.se") => nil
+     (db/get-last-photo "john@d.se" anything) => nil
      (#'teamwall.handler/valid-token? anything
                                       ...token...) => true)
     (let [response (app-routes (mock :get

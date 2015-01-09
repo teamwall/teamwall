@@ -1,11 +1,12 @@
 (ns teamwall.register
+  "Render the register page and handle the register request"
   (:require [crate.core :as crate]
             [dommy.core :as dommy :refer-macros [sel sel1]]
-            [formative.core :as f]
+            [formidable.core :as f]
+            [formidable.dom :as fd]
             [reagent.core :as reagent :refer [atom]]
             [repositories.repository :as repository]
-            [secretary.core :as secretary]
-            [teamwall.formative :as fd]))
+            [secretary.core :as secretary]))
 
 
 ;;    /==================\
@@ -71,7 +72,7 @@
 (def register-form
   "Register form specification"
   {:renderer :bootstrap3-stacked
-   :fields [{:name :username}
+   :fields [{:name :username :autofocus true}
             {:name :email :type :email}
             {:name :password :type :password}
             {:name :password-confirm :type :password}]
@@ -89,8 +90,8 @@
   "Render the login error"
   []
   (if (nil? @error-message)
-    [:div.hidden.alert.alert-danger @error-message]
-    [:div.alert.alert-danger @error-message]))
+    [:div.hidden.alert.alert-danger.error-message @error-message]
+    [:div.alert.alert-danger.error-message @error-message]))
 
 (defn- render-register-form
   "Render the register form"
@@ -127,6 +128,6 @@
    [:h1
     "Register a new teammate"
     [:i.fa.fa-user]]
+   [render-error]
    [(with-meta render-form-container
-      {:component-did-mount when-form-container-mounted})]
-   [render-error]])
+      {:component-did-mount when-form-container-mounted})]])

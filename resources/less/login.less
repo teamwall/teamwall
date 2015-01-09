@@ -1,5 +1,5 @@
 body.login {
-  color: #f0e7d5;
+  color: #F0E7D5;
 }
 
 div.login {
@@ -11,8 +11,12 @@ div.login {
     }
   }
 
+  #row-field-submit span {
+    float: right;
+  }
+
   border-radius: 0px;
-  background: #213e61;
+  background: #213E61;
   padding: 20px;
   padding-top: 10px;
 
@@ -20,10 +24,21 @@ div.login {
     margin-top: 59px;
   }
 
-  .alert.alert-danger {
+  .alert.alert-danger.error-message {
     max-width: 288px;
     height: 34px;
     line-height: 4px;
     margin-bottom: 0;
+  }
+}
+
+.register-link a {
+  color: #F0E7D5;
+  text-decoration: underline;
+  float: right;
+  margin-top: 10px;
+
+  &:visited {
+    color: #C5BFB5
   }
 }

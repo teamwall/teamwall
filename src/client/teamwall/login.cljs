@@ -1,5 +1,10 @@
 (ns teamwall.login
-  (:require [reagent.core :as reagent :refer [atom]]
+  "Render the login page and handle the login request"
+  (:require [crate.core :as crate]
+            [dommy.core :as dommy :refer-macros [sel sel1]]
+            [formidable.core :as f]
+            [formidable.dom :as fd]
+            [reagent.core :as reagent :refer [atom]]
             [repositories.repository :as repository]))
 
 
@@ -27,11 +32,10 @@
 
 (defn- submit-action
   "Submit the login info to the server"
-  [event email password on-login]
-  (.preventDefault event)
+  [info on-login]
   (reset! error-message nil)
-  (repository/login email
-                    password
+  (repository/login (:email info)
+                    (:password info)
                     on-login
                     on-error))
 
@@ -44,42 +48,47 @@
            :on-change   #(reset! data (-> % .-target .-value))
            :id          "email"}])
 
-(defn- render-form
-  "Render the login form"
-  [on-login]
-  (let [email    (reagent/atom "")
-        password (reagent/atom "")]
-    [:div.login-form
-     [:form {:name "login-form"
-             :role "form"}
-      [:div.form-group
-       [:label {:for "email"}"Email: "]
-       [(with-meta render-email-input
-          {:component-did-mount #(.focus (reagent/dom-node %))}) email]]
+(def settings-form
+  "Settings form specification"
+  {:renderer :bootstrap3-stacked
+   :fields [{:name :email :type :email :autofocus true}
+            {:name :password :type :password}]
+   :validations [[:required [:email :password]]]})
 
-      [:div.form-group
-       [:label {:for "password"}"Password:"]
-       [:input {:type        "password"
-                :class       "form-control"
-                :on-change   #(reset! password (-> % .-target .-value))
-                :placeholder "Password"
-                :id          "password"}]]
-
-      [:button {:type      "submit"
-                :class     "btn btn-default pull-right"
-                :on-click  (fn [event]
-                             (submit-action event
-                                            @email
-                                            @password
-                                            on-login))}
-       "Log in"]]]))
+(defn- render-link-to-register
+  "Render the link to register page"
+  []
+  [:div.register-link
+   [:a {:href "/register"} "Register a new mate"]])
 
 (defn- render-error
   "Render the login error"
   []
   (if (nil? @error-message)
-    [:div.hidden.alert.alert-danger @error-message]
-    [:div.alert.alert-danger @error-message]))
+    [:div.hidden.alert.alert-danger.error-message @error-message]
+    [:div.alert.alert-danger.error-message @error-message]))
+
+(defn- render-settings-form
+  "Render the settings form"
+  []
+  (f/render-form settings-form))
+
+(defn- render-form-container
+  "Render the registration form container"
+  []
+  [:div#login-form-container.clearfix])
+
+(defn- when-form-container-mounted
+  "Callback performed when the form container is successfully mounted"
+  [node on-login]
+  (when-let [container (sel1 "#login-form-container")]
+    (dommy/append! container
+                   (crate/html (render-settings-form)))
+    (fd/handle-submit settings-form
+                      container
+                      (fn [info]
+                        (submit-action info
+                                       on-login)))))
 
 
 ;;    /==================\
@@ -96,5 +105,9 @@
    [:h1
     "Login"
     [:i.fa.fa-unlock-alt]]
-   [render-form on-login]
-   [render-error]])
+   [render-error]
+   [(with-meta render-form-container
+      {:component-did-mount (fn [node]
+                              (when-form-container-mounted node
+                                                           on-login))})]
+   [render-link-to-register]])

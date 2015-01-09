@@ -18,3 +18,8 @@
   [cookie-name]
   (or (.get goog.net.cookies (name cookie-name))
       nil))
+
+(defn remove-cookie!
+  "Remove the document cookie named COOKIE-NAME"
+  [cookie-name]
+  (.remove goog.net.cookies (name cookie-name)))

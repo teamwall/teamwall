@@ -1,33 +1,11 @@
 @import "/bower_components/bootstrap/dist/css/bootstrap.min.css";
 @import "/bower_components/fontawesome/css/font-awesome.min.css";
-.problem.error .form-control {
-  border-color: #a94442;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-}
-.alert.alert-error {
-  color: #a94442;
-  background-color: #f2dede;
-  border-color: #ebccd1;
-}
-.problem.error .help-block,
-.problem.error .control-label,
-.problem.error .radio,
-.problem.error .checkbox,
-.problem.error .radio-inline,
-.problem.error .checkbox-inline,
-.problem.error.radio label,
-.problem.error.checkbox label,
-.problem.error.radio-inline label,
-.problem.error.checkbox-inline label {
-  color: #a94442;
-}
 body.login {
-  color: #f0e7d5;
+  color: #F0E7D5;
 }
 div.login {
   border-radius: 0px;
-  background: #213e61;
+  background: #213E61;
   padding: 20px;
   padding-top: 10px;
 }
@@ -38,16 +16,28 @@ div.login h1 {
 div.login h1 .fa {
   padding-left: 10px;
 }
+div.login #row-field-submit span {
+  float: right;
+}
 @media (min-width: 768px) {
   div.login {
     margin-top: 59px;
   }
 }
-div.login .alert.alert-danger {
+div.login .alert.alert-danger.error-message {
   max-width: 288px;
   height: 34px;
   line-height: 4px;
   margin-bottom: 0;
+}
+.register-link a {
+  color: #F0E7D5;
+  text-decoration: underline;
+  float: right;
+  margin-top: 10px;
+}
+.register-link a:visited {
+  color: #c5bfb5;
 }
 body.register {
   color: #f0e7d5;
@@ -70,18 +60,60 @@ div.register h1 .fa {
     margin-top: 59px;
   }
 }
-div.register .alert.alert-error ul {
-  padding-left: 20px;
-}
 div.register .fieldset-submit {
   float: right;
 }
-div.register .alert.alert-danger {
-  max-width: 288px;
+div.register .alert.alert-danger ul {
+  padding-left: 20px;
+}
+div.register .alert.alert-danger .error-message {
   height: 34px;
   line-height: 4px;
-  margin-bottom: 0;
-  margin-top: -49px;
+  margin-bottom: 10px;
+}
+body.settings {
+  color: #f0e7d5;
+}
+div.settings {
+  border-radius: 0px;
+  background: #213e61;
+  padding: 20px;
+  padding-top: 10px;
+}
+div.settings h1 {
+  color: white;
+  text-align: center;
+}
+div.settings h3 {
+  color: white;
+}
+@media (min-width: 768px) {
+  div.settings {
+    margin-top: 59px;
+  }
+}
+div.settings .fieldset-submit {
+  float: right;
+}
+div.settings .alert.alert-danger ul {
+  padding-left: 20px;
+}
+div.settings .alert.alert-danger.error-message {
+  height: 34px;
+  line-height: 4px;
+  margin-bottom: 10px;
+}
+div.settings .cancel-link .cancel-form {
+  margin: 6px 12px;
+  padding: 0;
+}
+div.settings .cancel-link .cancel-form:hover {
+  color: #6199CD;
+  text-decoration: underline;
+}
+div.settings .cancel-link .cancel-form:active {
+  box-shadow: none;
+  -webkit-box-shadow: none;
 }
 html,
 body {
@@ -101,18 +133,21 @@ h1.title {
   text-align: center;
   color: white;
   font-size: 26px;
+  margin: 16px 0;
 }
 .navbar {
   border: 0 none;
   background: #283f5a;
   margin: 0;
   border-radius: 0;
+  z-index: 2;
 }
 .navbar .navbar-right {
   position: absolute;
   right: 0;
   top: 0;
   margin-right: 0;
+  margin-top: 0;
 }
 .navbar .navbar-right a {
   /*       cursor: pointer; */
@@ -120,9 +155,13 @@ h1.title {
 }
 .navbar .navbar-right a.link {
   line-height: 1.6;
-  padding: 0;
-  margin: 18px;
+  padding: 18px;
+  background: #283f5a;
   margin-left: 0;
+  cursor: pointer;
+}
+.navbar .navbar-right a.link.user {
+  cursor: default;
 }
 .navbar .navbar-right a.link .glyphicon {
   margin-right: 5px;
@@ -131,10 +170,34 @@ h1.title {
   text-decoration: none;
 }
 .navbar .navbar-right a:hover {
-  background: transparent;
-  /*         color: #FFC59F; */
   text-decoration: none;
-  /*         cursor: pointer; */
+}
+.navbar .navbar-right a.settings.glyphicon:hover {
+  text-decoration: underline;
+}
+.navbar .navbar-right li.menu:hover ul {
+  display: block;
+}
+.navbar .navbar-right li.menu ul {
+  display: none;
+  background: #283f5a;
+  padding-left: 18px;
+}
+.navbar .navbar-right li.menu ul li {
+  display: block;
+}
+.navbar .navbar-right li.menu ul li .menu-item {
+  cursor: pointer;
+}
+.navbar .navbar-right li.menu ul li .menu-item .glyphicon {
+  padding-right: 10px;
+  padding-bottom: 20px;
+}
+.navbar .navbar-right li.menu ul li .menu-item:hover {
+  text-decoration: none;
+}
+.navbar .navbar-right li.menu ul li .menu-item:hover .item {
+  border-bottom: 1px solid white;
 }
 .mates .mate {
   padding: 0;

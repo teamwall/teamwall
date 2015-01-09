@@ -11,7 +11,14 @@ An open source software used to build a wall of picture for your team
 
 - [Prerequisites](#prerequisites)
 - [Running](#running)
+- [Server configuration](#server-configuration)
+    - [config subcommand](#config-subcommand)
+    - [CLI arguments](#cli-arguments)
 - [API](#api)
+    - [Register a new user](#register-a-new-user)
+        - [Path & Verb](#path-verb)
+        - [Parameters](#parameters)
+        - [Status](#status)
     - [Login](#login)
         - [Path & Verb](#path-verb)
         - [Parameters](#parameters)
@@ -21,6 +28,10 @@ An open source software used to build a wall of picture for your team
         - [Path & Verb](#path-verb)
         - [Parameters](#parameters)
         - [Response](#response)
+        - [Status](#status)
+    - [Update user settings](#update-user-settings)
+        - [Path & Verb](#path-verb)
+        - [Parameters](#parameters)
         - [Status](#status)
     - [Get team members](#get-team-members)
         - [Path & Verb](#path-verb)
@@ -59,15 +70,70 @@ Other dependencies can be installed running:
 The first time you want to run the application,
 you first need to build the client part. To do so, run:
 
-    $ lein cljsbuild once
+    $ lein setup
 
 To start a web server for the application, run:
 
-    lein run
+    $ lein run
 
 The web server should be reachable at `localhost:3000`.
 
+By default, _Teamwall_ is served using HTTP but it is highly recommended to serve it using HTTPS.
+This can be easily done using [Nginx](http://nginx.org/en/) as detailled [here](https://github.com/teamwall/teamwall/wiki/HTTPS).
+
+## Server configuration
+
+There is two kind of settings which can be provided to _Teamwall_.
+The first kind contains the settings that can be stored into the databse.
+The second kind contains the databases settings.
+
+### config subcommand
+
+The `config` subcommand can be used to set the port used to serve the application.
+
+    $ lein run config --port PORT
+
+The help text can be seen using the command:
+
+    $ lein run config --help
+
+### CLI arguments
+
+This settings concern mainly the database access.
+The list of available options can be found running: 
+
+    $ lein run -- --help
+
 ## API
+
+### Register a new user
+
+#### Path & Verb
+
+To register a new mate, a **POST** request needs to be done against the path:
+
+    /register
+
+#### Parameters
+
+The payload must be JSON.
+
+| Params | Type | Description|
+--------|--------|--------
+| email | payload | The new user email. It should be unique |
+| username | payload | The new user user name |
+| password | payload | The new user password |
+
+cURL example:
+
+    $ curl -H "Content-Type: application/json" -d '{"email":"user1@mycompany.com", "username": "John Doe", "password": "password"}' localhost:3000/register
+
+#### Status
+
+| Cause | Status |
+--------|--------
+| Success | 200 OK |
+| Email already used | 403 Forbidden |
 
 ### Login
 
@@ -88,7 +154,7 @@ To login, a **GET** request needs to be done against the path:
 
 cURL example:
 
-    $ curl "localhost:3000/login?email=email&password=password"
+    $ curl "localhost:3000/login?email=user1@mycompany.com&password=password"
 
 #### Response
 
@@ -154,6 +220,34 @@ Example:
   "email" : "user1@mycompany.com"
 }
 ~~~
+
+#### Status
+
+| Cause | Status |
+--------|--------
+| Success | 200 OK |
+| Field _token_ missing or invalid | 403 Forbidden |
+
+### Update user settings
+
+#### Path & Verb
+
+To update the current user's settings, a **POST** request needs to be done against the path:
+
+    /settings
+
+#### Parameters
+
+The payload must be JSON.
+
+| Params | Type | Description|
+--------|--------|--------
+| token | payload | the API token received during the login |
+| settings | payload | a json map of the user settings |
+
+cURL example:
+
+    $ curl -H "Content-Type: application/json" -d '{"sleep-time": 60, "token":"JSzvjh_Qq0zGjLu7pL-9tvGrl84DwgMNT4vZ_F4IxC"}' localhost:3000/settings
 
 #### Status
 

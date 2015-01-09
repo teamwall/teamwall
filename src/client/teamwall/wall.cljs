@@ -1,7 +1,10 @@
 (ns teamwall.wall
+  "Render the wall page and the pictures"
   (:require [cemerick.url :refer [url url-encode]]
             [reagent.core :as reagent :refer [atom]]
             [repositories.repository :as repository]
+            [secretary.core :as secretary]
+            [teamwall.helper :as helper]
             [teamwall.states :as states]))
 
 
@@ -28,6 +31,20 @@
 ;;    |                  |
 ;;    \==================/
 
+
+(defn- redirect-to-settings
+  "Redirect the current page to settings"
+  [event]
+  (.preventDefault event)
+  (.pushState js/history {} "" "/settings")
+  (secretary/dispatch! "/settings"))
+
+(defn- logout
+  "Logout the current user"
+  [event]
+  (.preventDefault event)
+  (helper/remove-cookie! :tw-token)
+  (set! (.-location js/window) "/"))
 
 (defn- now-as-milliseconds
   "Return the current time as a string"
@@ -102,10 +119,28 @@
   []
   [:a.link.glyphicon.glyphicon-cog])
 
+(defn- build-user-settings
+  "Build the settings item"
+  []
+  [:a.menu-item.settings
+   {:on-click redirect-to-settings}
+   [:span.item
+    [:span.glyphicon.glyphicon-cog]
+    "Settings"]])
+
+(defn- build-user-logout
+  "Build the logout item"
+  []
+  [:a.menu-item.logout
+   {:on-click logout}
+   [:span.item
+    [:span.glyphicon.glyphicon-log-out]
+    "Logout"]])
+
 (defn- build-user-link
   "Build the user anchor"
   []
-  [:a.link
+  [:a.link.user
    [:span.glyphicon.glyphicon-user]
    (:username (states/get-user))])
 
@@ -116,7 +151,10 @@
    [:div.container-fluid
     [build-title]
     [:ul.nav.navbar-nav.navbar-right
-     [:li [build-user-link]]]]])
+     [:li.menu [build-user-link]
+      [:ul
+       [:li [build-user-settings]]
+       [:li [build-user-logout]]]]]]])
 
 (defn- build-content
   "Build the wall of mate tiles"

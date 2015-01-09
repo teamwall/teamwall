@@ -1,4 +1,4 @@
-(defproject teamwall "1.0.2"
+(defproject teamwall "1.1.0"
   :description "An open source software used to build a wall of picture for your team"
   :url "www.teamwall.io"
   :license {:name "GNU GENERAL PUBLIC LICENSE - version 3"
@@ -6,10 +6,10 @@
             :distribution :repo}
   :min-lein-version "2.0.0"
   :dependencies [[cljs-ajax "0.3.3"]
-                 [cheshire "5.3.1"]
+                 [cheshire "5.4.0"]
                  [clj-http "1.0.1"]
                  [clj-time "0.8.0"]
-                 [cljs-http "0.1.21"]
+                 [cljs-http "0.1.22"]
                  [clojurewerkz/scrypt "1.2.0"]
                  [com.cemerick/url "0.1.1"]
                  [com.cognitect/transit-cljs "0.8.194"]
@@ -17,29 +17,33 @@
                  [com.novemberain/pantomime "2.3.0"]
                  [com.taoensso/sente "1.2.0"]
                  [compojure "1.3.1"]
-                 [crate "0.2.4"]
+                 [crate "0.2.5"]
                  [crypto-random "1.2.0"]
-                 [formative "0.8.8"]
+                 [formidable "0.1.9"]
                  [http-kit "2.1.19"]
                  [lein-cljsbuild/cljs-compat "1.0.0-20141215.132312-28"]
                  [org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2411"]
+                 [org.clojure/clojurescript "0.0-2498"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [org.clojure/core.match "0.2.2"]
+                 [org.clojure/tools.cli "0.3.1"]
                  [prismatic/dommy "1.0.0"]
-                 [secretary "1.2.1"]
                  [reagent "0.4.3"]
                  [ring "1.3.2"]
                  [ring/ring-json "0.3.1"]
+                 [secretary "1.2.1"]
                  [slingshot "0.12.1"]]
   :plugins [[codox "0.8.10"]
             [lein-bikeshed "0.2.0"]
             [lein-cljsbuild "1.0.3"]
             [lein-kibit "0.0.8"]
+            [lein-less "1.7.2"]
             [lein-ring "0.8.13"]]
   :main teamwall.handler
   :aot [teamwall.handler]
   :source-paths ["src/server"]
+  :less {:source-paths ["resources/less/page.less"]
+         :target-path "resources/public/css/page.css"}
   :cljsbuild {
     :builds {
       :main {
@@ -77,4 +81,10 @@
                                :src-linenum-anchor-prefix "L"}}}
   :aliases {"doc" ["do"
                    ["with-profile" "doc-cljs" "doc"]
-                   ["with-profile" "doc-clj" "doc"]]})
+                   ["with-profile" "doc-clj" "doc"]]
+            "setup" ["do"
+                     ["cljsbuild" "once"]
+                     ["less" "once"]]
+            "cleanup" ["do"
+                     ["cljsbuild" "clean"]
+                     ["clean"]]})

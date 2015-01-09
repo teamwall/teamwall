@@ -1,0 +1,15 @@
+.wall-bg() {
+  background: #2E4867;
+  background: url("../img/background.png") repeat center 0;
+  background-size: 100%;
+
+  @media(max-width: @screen-md-min){
+    background-image: url("../img/background_2tiles.png");
+  }
+}
+
+.grayscale-img() {
+  -webkit-filter: grayscale(100%);
+  -moz-filter: grayscale(100%);
+  filter: grayscale(100%);
+}

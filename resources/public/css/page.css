@@ -121,13 +121,77 @@ body {
 }
 body {
   background: #2E4867;
-  background: url("../img/background.png") repeat center 59px;
+  background: url("../img/background.png") repeat center 0;
   background-size: 100%;
 }
 @media (max-width: 992px) {
   body {
     background-image: url("../img/background_2tiles.png");
   }
+}
+body.sidebar-closed .wall {
+  left: 0;
+}
+body.sidebar-closed .sidebar {
+  display: none;
+}
+div.wall {
+  position: fixed;
+  left: 250px;
+  right: 0;
+  top: 60px;
+  bottom: 0;
+  overflow-y: auto;
+  background: #2E4867;
+  background: url("../img/background.png") repeat center 0;
+  background-size: 100%;
+}
+@media (max-width: 992px) {
+  div.wall {
+    background-image: url("../img/background_2tiles.png");
+  }
+}
+.sidebar {
+  position: fixed;
+  width: 250px;
+  background: #324F73;
+  border-right: 1px solid #202F42;
+  top: 60px;
+  bottom: 0;
+  left: 0;
+  overflow-y: auto;
+}
+.sidebar h2 {
+  margin: 0;
+  padding: 10px;
+  color: white;
+  font-size: 16px;
+  background: #283F5A;
+  border-top: 1px solid #202F42;
+  border-bottom: 1px solid #202F42;
+}
+.sidebar ul {
+  margin: 0;
+  padding: 10px;
+}
+.sidebar ul li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  color: white;
+  padding-bottom: 10px;
+}
+.sidebar ul li .gravatar {
+  border-radius: 16px;
+  margin-right: 10px;
+}
+.sidebar ul li.offline {
+  color: #888;
+}
+.sidebar ul li.offline .gravatar {
+  -webkit-filter: grayscale(100%);
+  -moz-filter: grayscale(100%);
+  filter: grayscale(100%);
 }
 h1.title {
   text-align: center;
@@ -141,6 +205,14 @@ h1.title {
   margin: 0;
   border-radius: 0;
   z-index: 2;
+}
+.navbar .sidebar-toggler {
+  position: absolute;
+  font-size: 28px;
+  left: 10px;
+  top: 16px;
+  cursor: pointer;
+  color: white;
 }
 .navbar .navbar-right {
   position: absolute;

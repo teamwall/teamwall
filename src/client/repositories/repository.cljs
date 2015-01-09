@@ -209,5 +209,5 @@
   (async-post-json :handler on-success
                    :error   on-error
                    :url     settings-url
-                   :params  {:user (assoc user :settings settings)
+                   :params  {:settings settings
                              :token token}))

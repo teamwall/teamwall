@@ -348,17 +348,18 @@
   (POST "/settings"
         {body :body}
         (let [params   (parse-string (slurp body) true)
-              user     (:user params)
+              settings (:settings params)
               token    (:token params)
-              data     (get @tokens token)
-              new-data (assoc data :user user)]
+              data     (get @tokens token)]
           (secure-routing-json token
-                               (fn [old-user]
-                                 (db/update-settings! user
-                                                      @db-settings)
-                                 (swap! tokens assoc
-                                        token  new-data)
-                                 user))))
+                               (fn [user]
+                                 (let [new-user (assoc user :settings settings)
+                                       new-data (assoc data :user new-user)]
+                                   (db/update-settings! new-user
+                                                        @db-settings)
+                                   (swap! tokens assoc
+                                          token  new-data)
+                                   (stub-user new-user))))))
 
   (GET  "/notifications" req (ring-ajax-get-or-ws-handshake req))
   (POST "/notifications" req (ring-ajax-post req))

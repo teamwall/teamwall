@@ -72,7 +72,8 @@
              :text "App settings"}
             {:name :sleep-time
              :placeholder "60"
-             :label "Sleep time (in seconds)" }
+             :label "Sleep time (in seconds)"
+             :autofocus true}
             {:name :timelaps
              :type :checkbox
              :label "Store daily pictures to make a animated timelaps"}]

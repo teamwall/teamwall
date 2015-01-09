@@ -51,7 +51,7 @@
 (def settings-form
   "Settings form specification"
   {:renderer :bootstrap3-stacked
-   :fields [{:name :email :type :email}
+   :fields [{:name :email :type :email :autofocus true}
             {:name :password :type :password}]
    :validations [[:required [:email :password]]]})
 

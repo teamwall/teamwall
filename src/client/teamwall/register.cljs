@@ -72,7 +72,7 @@
 (def register-form
   "Register form specification"
   {:renderer :bootstrap3-stacked
-   :fields [{:name :username}
+   :fields [{:name :username :autofocus true}
             {:name :email :type :email}
             {:name :password :type :password}
             {:name :password-confirm :type :password}]

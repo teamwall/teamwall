@@ -25,6 +25,18 @@
 
 ;;    /==================\
 ;;    |                  |
+;;    |       VARS       |
+;;    |                  |
+;;    \==================/
+
+
+(def ^:private snapshot-running
+  "Boolean set when the snapshot loop is run to ensure unicity"
+  (atom false))
+
+
+;;    /==================\
+;;    |                  |
 ;;    |     RENDERING    |
 ;;    |                  |
 ;;    \==================/
@@ -64,16 +76,18 @@
 (defn- snapshot-loop
   "Run an infinite loop of snapshot"
   [token]
-  (go
-   (loop []
-     (webrtc/take-picture (fn [blob]
-                            (when blob
-                              (repository/send-blob-picture blob
-                                                            token))))
-     (<! (timeout (* 1000 (-> (states/get-user)
-                              :settings
-                              :sleep-time))))
-     (recur))))
+  (when-not @snapshot-running
+    (reset! snapshot-running true)
+    (go
+     (loop []
+       (webrtc/take-picture (fn [blob]
+                              (when blob
+                                (repository/send-blob-picture blob
+                                                              token))))
+       (<! (timeout (* 1000 (-> (states/get-user)
+                                :settings
+                                :sleep-time))))
+       (recur)))))
 
 (defn- setup-wall
   "Setup the environment variables and render the wall"

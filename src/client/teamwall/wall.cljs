@@ -112,7 +112,7 @@
   [user]
   (str "https://www.gravatar.com/avatar/"
        (md5/md5 (:email user))
-       "?s=32"))
+       "?s=32&d=retro"))
 
 
 ;;    /==================\

@@ -9,6 +9,7 @@
                  [cheshire "5.4.0"]
                  [clj-http "1.0.1"]
                  [clj-time "0.8.0"]
+                 [cljs-hash "0.0.2"]
                  [cljs-http "0.1.22"]
                  [clojurewerkz/scrypt "1.2.0"]
                  [com.cemerick/url "0.1.1"]

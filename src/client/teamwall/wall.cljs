@@ -1,6 +1,8 @@
 (ns teamwall.wall
   "Render the wall page and the pictures"
   (:require [cemerick.url :refer [url url-encode]]
+            [cljs-hash.md5 :as md5]
+            [dommy.core :as dommy :refer-macros [sel sel1]]
             [reagent.core :as reagent :refer [atom]]
             [repositories.repository :as repository]
             [secretary.core :as secretary]
@@ -90,6 +92,13 @@
                                      (map-indexed vector @members))))]
     (swap! members assoc index user)))
 
+
+(defn- toggle-sidebar
+  "Toggle the left-hand side sidebar"
+  []
+  (let [body (sel1 "body")]
+    (dommy/toggle-class! body "sidebar-closed")))
+
 (defn- get-tiles
   "Return all teammate tiles."
   []
@@ -97,6 +106,21 @@
          {:src  (update-img-url-for-user! user)
           :user user})
        @members))
+
+(defn- build-avatar-src
+  "Build the avatar path for the provided user"
+  [user]
+  (str "http://www.gravatar.com/avatar/"
+       (md5/md5 (:email user))
+       "?s=32"))
+
+
+;;    /==================\
+;;    |                  |
+;;    |     RENDERING    |
+;;    |                  |
+;;    \==================/
+
 
 (defn- tile
   "Build a snapshot tile for the given SRC"
@@ -144,10 +168,16 @@
    [:span.glyphicon.glyphicon-user]
    (:username (states/get-user))])
 
+(defn- build-sidebar-toggler
+  "Build the left-hand side toggler"
+  []
+  [:i.fa.fa-bars.sidebar-toggler {:on-click toggle-sidebar}])
+
 (defn- build-navbar
   "Build the main navbar of the page"
   []
   [:div.navbar.navbar-fixed
+   [build-sidebar-toggler]
    [:div.container-fluid
     [build-title]
     [:ul.nav.navbar-nav.navbar-right
@@ -155,6 +185,18 @@
       [:ul
        [:li [build-user-settings]]
        [:li [build-user-logout]]]]]]])
+
+(defn- build-list-of-users
+  "Build the list of users"
+  []
+  (let [items (map (fn [user]
+                     [:li {:class (if (= (name (:status user)) "online")
+                                    "user"
+                                    "user offline")}
+                      [:img.gravatar {:src (build-avatar-src user)}]
+                      (:username user)])
+                   @members)]
+    [:ul.users items]))
 
 (defn- build-content
   "Build the wall of mate tiles"
@@ -202,5 +244,9 @@
   []
   [:div
    [build-navbar]
-   [:div.wall
-    [build-content]]])
+   [:div.viewport
+    [:div.sidebar
+     [:h2 "Mates"]
+     [build-list-of-users]]
+    [:div.wall
+     [build-content]]]])

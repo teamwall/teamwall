@@ -1,7 +1,7 @@
 @import "/bower_components/bootstrap/dist/css/bootstrap.min.css";
 @import "/bower_components/fontawesome/css/font-awesome.min.css";
 
-
+@import "./mixins.less";
 @import "../public/bower_components/bootstrap/less/variables.less";
 @import "./login.less";
 @import "./register.less";
@@ -12,16 +12,72 @@ html, body {
 }
 
 body {
-  background: #2E4867;
-  background: url("../img/background.png") repeat center 59px;
-  background-size: 100%;
+  .wall-bg;
 
-  @media(max-width: @screen-md-min){
-    background-image: url("../img/background_2tiles.png");
+  &.sidebar-closed {
+    .wall {
+      left: 0;
+    }
+
+    .sidebar {
+      display: none;
+    }
   }
 }
 
 div.wall {
+  position: fixed;
+  left: 250px;
+  right: 0;
+  top: 60px;
+  bottom: 0;
+  overflow-y: auto;
+  .wall-bg;
+}
+
+.sidebar {
+  position: fixed;
+  width: 250px;
+  background: #324F73;
+  border-right: 1px solid #202F42;
+  top: 60px;
+  bottom: 0;
+  left: 0;
+  overflow-y: auto;
+
+  h2 {
+    margin: 0;
+    padding: 10px;
+    color: white;
+    font-size: 16px;
+    background: #283F5A;
+    border-top: 1px solid #202F42;
+    border-bottom: 1px solid #202F42;
+  }
+
+  ul {
+    margin: 0;
+    padding: 10px;
+    li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      color: white;
+      padding-bottom: 10px;
+
+      .gravatar {
+          border-radius: 16px;
+          margin-right: 10px;
+      }
+
+      &.offline {
+        color: #888;
+        .gravatar {
+          .grayscale-img();
+        }
+      }
+    }
+  }
 }
 
 h1.title {
@@ -37,6 +93,15 @@ h1.title {
   margin: 0;
   border-radius: 0;
   z-index: 2;
+
+  .sidebar-toggler {
+    position: absolute;
+    font-size: 28px;
+    left: 10px;
+    top: 16px;
+    cursor: pointer;
+    color: white;
+  }
 
   .navbar-right {
     position: absolute;
@@ -124,9 +189,7 @@ h1.title {
     }
 
     img.offline {
-      -webkit-filter: grayscale(100%);
-      -moz-filter: grayscale(100%);
-      filter: grayscale(100%);
+      .grayscale-img();
     }
 
     .timestamp {

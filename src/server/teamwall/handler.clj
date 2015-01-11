@@ -33,6 +33,10 @@
 ;;    \==================/
 
 
+(def ^:private signaling-channels
+  "List of currently open signaling channels"
+  (atom '()))
+
 (def ^:private default-ttl
   "Default value for a token Time-To-Live. Default is one year"
   (* 365 24 60 60 1000))
@@ -77,41 +81,6 @@
   (def ^:private connected-uids
     "Notifications: open connections"
     connected-uids))
-
-(defn- event-received
-  "Handle a new signaling event"
-  [data]
-  (println "Signaling:" data))
-
-(defn- signaling-handler
-  "Handles signaling WS connections"
-  [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]
-  (println "id:" id)
-  (match [id ?data]
-         [:chsk/state {:first-open? true}] (println "New connection")
-         [:chsk/state _] (println "New state:" ?data)
-         [:chsk/recv _] (event-received ?data)
-         :else (println "Unmatched event:" ev-msg)))
-
-(let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
-              connected-uids]}
-      (sente/make-channel-socket! {})]
-  (def ^:private signaling-ring-ajax-post
-    "Signaling: post for handshake"
-    ajax-post-fn)
-  (def ^:private signaling-ring-ajax-get-or-ws-handshake
-    "Signaling: get for handshake"
-    ajax-get-or-ws-handshake-fn)
-  (def ^:private signaling-ch-chsk
-    "Signaling: Income channel"
-    ch-recv)
-  (def ^:private signaling-chsk-send!
-    "Signaling: send function"
-    send-fn)
-  (def ^:private signaling-connected-uids
-    "Signaling: open connections"
-    connected-uids)
-  (defonce chsk-router (sente/start-chsk-router! ch-recv signaling-handler)))
 
 (def ^:private cli-options
   "CLI options to handle optional arguments"
@@ -399,8 +368,20 @@
 
   (GET  "/notifications" req (ring-ajax-get-or-ws-handshake req))
   (POST "/notifications" req (ring-ajax-post req))
-  (GET  "/signaling" req (signaling-ring-ajax-get-or-ws-handshake req))
-  (POST "/signaling" req (signaling-ring-ajax-post req))
+
+  (GET  "/signaling"
+        request
+        (with-channel request channel
+          (swap! signaling-channels conj channel)
+          (on-close channel (fn [status]
+                              (reset! signaling-channels
+                                      (remove #(-> %
+                                                   open?
+                                                   not)
+                                              @signaling-channels))))
+          (on-receive channel (fn [data]
+                                (doseq [chan @signaling-channels]
+                                  (send! chan data))))))
 
   (GET "/login"
        req

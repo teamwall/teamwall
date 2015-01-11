@@ -22,6 +22,7 @@
                  [crypto-random "1.2.0"]
                  [formidable "0.1.9"]
                  [http-kit "2.1.19"]
+                 [jarohen/chord "0.5.0"]
                  [lein-cljsbuild/cljs-compat "1.0.0-20141215.132312-28"]
                  [org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2498"]

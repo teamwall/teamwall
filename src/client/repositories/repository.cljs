@@ -112,8 +112,6 @@
   [state]
   (js/console.log "Channel socket state change: %s" state))
 
-
-
 (defn- event-handler
   "Dispatch the events based on the event type"
   [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]

@@ -6,7 +6,8 @@
   (:require [cheshire.core :refer :all]
             [clojure.core.async
              :as async
-             :refer (<! <!! >! >!! put! chan go go-loop)]
+             :refer (<! <!! >! >!! put! close! chan go go-loop)]
+            [clojure.core.match :refer [match]]
             [clojure.data :as data]
             [clojure.java.io :as io]
             [clojure.string :as string]
@@ -62,20 +63,55 @@
               connected-uids]}
       (sente/make-channel-socket! {})]
   (def ^:private ring-ajax-post
-    "Sente: post for handshake"
+    "Notifications: post for handshake"
     ajax-post-fn)
   (def ^:private ring-ajax-get-or-ws-handshake
-    "Sente: get for handshake"
+    "Notifications: get for handshake"
     ajax-get-or-ws-handshake-fn)
   (def ^:private ch-chsk
-    "Sente: Income channel"
+    "Notifications: Income channel"
     ch-recv)
   (def ^:private chsk-send!
-    "Sente: send function"
+    "Notifications: send function"
     send-fn)
   (def ^:private connected-uids
-    "Sente: open connections"
+    "Notifications: open connections"
     connected-uids))
+
+(defn- event-received
+  "Handle a new signaling event"
+  [data]
+  (println "Signaling:" data))
+
+(defn- signaling-handler
+  "Handles signaling WS connections"
+  [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]
+  (println "id:" id)
+  (match [id ?data]
+         [:chsk/state {:first-open? true}] (println "New connection")
+         [:chsk/state _] (println "New state:" ?data)
+         [:chsk/recv _] (event-received ?data)
+         :else (println "Unmatched event:" ev-msg)))
+
+(let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
+              connected-uids]}
+      (sente/make-channel-socket! {})]
+  (def ^:private signaling-ring-ajax-post
+    "Signaling: post for handshake"
+    ajax-post-fn)
+  (def ^:private signaling-ring-ajax-get-or-ws-handshake
+    "Signaling: get for handshake"
+    ajax-get-or-ws-handshake-fn)
+  (def ^:private signaling-ch-chsk
+    "Signaling: Income channel"
+    ch-recv)
+  (def ^:private signaling-chsk-send!
+    "Signaling: send function"
+    send-fn)
+  (def ^:private signaling-connected-uids
+    "Signaling: open connections"
+    connected-uids)
+  (defonce chsk-router (sente/start-chsk-router! ch-recv signaling-handler)))
 
 (def ^:private cli-options
   "CLI options to handle optional arguments"
@@ -363,6 +399,8 @@
 
   (GET  "/notifications" req (ring-ajax-get-or-ws-handshake req))
   (POST "/notifications" req (ring-ajax-post req))
+  (GET  "/signaling" req (signaling-ring-ajax-get-or-ws-handshake req))
+  (POST "/signaling" req (signaling-ring-ajax-post req))
 
   (GET "/login"
        req

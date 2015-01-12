@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="css/page.css"/>
+        <link rel="shortcut icon" href="img/favicon.png?v1"/>
+    </head>
+    <body>
+        <script src="bower_components/react/react.min.js"></script>
+        <script src="https://cdn.webrtc-experiment.com/RTCMultiConnection.js"></script>
+        <script src="lib/polyfills.js"></script>
+        <script src="js/cljs.js"></script>
+
+        <hr>
+        <button id="openRoom">Open Room</button>
+        <button id="joinRoom">Join Room</button>
+        <button id="shareScreen" disabled>Share Screen</button>
+        <hr>
+        <div id="videos-container"></div>
+
+        <script>
+            webrtc.conference.setup_chat();
+        </script>
+    </body>
+</html>

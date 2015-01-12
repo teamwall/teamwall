@@ -332,6 +332,11 @@
   (client-route "/register")
   (client-route "/settings")
 
+  (GET "/chat"
+       {}
+       (response/resource-response "chat.html"
+                                   {:root "public"}))
+
   (POST "/register"
         {body :body}
         (let [params         (parse-string (slurp body) true)

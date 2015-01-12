@@ -93,7 +93,8 @@
 (defn set-body!
   "Set the RMC body"
   [rmc node]
-  (set! (.-body rmc)))
+  (set! (.-body rmc)
+        node))
 
 (defn add-stream!
   "Add a stream to the provided communication"
@@ -113,7 +114,7 @@
   (.open rmc
          id))
 
-(defn connect-to-room
+(defn connect-to-room!
   "Connect to an existing chat room"
   [rmc id]
   (.connect rmc

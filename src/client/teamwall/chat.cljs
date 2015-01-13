@@ -5,6 +5,7 @@
             [teamwall.states :as states]
             [webrtc.conference :as conference]))
 
+
 ;;    /==================\
 ;;    |                  |
 ;;    |       MAIN       |
@@ -12,9 +13,40 @@
 ;;    \==================/
 
 
+(defn connect-to-room
+  "Join the room corresponding to ID"
+  [id]
+  (let [rmc (conference/setup-chat (:email (states/get-user)))]
+    (conference/connect-to-room rmc
+                                id)))
+
+(defn create-room
+  "Join the room corresponding to ID"
+  [id]
+  (let [rmc (conference/setup-chat (:email (states/get-user)))]
+    (conference/create-room rmc
+                            id)))
+
 (defn render-content
   "Main rendering function"
   []
   [:div
    [:h1 "Chat"]
    [:img {:src "http://thecatapi.com/api/images/get?format=src&type=gif"}]])
+
+
+;;    /==================\
+;;    |                  |
+;;    |       NOTE       |
+;;    |                  |
+;;    \==================/
+
+
+;;; Structure of a room
+;;;
+;;; {:?name optional name of the room
+;;;  :open? is the room already open or not
+;;;  :moderator user id of the room creator
+;;;  :users list of user in the room excluding the moderator
+;;;  :private? is the room private or not?
+;;;  :roomid unique identifier (nanoseconds of instantiation)}

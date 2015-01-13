@@ -40,6 +40,10 @@
   "URL for the user settings route"
   "/settings")
 
+(def ^:private get-rooms-url
+  "URL for the existing rooms route"
+  "/rooms")
+
 
 ;;    /==================\
 ;;    |                  |
@@ -156,7 +160,7 @@
 (defn open-notification-channel
   "Open the notification channel with the server.
   Keep a WebSocket open"
-  [token]
+  []
   (let [channel (sente/make-channel-socket! "/notifications" {:type :auto})
         {:keys [chsk ch-recv send-fn state]} channel]
     (def chsk       chsk)
@@ -189,6 +193,13 @@
   [token on-success]
   (async-get-json :handler on-success
                   :url     get-team-members-url
+                  :params  {:token token}))
+
+(defn get-rooms
+  "Ask the server for existing rooms"
+  [token on-success]
+  (async-get-json :handler on-success
+                  :url     get-rooms-url
                   :params  {:token token}))
 
 (defn register

@@ -4,7 +4,7 @@
 
 (defn ^export init
   []
-  (let [[rmc websocket] (conference/setup-chat)
+  (let [rmc (conference/setup-chat)
         node (sel1 "#videos-container")]
     (conference/set-body! rmc
                           node)

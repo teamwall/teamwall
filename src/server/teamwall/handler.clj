@@ -63,25 +63,6 @@
   "Content of the setting file"
   (atom default-db-settings))
 
-(let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
-              connected-uids]}
-      (sente/make-channel-socket! {})]
-  (def ^:private ring-ajax-post
-    "Notifications: post for handshake"
-    ajax-post-fn)
-  (def ^:private ring-ajax-get-or-ws-handshake
-    "Notifications: get for handshake"
-    ajax-get-or-ws-handshake-fn)
-  (def ^:private ch-chsk
-    "Notifications: Income channel"
-    ch-recv)
-  (def ^:private chsk-send!
-    "Notifications: send function"
-    send-fn)
-  (def ^:private connected-uids
-    "Notifications: open connections"
-    connected-uids))
-
 (def ^:private cli-options
   "CLI options to handle optional arguments"
   [[nil  "--db-host URL" "Set the URL to reach the Mongo database"
@@ -108,6 +89,46 @@
 ;;    |                  |
 ;;    \==================/
 
+
+(defmulti event-received
+  "Dispatch function invoked when a new event is received
+  via the communication channel"
+  first)
+
+(defmethod event-received :teamwall/open-room [[_ data]]
+  (api/update-room! (:room-id data)
+                    (:user data)
+                    :open? true
+                    :moderator (:email (:user data))))
+
+(defmethod event-received :teamwall/create-room [[_ data]]
+  (api/update-room! (:room-id data)
+                    (:user data)
+                    :open? true))
+
+(defn- event-handler
+  "Dispatch the events based on the event type"
+  [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]
+  (match [id ?data]
+         [:chsk/state {:first-open? true}] false
+         [:chsk/state _] false
+         [:chsk/recv _] (event-received ?data)
+         :else (println "Unmatched event:" ev-msg)))
+
+(defn- open-notification-channel
+  "Open the notification channel with the server.
+  Keep a WebSocket open"
+  []
+  (let [channel (sente/make-channel-socket! {})
+        {:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
+              connected-uids]} channel]
+    (def ring-ajax-post ajax-post-fn)
+    (def ring-ajax-get-or-ws-handshake ajax-get-or-ws-handshake-fn)
+    (def ch-chsk ch-recv)
+    (def chsk-send! send-fn)
+    (def connected-uids connected-uids))
+
+  (defonce chsk-router (sente/start-chsk-router! ch-chsk event-handler)))
 
 (defn- as-integer
   "Convert the provided String or Integer to Integer"
@@ -421,6 +442,12 @@
                                   (api/get-team-members %
                                                         @db-settings))))
 
+  (GET "/rooms"
+       {params :params}
+       (secure-routing-json (:token params)
+                            (fn [user]
+                              (api/get-all-rooms user))))
+
   (wrap-multipart-params
    (POST "/new-photo"
          {params :params}
@@ -487,7 +514,9 @@
     (case (first arguments)
       "config" (set-settings (parse-opts (rest arguments)
                                          cli-configure-options))
-      nil      (run-app)
+      nil      (do
+                 (open-notification-channel)
+                 (run-app))
       (exit 1 (str "Unknown command '"
                    (first arguments)
                    "'")))))

@@ -95,7 +95,7 @@
   [data]
   (states/set-token (:token data))
   (states/set-user (:user data))
-  (repository/open-notification-channel (:token data))
+  (repository/open-notification-channel)
   (repository/get-team-members (:token data)
                                (fn [members]
                                  (wall/set-team members)
@@ -108,18 +108,28 @@
   [data]
   (states/set-token (:token data))
   (states/set-user (:user data))
-  (repository/open-notification-channel (:token data))
+  (repository/open-notification-channel)
   (append-content (settings/render-content)
                   "settings"))
 
 (defn- setup-chat
   "Setup the chat page"
-  [data]
+  [data room-id]
   (states/set-token (:token data))
   (states/set-user (:user data))
-  (repository/open-notification-channel (:token data))
-  (append-content (chat/render-content)
-                  "chat"))
+  (repository/open-notification-channel)
+  (repository/get-rooms (:token data)
+                        (fn [rooms]
+                          (state/rooms! rooms)
+                          (append-content (chat/render-content)
+                                          "chat")
+                          (let [room (first (filter (fn [room]
+                                                      (= (:id room)
+                                                         room-id))
+                                                    (states/rooms)))]
+                            (if (:open? room)
+                              (chat/connect-to-room-room room-id)
+                              (chat/create-room room-id)))))
 
 (defn set-token-from-cookie!
   "Set the state token from the document cookie. If the cookie is
@@ -178,13 +188,14 @@
                                  on-success
                                  on-error)))
 
-(defroute ^:no-doc chat-route "/chat"
-  {:as params}
+(defroute ^:no-doc chat-route "/chat/:room-id"
+  [room-id]
   (let [token      (get-token)
         document   (settings/render-content)
         on-success (fn [user]
                      (setup-chat {:user user
-                                  :token token}))
+                                  :token token}
+                                 room-id))
         on-error   (fn [err]
                      (states/reset-token!)
                      (redirect (wall-route)))]

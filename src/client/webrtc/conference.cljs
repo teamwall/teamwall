@@ -7,15 +7,6 @@
 
 ;;    /==================\
 ;;    |                  |
-;;    |       VARS       |
-;;    |                  |
-;;    \==================/
-
-
-
-
-;;    /==================\
-;;    |                  |
 ;;    |      PRIVATE     |
 ;;    |                  |
 ;;    \==================/
@@ -85,7 +76,7 @@
 
 ;;    /==================\
 ;;    |                  |
-;;    |       MAIN       |
+;;    |      PUBLIC      |
 ;;    |                  |
 ;;    \==================/
 
@@ -122,7 +113,7 @@
 
 (defn ^export setup-chat
   "Setup the whole chat application. Must be the first function invoked"
-  []
+  [& [user-id]]
   (let [message-callbacks (atom {})
         uri       (build-relative-ws-path "/signaling")
         websocket (create-websocket uri)
@@ -141,4 +132,7 @@
                                     message-callbacks)))
     (set! (.-getExternalIceServers rmc)
           false)
-    [rmc websocket]))
+    (when user-id
+      (set! (.-userid rmc)
+            user-id))
+    rmc))

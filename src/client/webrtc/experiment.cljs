@@ -17,4 +17,10 @@
                    :click
                    (fn [event]
                      (conference/connect-to-room! rmc
-                                                  "123456789")))))
+                                                  "123456789")))
+    (dommy/listen! (sel1 "#shareScreen")
+                   :click
+                   (fn [event]
+                     (conference/add-stream! rmc
+                                             {:screen true
+                                              :oneway true})))))

@@ -7,6 +7,7 @@
             [reagent.core :as reagent :refer [atom]]
             [repositories.repository :as repository]
             [secretary.core :as secretary :refer-macros [defroute]]
+            [teamwall.chat :as chat]
             [teamwall.helper :as helper]
             [teamwall.login :as login]
             [teamwall.register :as register]
@@ -111,6 +112,15 @@
   (append-content (settings/render-content)
                   "settings"))
 
+(defn- setup-chat
+  "Setup the chat page"
+  [data]
+  (states/set-token (:token data))
+  (states/set-user (:user data))
+  (repository/open-notification-channel (:token data))
+  (append-content (chat/render-content)
+                  "chat"))
+
 (defn set-token-from-cookie!
   "Set the state token from the document cookie. If the cookie is
   absent, set it to `nil`"
@@ -161,6 +171,20 @@
         on-success (fn [user]
                      (setup-settings {:user user
                                       :token token}))
+        on-error   (fn [err]
+                     (states/reset-token!)
+                     (redirect (wall-route)))]
+    (repository/get-current-user token
+                                 on-success
+                                 on-error)))
+
+(defroute ^:no-doc chat-route "/chat"
+  {:as params}
+  (let [token      (get-token)
+        document   (settings/render-content)
+        on-success (fn [user]
+                     (setup-chat {:user user
+                                  :token token}))
         on-error   (fn [err]
                      (states/reset-token!)
                      (redirect (wall-route)))]

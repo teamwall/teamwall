@@ -114,6 +114,13 @@
        (md5/md5 (:email user))
        "?s=32&d=retro"))
 
+(defn- open-chat
+  "Open a chat popup window"
+  []
+  (js/window.open "/chat"
+                  "Chat"
+                  "mywindow","status=1"))
+
 
 ;;    /==================\
 ;;    |                  |
@@ -198,6 +205,11 @@
                    @members)]
     [:ul.users items]))
 
+(defn- build-list-of-meetings
+  "Build the list of current meetings"
+  []
+  [:button {:on-click open-chat} "New Chat"])
+
 (defn- build-content
   "Build the wall of mate tiles"
   []
@@ -247,6 +259,8 @@
    [:div.viewport
     [:div.sidebar
      [:h2 "Mates"]
-     [build-list-of-users]]
+     [build-list-of-users]
+     [:h2 "Meetings"]
+     [build-list-of-meetings]]
     [:div.wall
      [build-content]]]])

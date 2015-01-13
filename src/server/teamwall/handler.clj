@@ -331,8 +331,9 @@
   (client-route "/wall")
   (client-route "/register")
   (client-route "/settings")
+  (client-route "/chat")
 
-  (GET "/chat"
+  (GET "/exp"
        {}
        (response/resource-response "chat.html"
                                    {:root "public"}))

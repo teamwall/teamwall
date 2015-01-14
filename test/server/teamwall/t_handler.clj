@@ -29,6 +29,9 @@
 
 
 (facts "About routes"
+  (against-background
+   (#'teamwall.handler/notify-team anything
+                                   anything) => true)
   (fact "Undefined routes returns a 403"
     (let [response (app-routes (mock :get "/invalid"))]
       response => (contains {:status 403})))

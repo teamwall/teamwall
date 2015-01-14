@@ -93,7 +93,7 @@
 (defmulti event-received
   "Dispatch function invoked when a new event is received
   via the communication channel"
-  (fn [data] (:event-id data)))
+  :event-id)
 
 (defmethod event-received :teamwall/open-room [data]
   (api/update-room! (:room-id data)

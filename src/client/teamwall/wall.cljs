@@ -117,9 +117,15 @@
 (defn- open-chat
   "Open a chat popup window"
   []
-  (js/window.open "/chat"
-                  "Chat"
-                  "mywindow","status=1"))
+  (repository/notify-server "create-room"
+                            {:user (states/get-user)
+                             :room-id "id"
+                             :name "Test"}
+                            1000
+                            (fn []
+                              (js/window.open "/chat"
+                                              "Chat"
+                                              "mywindow","status=1"))))
 
 
 ;;    /==================\

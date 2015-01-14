@@ -118,7 +118,8 @@
                       :private?  (boolean private?)}]
     (if domain-rooms
       (swap! domain-rooms assoc id room)
-      (swap! @rooms assoc domain {id room}))
+      (swap! rooms assoc domain {id room}))
+    (println "Room" ?name "created")
     room))
 
 (defn get-team-members

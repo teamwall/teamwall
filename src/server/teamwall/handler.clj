@@ -93,25 +93,27 @@
 (defmulti event-received
   "Dispatch function invoked when a new event is received
   via the communication channel"
-  first)
+  (fn [data] (:event-id data)))
 
-(defmethod event-received :teamwall/open-room [[_ data]]
+(defmethod event-received :teamwall/open-room [data]
   (api/update-room! (:room-id data)
                     (:user data)
                     :open? true
                     :moderator (:email (:user data))))
 
-(defmethod event-received :teamwall/create-room [[_ data]]
-  (api/update-room! (:room-id data)
-                    (:user data)
-                    :open? true))
+(defmethod event-received :teamwall/create-room [data]
+  (api/create-room (:user data)
+                   (:room-id data)
+                   :?name (:name data)))
 
 (defn- event-handler
   "Dispatch the events based on the event type"
   [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]
   (match [id ?data]
-         [:chsk/state {:first-open? true}] false
-         [:chsk/state _] false
+         [:chsk/uidport-open _] true
+         [:chsk/uidport-close _] true
+         [:chsk/ws-ping _] true
+         [:chsk/state _] true
          [:chsk/recv _] (event-received ?data)
          :else (println "Unmatched event:" ev-msg)))
 

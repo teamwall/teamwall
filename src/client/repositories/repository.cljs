@@ -170,6 +170,14 @@
 
   (defonce chsk-router (sente/start-chsk-router! ch-chsk event-handler)))
 
+(defn notify-server
+  "Send an event to the server via the notification channel"
+  [event-type options & [?timeout-ms ?cb-fn]]
+  (chsk-send! [:chsk/recv
+                (assoc options :event-id (keyword "teamwall" event-type))]
+              ?timeout-ms
+              ?cb-fn))
+
 (defn send-blob-picture
   "Send a blob object as a form data to the server"
   [blob token]

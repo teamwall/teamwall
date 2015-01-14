@@ -120,7 +120,7 @@
   (repository/open-notification-channel)
   (repository/get-rooms (:token data)
                         (fn [rooms]
-                          (state/rooms! rooms)
+                          (states/rooms! rooms)
                           (append-content (chat/render-content)
                                           "chat")
                           (let [room (first (filter (fn [room]
@@ -128,8 +128,8 @@
                                                          room-id))
                                                     (states/rooms)))]
                             (if (:open? room)
-                              (chat/connect-to-room-room room-id)
-                              (chat/create-room room-id)))))
+                              (chat/connect-to-room room-id)
+                              (chat/create-room room-id))))))
 
 (defn set-token-from-cookie!
   "Set the state token from the document cookie. If the cookie is

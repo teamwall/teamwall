@@ -13,19 +13,24 @@
 ;;    \==================/
 
 
-(defn connect-to-room
+(defn connect-to-room!
   "Join the room corresponding to ID"
   [id]
   (let [rmc (conference/setup-chat (:email (states/get-user)))]
-    (conference/connect-to-room rmc
+    (conference/connect-to-room! rmc
                                 id)))
 
-(defn create-room
+(defn create-room!
   "Join the room corresponding to ID"
   [id]
   (let [rmc (conference/setup-chat (:email (states/get-user)))]
-    (conference/create-room rmc
-                            id)))
+    (repository/notify-server :open-room
+                              {:room-id id
+                               :user    (states/get-user)}
+                              1000
+                              (fn [& rest]
+                                (conference/create-room! rmc
+                                                         id)))))
 
 (defn render-content
   "Main rendering function"

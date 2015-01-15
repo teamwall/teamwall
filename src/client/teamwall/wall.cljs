@@ -123,7 +123,7 @@
                              :name "Test"}
                             1000
                             (fn []
-                              (js/window.open "/chat"
+                              (js/window.open (str "/chat/" "id")
                                               "Chat"
                                               "mywindow","status=1"))))
 
@@ -243,6 +243,9 @@
 
 (defmethod repository/event-received :teamwall/status-changed [[_ data]]
   (status-changed! (:user data)))
+
+(defmethod repository/event-received :teamwall/room-created [[_ data]]
+  (states/add-room! (:room data)))
 
 
 ;;    /==================\

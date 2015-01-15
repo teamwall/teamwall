@@ -25,6 +25,8 @@
             [teamwall.db :as db])
   (:gen-class))
 
+(declare notify-team)
+
 
 ;;    /==================\
 ;;    |                  |
@@ -102,9 +104,12 @@
                     :moderator (:email (:user data))))
 
 (defmethod event-received :teamwall/create-room [data]
-  (api/create-room (:user data)
-                   (:room-id data)
-                   :?name (:name data)))
+  (let [room (api/create-room (:user data)
+                              (:room-id data)
+                              :?name (:name data))]
+    (notify-team (:user data)
+                 :room-created
+                 {:room room})))
 
 (defn- event-handler
   "Dispatch the events based on the event type"
@@ -183,14 +188,6 @@
          ttl))
     false))
 
-(defn- notify-all
-  "Notify all the clients"
-  [event-type options]
-  (doseq [uid (:any @connected-uids)]
-    (chsk-send! uid
-                [(keyword "teamwall" event-type)
-                 options])))
-
 (defn- notify-team
   "Notify all the members of the USER's team"
   [user event-type & [options]]
@@ -202,7 +199,7 @@
                  (= (api/extract-email-pattern user-email)
                     (api/extract-email-pattern mate-email)))
         (chsk-send! uid
-                    [(keyword "teamwall" event-type)
+                    [(keyword "teamwall" (name event-type))
                      (merge {:user user} options)])))))
 
 (defn- login!
@@ -354,7 +351,7 @@
   (client-route "/wall")
   (client-route "/register")
   (client-route "/settings")
-  (client-route "/chat")
+  (client-route "/chat/:roomid")
 
   (GET "/exp"
        {}

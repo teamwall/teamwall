@@ -174,7 +174,7 @@
   "Send an event to the server via the notification channel"
   [event-type options & [?timeout-ms ?cb-fn]]
   (chsk-send! [:chsk/recv
-                (assoc options :event-id (keyword "teamwall" event-type))]
+                (assoc options :event-id (keyword "teamwall" (name event-type)))]
               ?timeout-ms
               ?cb-fn))
 

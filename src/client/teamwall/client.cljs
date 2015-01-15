@@ -128,8 +128,8 @@
                                                          room-id))
                                                     (states/rooms)))]
                             (if (:open? room)
-                              (chat/connect-to-room room-id)
-                              (chat/create-room room-id))))))
+                              (chat/connect-to-room! room-id)
+                              (chat/create-room! room-id))))))
 
 (defn set-token-from-cookie!
   "Set the state token from the document cookie. If the cookie is
@@ -188,14 +188,14 @@
                                  on-success
                                  on-error)))
 
-(defroute ^:no-doc chat-route "/chat/:room-id"
-  [room-id]
+(defroute ^:no-doc chat-route "/chat/:roomid"
+  [roomid]
   (let [token      (get-token)
         document   (settings/render-content)
         on-success (fn [user]
                      (setup-chat {:user user
                                   :token token}
-                                 room-id))
+                                 roomid))
         on-error   (fn [err]
                      (states/reset-token!)
                      (redirect (wall-route)))]

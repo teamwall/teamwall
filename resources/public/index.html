@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" href="css/page.css"/>
-        <link rel="shortcut icon" href="img/favicon.png?v1"/>
+        <link rel="stylesheet" href="/css/page.css"/>
+        <link rel="shortcut icon" href="/img/favicon.png?v1"/>
     </head>
     <body>
-        <script src="bower_components/react/react.min.js"></script>
-        <script src="lib/polyfills.js"></script>
-        <script src="js/cljs.js"></script>
+        <script src="/bower_components/react/react.min.js"></script>
+        <script src="/bower_components/rtcmulticonnection/RTCMultiConnection.min.js"></script>
+        <script src="/lib/polyfills.js"></script>
+        <script src="/js/cljs.js"></script>
         <script>
             teamwall.client.initialize();
             teamwall.client.dispatch(window.location.pathname);

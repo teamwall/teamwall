@@ -18,7 +18,7 @@
   [id]
   (let [rmc (conference/setup-chat (:email (states/get-user)))]
     (conference/connect-to-room! rmc
-                                id)))
+                                 id)))
 
 (defn create-room!
   "Join the room corresponding to ID"
@@ -28,7 +28,7 @@
                               {:room-id id
                                :user    (states/get-user)}
                               1000
-                              (fn [& rest]
+                              (fn []
                                 (conference/create-room! rmc
                                                          id)))))
 

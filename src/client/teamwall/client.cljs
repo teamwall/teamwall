@@ -77,6 +77,7 @@
 (defn- snapshot-loop
   "Run an infinite loop of snapshot"
   [token]
+  (webrtc/start-video-stream!)
   (when-not @snapshot-running
     (reset! snapshot-running true)
     (go
@@ -218,5 +219,4 @@
 
 (defn ^:export initialize
   "Initialize the client"
-  []
-  (webrtc/start-video-stream!))
+  [])

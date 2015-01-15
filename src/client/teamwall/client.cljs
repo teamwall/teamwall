@@ -216,7 +216,3 @@
   "Dispatch the current URI"
   [uri]
   (secretary/dispatch! uri))
-
-(defn ^:export initialize
-  "Initialize the client"
-  [])

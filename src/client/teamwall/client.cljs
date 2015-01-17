@@ -124,11 +124,8 @@
                           (states/rooms! rooms)
                           (append-content (chat/render-content)
                                           "chat")
-                          (let [room (first (filter (fn [room]
-                                                      (= (:id room)
-                                                         room-id))
-                                                    (states/rooms)))]
-                            (if (:open? room)
+                          (let [room (get (states/rooms) room-id)]
+                            (if (get room "open?")
                               (chat/connect-to-room! room-id)
                               (chat/create-room! room-id))))))
 

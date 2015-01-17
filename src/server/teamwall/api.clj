@@ -84,7 +84,7 @@
   (let [domain (extract-email-pattern (:email user))
         rooms (get-rooms-atom-for-domain domain)
         room (get @rooms id)
-        new-room (assoc rooms
+        new-room (assoc @rooms
                    :?name    (if (nil? ?name)
                                (:?name room)
                                ?name)
@@ -98,7 +98,7 @@
                                (:private? room)
                                private?))]
     (when room
-      (swap! (get-rooms-atom-for-domain domain) assoc id new-room))))
+      (swap! rooms assoc id new-room))))
 
 (defn remove-room!
   "Remove the room corresponding to ID"
@@ -120,6 +120,7 @@
       (swap! domain-rooms assoc id room)
       (swap! rooms assoc domain (atom {id room})))
     (println "Room" ?name "created")
+    (println @rooms)
     room))
 
 (defn get-team-members

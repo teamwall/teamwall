@@ -90,8 +90,9 @@
         email  (:email user)
         index  (first (first (filter #(= (:email (second %)) email)
                                      (map-indexed vector @members))))]
-    (swap! members assoc index user)))
-
+    (when (and index
+               (< index (count @members)))
+      (swap! members assoc index user))))
 
 (defn- toggle-sidebar
   "Toggle the left-hand side sidebar"

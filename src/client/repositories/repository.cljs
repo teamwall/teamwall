@@ -62,10 +62,12 @@
 
 (defn- async-get-json
   "Do an async GET call and consider the response as JSON"
-  [& {:keys [handler url error params]}]
+  [& {:keys [handler url error params keywords?]}]
   (let [options (atom {:handler handler
                        :response-format :json
-                       :keywords? true})]
+                       :keywords? (if (nil? keywords?)
+                                    true
+                                    keywords?)})]
     (when-not (nil? error)
       (swap! options assoc :error-handler error))
     (when-not (nil? params)
@@ -208,7 +210,8 @@
   [token on-success]
   (async-get-json :handler on-success
                   :url     get-rooms-url
-                  :params  {:token token}))
+                  :params  {:token token}
+                  :keywords? false))
 
 (defn register
   "Register a new teammate with the info provided"

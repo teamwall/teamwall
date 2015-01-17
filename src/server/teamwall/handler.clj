@@ -97,12 +97,6 @@
   via the communication channel"
   :event-id)
 
-(defmethod event-received :teamwall/open-room [data]
-  (api/update-room! (:room-id data)
-                    (:user data)
-                    :open? true
-                    :moderator (:email (:user data))))
-
 (defmethod event-received :teamwall/create-room [data]
   (let [room (api/create-room (:user data)
                               (:room-id data)
@@ -110,6 +104,12 @@
     (notify-team (:user data)
                  :room-created
                  {:room room})))
+
+(defmethod event-received :teamwall/open-room [data]
+  (api/update-room! (:user data)
+                    (:room-id data)
+                    :open? true
+                    :moderator (:email (:user data))))
 
 (defn- event-handler
   "Dispatch the events based on the event type"

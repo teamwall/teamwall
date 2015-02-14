@@ -27,6 +27,25 @@
 
 (declare notify-team)
 
+(def ring-ajax-post
+  "Sente ajax callback"
+  nil)
+(def ring-ajax-get-or-ws-handshake
+  "Sente handshake"
+  nil)
+(def ch-chsk
+  "Sente input channel"
+  nil)
+(def chsk-send!
+  "Sente send function"
+  nil)
+(def connected-uids
+  "Sente list of connected users"
+  nil)
+
+(def chsk-router
+  "Sente event router"
+  nil)
 
 ;;    /==================\
 ;;    |                  |

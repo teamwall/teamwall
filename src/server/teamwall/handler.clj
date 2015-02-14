@@ -100,7 +100,7 @@
 (defmethod event-received :teamwall/create-room [data]
   (let [room (api/create-room (:user data)
                               (:room-id data)
-                              :?name (:name data))]
+                              :?name (:?name data))]
     (notify-team (:user data)
                  :room-created
                  {:room room})))

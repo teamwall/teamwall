@@ -99,7 +99,7 @@
   (repository/open-notification-channel)
   (repository/get-team-members (:token data)
                                (fn [members]
-                                 (wall/set-team members)
+                                 (wall/set-team! members)
                                  (append-content (wall/render-content)
                                                  "wall")))
   (snapshot-loop (:token data)))
@@ -121,7 +121,7 @@
   (repository/open-notification-channel)
   (repository/get-rooms (:token data)
                         (fn [rooms]
-                          (states/rooms! rooms)
+                          (wall/set-rooms! rooms)
                           (append-content (chat/render-content)
                                           "chat")
                           (let [room (get (states/rooms) room-id)]

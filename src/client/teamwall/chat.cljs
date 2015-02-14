@@ -17,6 +17,8 @@
   "Join the room corresponding to ID"
   [id]
   (let [rmc (conference/setup-chat (:email (states/get-user)))]
+    (conference/set-body! rmc
+                          (sel1 "#video-container"))
     (conference/connect-to-room! rmc
                                  id)))
 
@@ -24,6 +26,8 @@
   "Join the room corresponding to ID"
   [id]
   (let [rmc (conference/setup-chat (:email (states/get-user)))]
+    (conference/set-body! rmc
+                          (sel1 "#video-container"))
     (repository/notify-server :open-room
                               {:room-id id
                                :user    (states/get-user)}
@@ -37,7 +41,8 @@
   []
   [:div
    [:h1 "Chat"]
-   [:img {:src "http://thecatapi.com/api/images/get?format=src&type=gif"}]])
+   [:img {:src "http://thecatapi.com/api/images/get?format=src&type=gif"}]
+   [:div#video-container]])
 
 
 ;;    /==================\
@@ -54,4 +59,4 @@
 ;;;  :moderator user id of the room creator
 ;;;  :users list of user in the room excluding the moderator
 ;;;  :private? is the room private or not?
-;;;  :roomid unique identifier (nanoseconds of instantiation)}
+;;;  :room-id unique identifier (nanoseconds of instantiation)}

@@ -1,155 +1,125 @@
 @import "/bower_components/bootstrap/dist/css/bootstrap.min.css";
+@import "/bower_components/bootstrap-select/dist/css/bootstrap-select.min.css";
 @import "/bower_components/fontawesome/css/font-awesome.min.css";
-/* line 1, /home/nico/work/clojure/teamwall/resources/less/login.less */
 body.login {
   color: #F0E7D5;
 }
-/* line 5, /home/nico/work/clojure/teamwall/resources/less/login.less */
 div.login {
   border-radius: 0px;
   background: #213E61;
   padding: 20px;
   padding-top: 10px;
 }
-/* line 6, /home/nico/work/clojure/teamwall/resources/less/login.less */
 div.login h1 {
   color: white;
   text-align: center;
 }
-/* line 9, /home/nico/work/clojure/teamwall/resources/less/login.less */
 div.login h1 .fa {
   padding-left: 10px;
 }
-/* line 14, /home/nico/work/clojure/teamwall/resources/less/login.less */
 div.login #row-field-submit span {
   float: right;
 }
 @media (min-width: 768px) {
-  /* line 23, /home/nico/work/clojure/teamwall/resources/less/login.less */
   div.login {
     margin-top: 59px;
   }
 }
-/* line 28, /home/nico/work/clojure/teamwall/resources/less/login.less */
 .register-link a {
   color: #F0E7D5;
   text-decoration: underline;
   float: right;
   margin-top: 10px;
 }
-/* line 34, /home/nico/work/clojure/teamwall/resources/less/login.less */
 .register-link a:visited {
   color: #c5bfb5;
 }
-/* line 1, /home/nico/work/clojure/teamwall/resources/less/register.less */
 body.register {
   color: #f0e7d5;
 }
-/* line 5, /home/nico/work/clojure/teamwall/resources/less/register.less */
 div.register {
   border-radius: 0px;
   background: #213e61;
   padding: 20px;
   padding-top: 10px;
 }
-/* line 6, /home/nico/work/clojure/teamwall/resources/less/register.less */
 div.register h1 {
   color: white;
   text-align: center;
 }
-/* line 9, /home/nico/work/clojure/teamwall/resources/less/register.less */
 div.register h1 .fa {
   padding-left: 10px;
 }
 @media (min-width: 768px) {
-  /* line 19, /home/nico/work/clojure/teamwall/resources/less/register.less */
   div.register {
     margin-top: 59px;
   }
 }
-/* line 23, /home/nico/work/clojure/teamwall/resources/less/register.less */
 div.register .fieldset-submit {
   float: right;
 }
-/* line 30, /home/nico/work/clojure/teamwall/resources/less/register.less */
 div.register .alert.alert-danger ul {
   padding-left: 20px;
 }
-/* line 1, /home/nico/work/clojure/teamwall/resources/less/settings.less */
 body.settings {
   color: #f0e7d5;
 }
-/* line 5, /home/nico/work/clojure/teamwall/resources/less/settings.less */
 div.settings {
   border-radius: 0px;
   background: #213e61;
   padding: 20px;
   padding-top: 10px;
 }
-/* line 6, /home/nico/work/clojure/teamwall/resources/less/settings.less */
 div.settings h1 {
   color: white;
   text-align: center;
 }
-/* line 11, /home/nico/work/clojure/teamwall/resources/less/settings.less */
 div.settings h3 {
   color: white;
 }
 @media (min-width: 768px) {
-  /* line 20, /home/nico/work/clojure/teamwall/resources/less/settings.less */
   div.settings {
     margin-top: 59px;
   }
 }
-/* line 24, /home/nico/work/clojure/teamwall/resources/less/settings.less */
 div.settings .fieldset-submit {
   float: right;
 }
-/* line 29, /home/nico/work/clojure/teamwall/resources/less/settings.less */
 div.settings .alert.alert-danger ul {
   padding-left: 20px;
 }
-/* line 34, /home/nico/work/clojure/teamwall/resources/less/settings.less */
 div.settings .cancel-link .cancel-form {
   margin: 6px 12px;
   padding: 0;
 }
-/* line 38, /home/nico/work/clojure/teamwall/resources/less/settings.less */
 div.settings .cancel-link .cancel-form:hover {
   color: #6199CD;
   text-decoration: underline;
 }
-/* line 43, /home/nico/work/clojure/teamwall/resources/less/settings.less */
 div.settings .cancel-link .cancel-form:active {
   box-shadow: none;
   -webkit-box-shadow: none;
 }
-/* line 10, /home/nico/work/clojure/teamwall/resources/less/page.less */
 html,
 body {
   height: 100%;
 }
-/* line 14, /home/nico/work/clojure/teamwall/resources/less/page.less */
 body {
   background: #2E4867;
   background: url("../img/background.png") repeat center 0;
   background-size: 100%;
 }
 @media (max-width: 992px) {
-  /* line 6, /home/nico/work/clojure/teamwall/resources/less/mixins.less */
   body {
     background-image: url("../img/background_2tiles.png");
   }
 }
-/* line 18, /home/nico/work/clojure/teamwall/resources/less/page.less */
 body.sidebar-closed .wall {
   left: 0;
 }
-/* line 22, /home/nico/work/clojure/teamwall/resources/less/page.less */
 body.sidebar-closed .sidebar {
   display: none;
 }
-/* line 28, /home/nico/work/clojure/teamwall/resources/less/page.less */
 div.wall {
   position: fixed;
   left: 250px;
@@ -162,12 +132,10 @@ div.wall {
   background-size: 100%;
 }
 @media (max-width: 992px) {
-  /* line 6, /home/nico/work/clojure/teamwall/resources/less/mixins.less */
   div.wall {
     background-image: url("../img/background_2tiles.png");
   }
 }
-/* line 38, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .sidebar {
   position: fixed;
   width: 250px;
@@ -178,7 +146,6 @@ div.wall {
   left: 0;
   overflow-y: auto;
 }
-/* line 48, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .sidebar h2 {
   margin: 0;
   padding: 10px;
@@ -188,12 +155,20 @@ div.wall {
   border-top: 1px solid #202F42;
   border-bottom: 1px solid #202F42;
 }
-/* line 58, /home/nico/work/clojure/teamwall/resources/less/page.less */
+.sidebar h2 .add-room {
+  float: right;
+  font-size: 24px;
+  margin-top: -5px;
+  cursor: pointer;
+  color: #888;
+}
+.sidebar h2 .add-room:hover {
+  color: white;
+}
 .sidebar ul {
   margin: 0;
   padding: 10px;
 }
-/* line 61, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .sidebar ul li {
   list-style: none;
   margin: 0;
@@ -201,29 +176,35 @@ div.wall {
   color: white;
   padding-bottom: 10px;
 }
-/* line 68, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .sidebar ul li .gravatar {
   border-radius: 16px;
   margin-right: 10px;
 }
-/* line 73, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .sidebar ul li.offline {
   color: #888;
 }
-/* line 75, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .sidebar ul li.offline .gravatar {
   -webkit-filter: grayscale(100%);
   -moz-filter: grayscale(100%);
   filter: grayscale(100%);
 }
-/* line 83, /home/nico/work/clojure/teamwall/resources/less/page.less */
+.sidebar ul li a.open-room {
+  color: white;
+  cursor: pointer;
+}
+.sidebar ul li a.open-room:hover {
+  border-bottom: 1px solid white;
+  text-decoration: none;
+}
+.sidebar ul li a.open-room i.fa {
+  margin-right: 10px;
+}
 h1.title {
   text-align: center;
   color: white;
   font-size: 26px;
   margin: 16px 0;
 }
-/* line 90, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar {
   border: 0 none;
   background: #283f5a;
@@ -231,7 +212,6 @@ h1.title {
   border-radius: 0;
   z-index: 2;
 }
-/* line 97, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .sidebar-toggler {
   position: absolute;
   font-size: 28px;
@@ -240,7 +220,6 @@ h1.title {
   cursor: pointer;
   color: white;
 }
-/* line 106, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right {
   position: absolute;
   right: 0;
@@ -248,12 +227,10 @@ h1.title {
   margin-right: 0;
   margin-top: 0;
 }
-/* line 113, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right a {
   /*       cursor: pointer; */
   color: white;
 }
-/* line 117, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right a.link {
   line-height: 1.6;
   padding: 18px;
@@ -261,72 +238,56 @@ h1.title {
   margin-left: 0;
   cursor: pointer;
 }
-/* line 124, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right a.link.user {
   cursor: default;
 }
-/* line 128, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right a.link .glyphicon {
   margin-right: 5px;
 }
-/* line 133, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right a.link.glyphicon:hover {
   text-decoration: none;
 }
-/* line 139, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right a:hover {
   text-decoration: none;
 }
-/* line 144, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right a.settings.glyphicon:hover {
   text-decoration: underline;
 }
-/* line 150, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right li.menu:hover ul {
   display: block;
 }
-/* line 153, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right li.menu ul {
   display: none;
   background: #283f5a;
   padding-left: 18px;
 }
-/* line 158, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right li.menu ul li {
   display: block;
 }
-/* line 161, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right li.menu ul li .menu-item {
   cursor: pointer;
 }
-/* line 164, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right li.menu ul li .menu-item .glyphicon {
   padding-right: 10px;
   padding-bottom: 20px;
 }
-/* line 169, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right li.menu ul li .menu-item:hover {
   text-decoration: none;
 }
-/* line 172, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .navbar .navbar-right li.menu ul li .menu-item:hover .item {
   border-bottom: 1px solid white;
 }
-/* line 184, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .mates .mate {
   padding: 0;
 }
-/* line 187, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .mates .mate img {
   width: 100%;
 }
-/* line 191, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .mates .mate img.offline {
   -webkit-filter: grayscale(100%);
   -moz-filter: grayscale(100%);
   filter: grayscale(100%);
 }
-/* line 195, /home/nico/work/clojure/teamwall/resources/less/page.less */
 .mates .mate .timestamp {
   position: absolute;
   bottom: 0;
@@ -337,4 +298,7 @@ h1.title {
   background: rgba(0, 0, 0, 0.5);
   padding: 3px 12px;
   border-radius: 20px;
+}
+.room-creation-form .disabled {
+  color: #999;
 }

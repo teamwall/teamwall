@@ -23,6 +23,7 @@
                  [formidable "0.1.9"]
                  [http-kit "2.1.19"]
                  [lein-cljsbuild/cljs-compat "1.0.0-20141215.132312-28"]
+                 [org.clojars.frozenlock/reagent-modals "0.2.2"]
                  [org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2498"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]

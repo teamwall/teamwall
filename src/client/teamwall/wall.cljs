@@ -4,7 +4,7 @@
             [cljs-hash.md5 :as md5]
             [dommy.core :as dommy :refer-macros [sel sel1]]
             [reagent.core :as reagent :refer [atom]]
-            [reagent-modals.modals :as reagent-modals]
+            [reagent-modals.modals :as rm]
             [repositories.repository :as repository]
             [secretary.core :as secretary]
             [teamwall.helper :as helper]
@@ -130,14 +130,16 @@
 
 (defn- create-room
   "Create a new meeting room"
-  [room-name public? invitations]
-  (let [room {:room-id "id"
-              :?name "Test"}]
+  [room-name public? users]
+  (let [user (states/get-user)
+        room {:room-id   (now-as-milliseconds)
+              :?name     room-name
+              :private?  (not public?)
+              :moderator (:email user)
+              :users     users}]
     (repository/notify-server "create-room"
-                              (assoc room :user (states/get-user))
-                              1000
-                              (fn []
-                                (open-chat-popup room)))))
+                              (assoc room :user user)
+                              1000)))
 
 
 ;;    /==================\
@@ -190,6 +192,15 @@
      "Create new meeting"]]
    [:div.modal-body
     [:form.form-horizontal.room-creation-form
+     {:on-submit (fn [event]
+                   (let [modal  (js/jQuery "#reagent-modal")
+                         picker (js/jQuery ".selectpicker")
+                         mates  (js->clj (.val picker))]
+                     (.modal modal "hide")
+                     (create-room @room-name
+                                  @public?
+                                  mates))
+                   false)}
      [render-form room-name public?]
      [:div.form-group
       [:label.col-sm-3.control-label {:for "mates-input"}
@@ -214,7 +225,7 @@
               :class "btn btn-primary"
               :on-click (fn []
                           (let [picker (js/jQuery ".selectpicker")
-                                mates  (.val picker)]
+                                mates  (js->clj (.val picker))]
                             (create-room @room-name
                                          @public?
                                          mates)))
@@ -226,7 +237,10 @@
   []
   (let [room-name (atom "")
         public?   (atom true)]
-    (reagent-modals/modal! [render-modal room-name public?])))
+    (rm/modal! [render-modal room-name public?]
+               {:shown (fn []
+                         (let [input (js/jQuery "#room-name-input")]
+                           (.focus input)))})))
 
 (defn- tile
   "Build a snapshot tile for the given SRC"
@@ -310,16 +324,14 @@
   (let [items (map (fn [room]
                      [:li.room
                       [:a.open-room
+                       {:on-click (fn []
+                                    (open-chat-popup room))}
                        [:span
                         [:i.fa.fa-video-camera]
                         (:?name room)]]])
                    @rooms)]
     [:div.rooms
-     [:ul.list-rooms items]
-     ;;      [:button.add-room.btn.btn-primary
-     ;;       {:on-click open-chat}
-     ;;       "New Chat"]
-     ]))
+     [:ul.list-rooms items]]))
 
 (defn- build-content
   "Build the wall of mate tiles"
@@ -350,8 +362,12 @@
   (status-changed! (:user data)))
 
 (defmethod repository/event-received :teamwall/room-created [[_ data]]
-  (js/console.log "New room")
-  (swap! rooms conj (:room data)))
+  (let [room (:room data)]
+    (when-not (:private? room)
+      (swap! rooms conj room))
+    (when (= (:moderator room)
+             (:email (states/get-user)))
+      (open-chat-popup room))))
 
 
 ;;    /==================\
@@ -375,7 +391,7 @@
   "Main rendering function"
   []
   [:div
-   [reagent-modals/modal-window]
+   [rm/modal-window]
    [build-navbar]
    [:div.viewport
     [:div.sidebar

@@ -211,8 +211,7 @@
   [token on-success]
   (async-get-json :handler on-success
                   :url     get-rooms-url
-                  :params  {:token token}
-                  :keywords? false))
+                  :params  {:token token}))
 
 (defn register
   "Register a new teammate with the info provided"

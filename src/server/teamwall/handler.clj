@@ -117,9 +117,8 @@
   :event-id)
 
 (defmethod event-received :teamwall/create-room [data]
-  (let [room (api/create-room (:user data)
-                              (:room-id data)
-                              :?name (:?name data))]
+  (let [args (apply concat data)
+        room (apply api/create-room args)]
     (notify-team (:user data)
                  :room-created
                  {:room room})))
@@ -147,14 +146,13 @@
   []
   (let [channel (sente/make-channel-socket! {})
         {:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
-              connected-uids]} channel]
+                connected-uids]} channel]
     (def ring-ajax-post ajax-post-fn)
     (def ring-ajax-get-or-ws-handshake ajax-get-or-ws-handshake-fn)
     (def ch-chsk ch-recv)
     (def chsk-send! send-fn)
     (def connected-uids connected-uids))
-
-  (defonce chsk-router (sente/start-chsk-router! ch-chsk event-handler)))
+  (def chsk-router (sente/start-chsk-router! ch-chsk event-handler)))
 
 (defn- as-integer
   "Convert the provided String or Integer to Integer"
@@ -464,7 +462,7 @@
        {params :params}
        (secure-routing-json (:token params)
                             (fn [user]
-                              (api/get-all-rooms user))))
+                              (vals (api/get-all-rooms user)))))
 
   (wrap-multipart-params
    (POST "/new-photo"

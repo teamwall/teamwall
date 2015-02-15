@@ -102,6 +102,9 @@
                                  (wall/set-team! members)
                                  (append-content (wall/render-content)
                                                  "wall")))
+  (repository/get-rooms (:token data)
+                        (fn [rooms]
+                          (wall/set-rooms! rooms)))
   (snapshot-loop (:token data)))
 
 (defn- setup-settings

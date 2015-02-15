@@ -76,29 +76,35 @@
 (defn get-all-rooms
   "Return the list of all the existing rooms"
   [user]
-  @(get-rooms-atom-for-domain (extract-email-pattern (:email user))))
+  (let [email   (:email user)
+        pattern (extract-email-pattern email)
+        rooms   (get-rooms-atom-for-domain pattern)]
+    (if rooms
+      @rooms
+      [])))
 
 (defn update-room!
   "Update the room corresponding to ID with new values"
   [user id & {:keys [?name open? users private?]}]
-  (let [domain (extract-email-pattern (:email user))
-        rooms (get-rooms-atom-for-domain domain)
-        room (get @rooms id)
-        new-room (assoc @rooms
-                   :?name    (if (nil? ?name)
-                               (:?name room)
-                               ?name)
-                   :open?    (if (nil? open?)
-                               (:open? room)
-                               open?)
-                   :users    (if (nil? users)
-                               (:users room)
-                               users)
-                   :private? (if (nil? private?)
-                               (:private? room)
-                               private?))]
+  (let [domain       (extract-email-pattern (:email user))
+        domain-rooms (get-rooms-atom-for-domain domain)
+        room         (or (get @domain-rooms id)
+                         {})
+        new-room     (assoc room
+                       :?name    (if (nil? ?name)
+                                   (:?name room)
+                                   ?name)
+                       :open?    (if (nil? open?)
+                                   (:open? room)
+                                   open?)
+                       :users    (if (nil? users)
+                                   (:users room)
+                                   users)
+                       :private? (if (nil? private?)
+                                   (:private? room)
+                                   private?))]
     (when room
-      (swap! rooms assoc id new-room))))
+      (swap! domain-rooms assoc id new-room))))
 
 (defn remove-room!
   "Remove the room corresponding to ID"
@@ -107,20 +113,18 @@
 
 (defn create-room
   "Update the room corresponding to ID with new values"
-  [user id & {:keys [?name open? users private?]}]
-  (let [domain (extract-email-pattern (:email user))
-        domain-rooms (get @rooms domain)
-        room         {:room-id   id
+  [& {:keys [moderator room-id ?name open? users private?]}]
+  (let [domain       (extract-email-pattern moderator)
+        domain-rooms (get-rooms-atom-for-domain domain)
+        room         {:room-id   room-id
                       :?name     (or ?name "")
                       :open?     (boolean open?)
-                      :moderator (:email user)
+                      :moderator moderator
                       :users     (or users [])
                       :private?  (boolean private?)}]
     (if domain-rooms
-      (swap! domain-rooms assoc id room)
-      (swap! rooms assoc domain (atom {id room})))
-    (println "Room" ?name "created")
-    (println @rooms)
+      (swap! domain-rooms assoc room-id room)
+      (swap! rooms assoc domain (atom {room-id room})))
     room))
 
 (defn get-team-members

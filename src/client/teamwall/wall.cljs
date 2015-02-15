@@ -120,13 +120,34 @@
        (md5/md5 (:email user))
        "?s=32&d=retro"))
 
+(defn- close-meeting
+  "Close the provided connection and notify the server"
+  [rmc]
+  (.close rmc)
+  (repository/notify-server :close-room
+                            {:room-id (.-sessionid rmc)
+                             :user    (states/get-user)}))
+
+(defn- leave-meeting
+  "Leave the provided connection"
+  [rmc]
+  (.leave rmc))
+
+
 (defn- open-chat-popup
   "Open a chat popup window"
   [room]
-  (js/window.open (str "/chat/" (:room-id room))
-                  (or (:?name room)
-                      "Chat")
-                  "mywindow","status=1"))
+  (let [popup (js/window.open (str "/chat/" (:room-id room))
+                              (or (:?name room)
+                                  "Chat")
+                              "mywindow","status=1")]
+
+    (set! (.-onbeforeunload popup)
+          (fn []
+            (when-let [rmc (.-rmc popup)]
+              (if (.-isInitiator rmc)
+                (close-meeting rmc)
+                (leave-meeting rmc)))))))
 
 (defn- create-room
   "Create a new meeting room"
@@ -369,6 +390,13 @@
              (:email (states/get-user)))
       (open-chat-popup room))))
 
+(defmethod repository/event-received :teamwall/room-removed [[_ data]]
+  (let [room-id   (:room-id data)
+        new-rooms (remove (fn [room]
+                            (= (:room-id room)
+                               room-id))
+                          @rooms)]
+    (reset! rooms new-rooms)))
 
 ;;    /==================\
 ;;    |                  |

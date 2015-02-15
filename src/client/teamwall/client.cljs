@@ -127,8 +127,12 @@
                           (wall/set-rooms! rooms)
                           (append-content (chat/render-content)
                                           "chat")
-                          (let [room (get (states/rooms) room-id)]
-                            (if (get room "open?")
+                          (let [matching-rooms (filter (fn [room]
+                                                         (= (:room-id room)
+                                                            room-id))
+                                                       rooms)
+                                room           (first matching-rooms)]
+                            (if (:open? room)
                               (chat/connect-to-room! room-id)
                               (chat/create-room! room-id))))))
 

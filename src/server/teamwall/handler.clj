@@ -129,6 +129,15 @@
                     :open? true
                     :moderator (:email (:user data))))
 
+(defmethod event-received :teamwall/close-room [data]
+  (let [user    (:user data)
+        room-id (:room-id data)]
+    (api/remove-room! user
+                      room-id)
+    (notify-team user
+                 :room-removed
+                 {:room-id room-id})))
+
 (defn- event-handler
   "Dispatch the events based on the event type"
   [{:as ev-msg :keys [event id ?data ring-req ?reply-fn send-fn]}]

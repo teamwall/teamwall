@@ -54,6 +54,8 @@
 (defn- open-signaling-channel
   "Open a new websocket channel for signaling"
   [config websocket rmc message-callbacks]
+  (set (.-socket rmc)
+       websocket)
   (this-as this
            (let [channel    (or (.-channel config)
                                 (.-channel this))
@@ -99,6 +101,24 @@
   (set! (.-onMediaCaptured rmc)
         callback))
 
+(defn on-close!
+  "Set the callback invoked when the channel is closed"
+  [rmc callback]
+  (set! (.-onclose rmc)
+        callback))
+
+(defn on-leave!
+  "Set the callback invoked when the channel is left"
+  [rmc callback]
+  (set! (.-onleave rmc)
+        callback))
+
+(defn on-session-closed!
+  "Set the callback invoked when the session is closed"
+  [rmc callback]
+  (set! (.-.onSessionClosed rmc)
+        callback))
+
 (defn create-room!
   "Create a new chat room"
   [rmc id]
@@ -115,9 +135,9 @@
   "Setup the whole chat application. Must be the first function invoked"
   [& [user-id]]
   (let [message-callbacks (atom {})
-        uri       (build-relative-ws-path "/signaling")
-        websocket (create-websocket uri)
-        rmc       (js/RTCMultiConnection.)]
+        uri               (build-relative-ws-path "/signaling")
+        websocket         (create-websocket uri)
+        rmc               (js/RTCMultiConnection.)]
 
     (set! (.-onmessage websocket)
           (fn [event]
@@ -132,6 +152,8 @@
                                     message-callbacks)))
     (set! (.-getExternalIceServers rmc)
           false)
+    (set! (.-leaveOnPageUnload rmc)
+          true)
     (when user-id
       (set! (.-userid rmc)
             user-id))

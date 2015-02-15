@@ -19,18 +19,30 @@
   (let [rmc (conference/setup-chat (:email (states/get-user)))]
     (conference/set-body! rmc
                           (sel1 "#video-container"))
+
+    (set! (.-rmc js/window)
+          rmc)
+
+    (conference/on-session-closed! rmc
+                                   (fn []
+                                     (.close js/window)))
     (conference/connect-to-room! rmc
                                  id)))
 
 (defn create-room!
   "Join the room corresponding to ID"
   [id]
-  (let [rmc (conference/setup-chat (:email (states/get-user)))]
+  (let [user (states/get-user)
+        rmc  (conference/setup-chat (:email user))]
     (conference/set-body! rmc
                           (sel1 "#video-container"))
+
+    (set! (.-rmc js/window)
+          rmc)
+
     (repository/notify-server :open-room
                               {:room-id id
-                               :user    (states/get-user)}
+                               :user    user}
                               1000
                               (fn []
                                 (conference/create-room! rmc

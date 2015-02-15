@@ -108,8 +108,9 @@
 
 (defn remove-room!
   "Remove the room corresponding to ID"
-  [domain id]
-  (swap! (get-rooms-atom-for-domain domain) dissoc id))
+  [user id]
+  (let [domain (extract-email-pattern (:email user))]
+    (swap! (get-rooms-atom-for-domain domain) dissoc id)))
 
 (defn create-room
   "Update the room corresponding to ID with new values"

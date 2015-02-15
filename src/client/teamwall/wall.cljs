@@ -120,13 +120,18 @@
        (md5/md5 (:email user))
        "?s=32&d=retro"))
 
+(defn- notify-room-closed
+  "Notify the server a room has eben closed"
+  [room-id]
+  (repository/notify-server :close-room
+                            {:room-id room-id
+                             :user    (states/get-user)}))
+
 (defn- close-meeting
   "Close the provided connection and notify the server"
   [rmc]
   (.close rmc)
-  (repository/notify-server :close-room
-                            {:room-id (.-sessionid rmc)
-                             :user    (states/get-user)}))
+  (notify-room-closed (.-sessionid rmc)))
 
 (defn- leave-meeting
   "Leave the provided connection"
@@ -349,7 +354,11 @@
                                     (open-chat-popup room))}
                        [:span
                         [:i.fa.fa-video-camera]
-                        (:?name room)]]])
+                        (:?name room)]]
+                      (when (= (:moderator room)
+                               (:email (states/get-user)))
+                        [:i.close-room.fa.fa-times-circle
+                         {:on-click #(notify-room-closed (:room-id room))}])])
                    @rooms)]
     [:div.rooms
      [:ul.list-rooms items]]))

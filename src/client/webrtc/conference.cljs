@@ -54,8 +54,6 @@
 (defn- open-signaling-channel
   "Open a new websocket channel for signaling"
   [config websocket rmc message-callbacks]
-  (set (.-socket rmc)
-       websocket)
   (this-as this
            (let [channel    (or (.-channel config)
                                 (.-channel this))
@@ -116,7 +114,7 @@
 (defn on-session-closed!
   "Set the callback invoked when the session is closed"
   [rmc callback]
-  (set! (.-.onSessionClosed rmc)
+  (set! (.-onSessionClosed rmc)
         callback))
 
 (defn create-room!

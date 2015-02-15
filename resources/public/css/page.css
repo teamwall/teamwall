@@ -302,3 +302,10 @@ h1.title {
 .room-creation-form .disabled {
   color: #999;
 }
+.close-room {
+  margin-left: 4px;
+  color: #888;
+}
+.close-room:hover {
+  color: #B86161;
+}

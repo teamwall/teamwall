@@ -40,6 +40,9 @@
     (set! (.-rmc js/window)
           rmc)
 
+    (conference/on-session-closed! rmc
+                                   (fn []
+                                     (.close js/window)))
     (repository/notify-server :open-room
                               {:room-id id
                                :user    user}

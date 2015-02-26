@@ -258,6 +258,34 @@
               :data-dismiss "modal"}
      "Create"]]])
 
+(defn- render-video-invitation
+  "Render the video chat invitation dialog"
+  [room moderator]
+  [:div
+   [:div.modal-header
+    [:button.close {:type "button"
+                    :data-dismiss "modal"
+                    :aria-label "Close"}
+     [:span {:aria-hidden true}]]
+    [:h4.modal-title
+     (str (:username moderator) " is calling you")]]
+   [:div.modal-body
+    [:p
+     (str (:username moderator) " is calling you about ")
+     [:b (:?name room)]
+     (str ". Do you want to answer?")]]
+   [:div.modal-footer
+    [:button.btn.btn-default {:type "button"
+                              :data-dismiss "modal"}
+     "Close"]
+    [:button {:type "button"
+              :class "btn btn-primary"
+              :on-click (fn []
+                          (open-chat-popup room))
+              :data-dismiss "modal"}
+     [:i.fa.fa-phone]
+     "Pick up"]]])
+
 (defn- open-chat
   "Opens a dialog window to set new room data"
   []
@@ -398,6 +426,25 @@
     (when (= (:moderator room)
              (:email (states/get-user)))
       (open-chat-popup room))))
+
+(defmethod repository/event-received :teamwall/room-opened [[_ data]]
+  (let [room-id   (:room-id data)
+        room      (first (filter (fn [room]
+                                  (= (:room-id room)
+                                     room-id))
+                                @rooms))
+        moderator (first (filter (fn [mate]
+                                  (= (:email mate)
+                                     (:moderator room)))
+                                @members))
+        email     (:email (states/get-user))
+        invited?  (< 0
+                    (count (filter (fn [user]
+                                     (= user
+                                        email))
+                                   (:users room))))]
+    (when invited?
+      (rm/modal! [render-video-invitation room moderator]))))
 
 (defmethod repository/event-received :teamwall/room-removed [[_ data]]
   (let [room-id   (:room-id data)

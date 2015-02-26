@@ -127,7 +127,10 @@
   (api/update-room! (:user data)
                     (:room-id data)
                     :open? true
-                    :moderator (:email (:user data))))
+                    :moderator (:email (:user data)))
+  (notify-team (:user data)
+               :room-opened
+               {:room-id (:room-id data)}))
 
 (defmethod event-received :teamwall/close-room [data]
   (let [user    (:user data)

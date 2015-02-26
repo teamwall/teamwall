@@ -11,7 +11,6 @@
 
 (def ^:private token (atom nil))
 (def ^:private user (atom nil))
-(def ^:private all-rooms (atom []))
 
 (def default-sleep-time
   "Default time between two snapshots in seconds"
@@ -53,18 +52,3 @@
   "Set the value of USER"
   [value]
   (reset! user value))
-
-(defn rooms
-  "Return the value of ROOMS"
-  []
-  @all-rooms)
-
-(defn rooms!
-  "Set the value of ROOMS"
-  [new-rooms]
-  (reset! all-rooms new-rooms))
-
-(defn add-room!
-  "Add a new ROOM to rooms"
-  [room]
-  (swap! all-rooms conj room))

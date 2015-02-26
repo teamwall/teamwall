@@ -277,6 +277,9 @@ h1.title {
 .navbar .navbar-right li.menu ul li .menu-item:hover .item {
   border-bottom: 1px solid white;
 }
+button .fa {
+  margin-right: 5px;
+}
 .mates .mate {
   padding: 0;
 }

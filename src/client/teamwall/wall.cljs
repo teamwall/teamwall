@@ -152,7 +152,8 @@
             (when-let [rmc (.-rmc popup)]
               (if (.-isInitiator rmc)
                 (close-meeting rmc)
-                (leave-meeting rmc)))))))
+                (leave-meeting rmc)))
+            "You are about to close this meeting."))))
 
 (defn- create-room
   "Create a new meeting room"

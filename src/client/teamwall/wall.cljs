@@ -91,13 +91,15 @@
 (defn- status-changed!
   "Updates the status of the user provided as argument"
   [user]
-  (let [status (:status user)
-        email  (:email user)
-        index  (first (first (filter #(= (:email (second %)) email)
-                                     (map-indexed vector @members))))]
+  (let [status        (:status user)
+        email         (:email user)
+        matching-user (first (filter #(= (:email (second %)) email)
+                                     (map-indexed vector @members)))
+        index         (first matching-user)
+        mate          (assoc (second matching-user) :status status)]
     (when (and index
                (< index (count @members)))
-      (swap! members assoc index user))))
+      (swap! members index mate))))
 
 (defn- toggle-sidebar
   "Toggle the left-hand side sidebar"
@@ -251,7 +253,8 @@
                       (map (fn [member]
                              [:option {:value (:email member)}
                               (:username member)])
-                           (remove #(= % (states/get-user))
+                           (remove #(= (:email %)
+                                       (:email (states/get-user)))
                                    @members))])
           {:component-did-mount (fn []
                                   (let [pickers (js/jQuery ".selectpicker")]

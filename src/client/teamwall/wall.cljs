@@ -168,6 +168,24 @@
                               (assoc room :user user)
                               1000)))
 
+(defn- submit-creation-form
+  "Validate the form field before creating a new room"
+  [room-name public?]
+  (let [modal      (js/jQuery "#reagent-modal")
+        picker     (js/jQuery ".selectpicker")
+        name-group (dommy/sel1 ".room-name")
+        mates      (js->clj (.val picker))]
+    (if (and public?
+             (empty? room-name))
+      (dommy/add-class! name-group
+                        :has-error)
+      (do
+        (.modal modal "hide")
+        (create-room room-name
+                     public?
+                     mates))))
+  false)
+
 
 ;;    /==================\
 ;;    |                  |
@@ -189,7 +207,7 @@
                 :on-change #(swap! public? not)}
         "Public room"]]]]]
 
-   [:div.form-group
+   [:div.form-group.room-name
     [:label {:for "room-name-input"
              :class (if @public?
                       "col-sm-3 control-label"
@@ -220,14 +238,8 @@
    [:div.modal-body
     [:form.form-horizontal.room-creation-form
      {:on-submit (fn [event]
-                   (let [modal  (js/jQuery "#reagent-modal")
-                         picker (js/jQuery ".selectpicker")
-                         mates  (js->clj (.val picker))]
-                     (.modal modal "hide")
-                     (create-room @room-name
-                                  @public?
-                                  mates))
-                   false)}
+                   (submit-creation-form @room-name
+                                         @public?))}
      [render-form room-name public?]
      [:div.form-group
       [:label.col-sm-3.control-label {:for "mates-input"}
@@ -250,13 +262,9 @@
      "Close"]
     [:button {:type "button"
               :class "btn btn-primary"
-              :on-click (fn []
-                          (let [picker (js/jQuery ".selectpicker")
-                                mates  (js->clj (.val picker))]
-                            (create-room @room-name
-                                         @public?
-                                         mates)))
-              :data-dismiss "modal"}
+              :on-click (fn [event]
+                          (submit-creation-form @room-name
+                                                @public?))}
      "Create"]]])
 
 (defn- render-video-invitation
@@ -431,19 +439,19 @@
 (defmethod repository/event-received :teamwall/room-opened [[_ data]]
   (let [room-id   (:room-id data)
         room      (first (filter (fn [room]
-                                  (= (:room-id room)
-                                     room-id))
-                                @rooms))
+                                   (= (:room-id room)
+                                      room-id))
+                                 @rooms))
         moderator (first (filter (fn [mate]
-                                  (= (:email mate)
-                                     (:moderator room)))
-                                @members))
+                                   (= (:email mate)
+                                      (:moderator room)))
+                                 @members))
         email     (:email (states/get-user))
         invited?  (< 0
-                    (count (filter (fn [user]
-                                     (= user
-                                        email))
-                                   (:users room))))]
+                     (count (filter (fn [user]
+                                      (= user
+                                         email))
+                                    (:users room))))]
     (when invited?
       (rm/modal! [render-video-invitation room moderator]))))
 

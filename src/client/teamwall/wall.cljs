@@ -432,8 +432,10 @@
   (let [room (:room data)]
     (when-not (:private? room)
       (swap! rooms conj room))
-    (when (= (:moderator room)
-             (:email (states/get-user)))
+    ;; Checking if memmbers is empty to be sure this is not a chat window
+    (when (and (seq @members)
+               (= (:moderator room)
+                  (:email (states/get-user))))
       (open-chat-popup room))))
 
 (defmethod repository/event-received :teamwall/room-opened [[_ data]]
